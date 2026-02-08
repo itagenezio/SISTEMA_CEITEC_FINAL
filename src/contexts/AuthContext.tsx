@@ -22,14 +22,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [user, role]);
 
     const login = (newRole: Role, userData: User) => {
+        console.log('AuthContext: Logging in...', { newRole, userData });
+        // Set storage SYNCly first
+        saveToStorage('current_user', userData);
+        saveToStorage('user_type', newRole);
+        // Then update state
         setRole(newRole);
         setUser(userData);
     };
 
     const logout = () => {
+        console.log('AuthContext: Logging out...');
+        saveToStorage('current_user', null);
+        saveToStorage('user_type', null);
         setRole(null);
         setUser(null);
-        localStorage.clear(); // Careful with clearing everything if other apps use localhost? No, usually fine.
+        // Clear only our keys to be safe
+        localStorage.removeItem('inovatec_current_user');
+        localStorage.removeItem('inovatec_user_type');
     };
 
     return (

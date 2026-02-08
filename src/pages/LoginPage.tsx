@@ -17,8 +17,12 @@ export function LoginPage() {
     }, [isAuthenticated, role, navigate]);
 
     const handleLogin = (userType: 'student' | 'teacher', userData: any) => {
-        console.log('Handling login for:', userType);
+        console.log('LoginPage: Handling login for:', userType);
         login(userType, userData);
+
+        // Redundant direct navigation for reliability
+        const dest = userType === 'student' ? '/student' : '/teacher';
+        navigate(dest, { replace: true });
     };
 
     // Show loading or nothing if already authenticated to prevent flicker

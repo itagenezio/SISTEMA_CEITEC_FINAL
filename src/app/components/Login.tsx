@@ -109,7 +109,7 @@ export function Login({ onLogin }: LoginProps) {
             {loginMethod === 'creds' ? (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Terminal_Identidade</label>
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">IDENTIDADE_DO_AGENTE</label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 group-focus-within:text-cyan-400 transition-colors" />
                     <Input
@@ -127,7 +127,7 @@ export function Login({ onLogin }: LoginProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Código_Encriptado</label>
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">CHAVE_DE_ENCRIPTAÇÃO</label>
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 group-focus-within:text-cyan-400 transition-colors" />
                     <Input
@@ -191,6 +191,16 @@ export function Login({ onLogin }: LoginProps) {
               <ShieldCheck className="w-3 h-3 text-cyan-500" /> Sistema de Segurança Ativo
             </div>
             <p className="text-[10px] text-slate-600 font-bold mt-1">Versão 2.5 // Baseado em Protocolo Inovatec</p>
+            <button
+              type="button"
+              onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+              }}
+              className="mt-2 text-[8px] text-slate-700 hover:text-cyan-500 transition-colors uppercase tracking-[0.2em] font-black"
+            >
+              [ RESETAR_EMERGÊNCIA_TOTAL ]
+            </button>
           </footer>
         </div>
       </motion.div>
