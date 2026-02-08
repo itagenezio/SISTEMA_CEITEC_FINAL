@@ -19,6 +19,7 @@ import { Class, EnrolledStudent } from '../../types';
 interface ClassManagementProps {
   onNavigate: (screen: string, id?: string) => void;
   onAddClass: (newClass: any) => void;
+  onAddActivity: (activity: any) => void;
   selectedClass: Class;
   classes: Class[];
   students: EnrolledStudent[];
@@ -30,6 +31,7 @@ interface ClassManagementProps {
 export function ClassManagement({
   onNavigate,
   onAddClass,
+  onAddActivity,
   selectedClass,
   classes,
   students,
@@ -40,6 +42,7 @@ export function ClassManagement({
   const [isClassModalOpen, setIsClassModalOpen] = useState(false);
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [isDeleteClassModalOpen, setIsDeleteClassModalOpen] = useState(false);
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
 
   const [newClassName, setNewClassName] = useState('');
   const [selectedDisciplines, setSelectedDisciplines] = useState<string[]>(['Inovação']);
@@ -49,6 +52,32 @@ export function ClassManagement({
     schedule: '',
     discipline: selectedClass?.disciplines[0] || 'Inovação'
   });
+
+  const [newActivity, setNewActivity] = useState({
+    title: '',
+    description: '',
+    points: 100,
+    deadline: '',
+    discipline: selectedClass?.disciplines[0] || 'Tecnologia'
+  });
+
+  const handleCreateActivity = () => {
+    if (!newActivity.title || !newActivity.deadline) {
+      toast.error('Preencha os campos obrigatórios');
+      return;
+    }
+
+    const activityData = {
+      ...newActivity,
+      icon: '📝',
+      color: 'from-blue-400 to-indigo-500'
+    };
+
+    onAddActivity(activityData);
+    toast.success('Atividade lançada para a turma!');
+    setIsActivityModalOpen(false);
+    setNewActivity({ title: '', description: '', points: 100, deadline: '', discipline: selectedClass?.disciplines[0] || 'Tecnologia' });
+  };
 
   const generateAccessCode = () => {
     return `INV-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -159,21 +188,26 @@ export function ClassManagement({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="p-6 bg-slate-900/40 border border-white/5 backdrop-blur-md space-y-5">
           <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-            <UserPlus className="w-4 h-4 text-emerald-400" /> Matrícula & Ingresso
+            <UserPlus className="w-4 h-4 text-emerald-400" /> Operações de Escopo
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-2">
             <Button
-              onClick={() => setIsStudentModalOpen(true)}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 h-12 rounded-xl text-[10px] font-black tracking-widest uppercase"
+              onClick={() => setIsClassModalOpen(true)}
+              className="w-full bg-indigo-600 hover:bg-indigo-500 h-11 rounded-xl text-[9px] font-black tracking-widest uppercase shadow-lg shadow-indigo-500/20"
             >
-              <Plus className="w-4 h-4 mr-2" /> Matricular Aluno
+              <Plus className="w-4 h-4 mr-2" /> Criar Novas Turmas
             </Button>
             <Button
-              variant="ghost"
-              onClick={() => toast.info('Selecione o arquivo CSV.')}
-              className="w-full bg-white/5 border border-white/5 hover:bg-white/10 h-12 rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-300"
+              onClick={() => setIsActivityModalOpen(true)}
+              className="w-full bg-cyan-600 hover:bg-cyan-500 h-11 rounded-xl text-[9px] font-black tracking-widest uppercase shadow-lg shadow-cyan-500/20"
             >
-              <Download className="w-4 h-4 mr-2" /> Importar CSV
+              <Plus className="w-4 h-4 mr-2" /> Lançar Atividade p/ Turma
+            </Button>
+            <Button
+              onClick={() => setIsStudentModalOpen(true)}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 h-11 rounded-xl text-[9px] font-black tracking-widest uppercase shadow-lg shadow-emerald-500/20"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Matricular Aluno
             </Button>
           </div>
         </Card>
@@ -276,6 +310,60 @@ export function ClassManagement({
           <DialogFooter className="bg-slate-950/50 -mx-6 -mb-6 p-6 border-t border-white/5">
             <Button variant="ghost" onClick={() => setIsStudentModalOpen(false)}>CANCEL</Button>
             <Button onClick={handleAddStudent} className="bg-emerald-600 hover:bg-emerald-500 h-11 px-8 rounded-xl font-bold">CONFIRM_LINK</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isActivityModalOpen} onOpenChange={setIsActivityModalOpen}>
+        <DialogContent className="bg-slate-900 border border-white/10 text-white sm:max-w-[500px] shadow-2xl">
+          <DialogHeader className="border-b border-white/5 pb-4">
+            <DialogTitle className="text-xl font-black tracking-tight flex items-center gap-2 uppercase">
+              <Plus className="w-5 h-5 text-cyan-400" /> Lançar Missão p/ {selectedClass?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-5 py-6 font-mono">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Identificação da Missão</label>
+              <Input
+                placeholder="Ex: PROJETO_FINAL_Q1"
+                value={newActivity.title}
+                onChange={(e) => setNewActivity({ ...newActivity, title: e.target.value })}
+                className="bg-slate-800 border-white/10 h-11 uppercase"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Descrição Técnica</label>
+              <Input
+                placeholder="Detalhes da atividade..."
+                value={newActivity.description}
+                onChange={(e) => setNewActivity({ ...newActivity, description: e.target.value })}
+                className="bg-slate-800 border-white/10 h-11"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Potencial XP</label>
+                <Input
+                  type="number"
+                  value={newActivity.points}
+                  onChange={(e) => setNewActivity({ ...newActivity, points: Number(e.target.value) })}
+                  className="bg-slate-800 border-white/10 h-11"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Data Limite</label>
+                <Input
+                  type="date"
+                  value={newActivity.deadline}
+                  onChange={(e) => setNewActivity({ ...newActivity, deadline: e.target.value })}
+                  className="bg-slate-800 border-white/10 h-11"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="bg-slate-950/50 -mx-6 -mb-6 p-6 border-t border-white/5">
+            <Button variant="ghost" onClick={() => setIsActivityModalOpen(false)} className="text-slate-500 font-black text-xs">ABORTAR</Button>
+            <Button onClick={handleCreateActivity} className="bg-cyan-600 hover:bg-cyan-500 text-white font-black h-11 px-8 rounded-xl text-xs uppercase">Confirmar_Deploy</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

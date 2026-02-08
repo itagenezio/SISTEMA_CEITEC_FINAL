@@ -26,7 +26,7 @@ const handleTeacherNavigate = (navigate: any, screen: string, id: string | undef
 
 export function ClassManagementPage() {
     const { classId } = useParams();
-    const { classes, enrolledStudents, addClass, addStudent, deleteClass, deleteStudent } = useData();
+    const { classes, enrolledStudents, addClass, addActivity, addStudent, deleteClass, deleteStudent } = useData();
     const navigate = useNavigate();
 
     const selectedClass = classes.find(c => String(c.id) === String(classId)) || classes[0];
@@ -40,6 +40,7 @@ export function ClassManagementPage() {
         <ClassManagement
             onNavigate={(s, id) => handleTeacherNavigate(navigate, s, id)}
             onAddClass={addClass}
+            onAddActivity={addActivity}
             selectedClass={selectedClass}
             classes={classes}
             students={classStudents}
