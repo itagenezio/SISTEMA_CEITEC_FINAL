@@ -106,13 +106,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
         const activityId = newSub.activityId;
         const selectedAct = activities.find(a => String(a.id) === String(activityId));
 
-        // Obter usuário atual do localStorage (já que context de Auth pode não estar acessível aqui facilmente sem circular dependency)
-        // Mas o ideal é passar o studentId como argumento.
-        // Como simplificação, pegamos do localStorage que AuthContext salva
+        // Obter usuário atual do localStorage
         const currentUser = getFromStorage('current_user', null);
 
-        if (!currentUser?.id) {
-            toast.error('Erro de autenticação ao enviar');
+        console.log('[DataContext] Tentando enviar submissão:', {
+            activityId,
+            currentUser,
+            hasId: !!currentUser?.id
+        });
+
+        if (!currentUser || !currentUser.id) {
+            console.error('[DataContext] Erro: Usuário não autenticado', { currentUser });
+            toast.error('Erro de autenticação ao enviar. Faça login novamente.');
             return false;
         }
 
