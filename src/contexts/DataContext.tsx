@@ -157,11 +157,23 @@ export function DataProvider({ children }: { children: ReactNode }) {
             graded_at: status === 'graded' ? new Date().toISOString() : null
         };
 
-        const { error } = await supabase.from('submissions').insert([dbSub]);
+        console.log('[DataContext] Objeto a ser enviado para Supabase:', dbSub);
+
+        const { data, error } = await supabase.from('submissions').insert([dbSub]).select();
+
         if (error) {
-            toast.error('Erro ao enviar');
+            console.error('[DataContext] Erro do Supabase:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+                dbSub
+            });
+            toast.error(`Erro ao enviar: ${error.message || 'Erro desconhecido'}`);
             return false;
         }
+
+        console.log('[DataContext] Submissão enviada com sucesso:', data);
 
         if (status === 'graded') {
             toast.success(autoFeedback || 'Atividade corrigida automaticamente!');
