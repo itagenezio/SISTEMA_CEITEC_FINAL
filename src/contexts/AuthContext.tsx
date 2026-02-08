@@ -16,30 +16,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(() => getFromStorage('current_user', null));
     const [role, setRole] = useState<Role | null>(() => getFromStorage('user_type', null));
 
-    useEffect(() => {
-        saveToStorage('current_user', user);
-        saveToStorage('user_type', role);
-    }, [user, role]);
-
     const login = (newRole: Role, userData: User) => {
-        console.log('AuthContext: Logging in...', { newRole, userData });
-        // Set storage SYNCly first
-        saveToStorage('current_user', userData);
-        saveToStorage('user_type', newRole);
-        // Then update state
-        setRole(newRole);
-        setUser(userData);
+        console.log('Auth: Entering login protocol...', { role: newRole });
+        try {
+            // Force save to disk first
+            localStorage.setItem('inovatec_current_user', JSON.stringify(userData));
+            localStorage.setItem('inovatec_user_type', JSON.stringify(newRole));
+
+            setRole(newRole);
+            setUser(userData);
+        } catch (e) {
+            console.error('Auth: Critical storage failure!', e);
+        }
     };
 
     const logout = () => {
-        console.log('AuthContext: Logging out...');
-        saveToStorage('current_user', null);
-        saveToStorage('user_type', null);
-        setRole(null);
-        setUser(null);
-        // Clear only our keys to be safe
         localStorage.removeItem('inovatec_current_user');
         localStorage.removeItem('inovatec_user_type');
+        setRole(null);
+        setUser(null);
     };
 
     return (

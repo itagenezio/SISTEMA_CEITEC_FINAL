@@ -4,9 +4,11 @@ echo ==========================================
 echo   Iniciando Servidor de Desenvolvimento
 echo ==========================================
 echo.
-echo Tentando subir em: http://127.0.0.1:5173
 echo.
-pnpm exec vite --port 5173 --host 0.0.0.0 --clearScreen false --force
+echo [!] IMPORTANTE: No PowerShell do VS Code, digite: .\iniciar.bat
+echo -------------------------------------------------------------
+echo.
+pnpm exec vite --port 5173 --host 127.0.0.1 --clearScreen false --force
 echo.
 echo ------------------------------------------
 echo O servidor parou. Verifique as mensagens acima.

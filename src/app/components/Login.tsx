@@ -60,18 +60,14 @@ export function Login({ onLogin }: LoginProps) {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#020617] relative overflow-hidden font-sans selection:bg-cyan-500/30">
 
-      {/* Background Tech Effects */}
-      <div className="absolute inset-0 z-0">
+      {/* Background Tech Effects - NOW MOVED BEHIND EVERYTHING */}
+      <div className="absolute inset-0 z-[-1] pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:40px_40px] opacity-10"></div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md relative z-10"
-      >
+      <div className="w-full max-w-md relative z-10">
         <div className="bg-slate-900/40 backdrop-blur-2xl rounded-[2.5rem] p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/5 relative overflow-hidden group">
           {/* Animated Glow Border */}
           <div className="absolute inset-0 border border-cyan-500/20 rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
@@ -91,14 +87,20 @@ export function Login({ onLogin }: LoginProps) {
           <div className="flex bg-slate-950 p-1.5 rounded-2xl mb-8 border border-white/5 font-bold uppercase text-[9px] tracking-widest">
             <button
               type="button"
-              onClick={() => setLoginMethod('creds')}
+              onClick={(e) => {
+                e.stopPropagation();
+                setLoginMethod('creds');
+              }}
               className={`flex-1 py-3 rounded-xl transition-all ${loginMethod === 'creds' ? 'bg-slate-800 text-cyan-400 shadow-inner' : 'text-slate-500 hover:text-white'}`}
             >
               Protocolo_Email
             </button>
             <button
               type="button"
-              onClick={() => setLoginMethod('code')}
+              onClick={(e) => {
+                e.stopPropagation();
+                setLoginMethod('code');
+              }}
               className={`flex-1 py-3 rounded-xl transition-all ${loginMethod === 'code' ? 'bg-slate-800 text-cyan-400 shadow-inner' : 'text-slate-500 hover:text-white'}`}
             >
               Código_Acesso
@@ -165,10 +167,15 @@ export function Login({ onLogin }: LoginProps) {
               </div>
             )}
 
-            <Button
+            <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-16 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black rounded-2xl shadow-[0_4px_20px_rgba(6,182,212,0.3)] transition-all hover:scale-[1.02] flex items-center justify-center gap-2 group text-xs tracking-widest uppercase border-none"
+              onClick={(e) => {
+                console.log('Button clicked directly');
+                // If form doesn't submit for some reason, we can force it here
+                // But standard type="submit" inside <form> is best
+              }}
+              className="w-full h-16 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black rounded-2xl shadow-[0_4px_20px_rgba(6,182,212,0.3)] transition-all hover:scale-[1.02] flex items-center justify-center gap-2 group text-xs tracking-widest uppercase border-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -178,7 +185,7 @@ export function Login({ onLogin }: LoginProps) {
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
-            </Button>
+            </button>
             <div className="mt-4 p-4 bg-slate-950/50 rounded-2xl border border-white/5 text-[10px] text-slate-500 text-center font-bold">
               {loginMethod === 'creds'
                 ? '💡 DICA: USE "PROF" NO EMAIL PARA ACESSO_COORDENADOR.'
@@ -193,17 +200,19 @@ export function Login({ onLogin }: LoginProps) {
             <p className="text-[10px] text-slate-600 font-bold mt-1">Versão 2.5 // Baseado em Protocolo Inovatec</p>
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log('Emergency reset triggered');
                 localStorage.clear();
                 window.location.reload();
               }}
-              className="mt-2 text-[8px] text-slate-700 hover:text-cyan-500 transition-colors uppercase tracking-[0.2em] font-black"
+              className="mt-2 text-[8px] text-slate-700 hover:text-cyan-500 transition-colors uppercase tracking-[0.2em] font-black relative z-50 p-2"
             >
               [ RESETAR_EMERGÊNCIA_TOTAL ]
             </button>
           </footer>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
