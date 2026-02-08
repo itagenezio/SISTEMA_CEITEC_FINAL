@@ -28,8 +28,8 @@ export function Login({ onLogin }: LoginProps) {
       if (loginMethod === 'creds') {
         const userType = email.toLowerCase().includes('prof') ? 'teacher' : 'student';
         onLogin(userType, {
-          id: userType === 'teacher' ? 'prof-1' : `student-${Math.random().toString(36).substr(2, 9)}`,
-          name: userType === 'teacher' ? 'Coordenador CEITEC' : (email.split('@')[0] || 'Agente Inovatec'),
+          id: userType === 'teacher' ? 'prof-1' : `user-${email.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() || 'anon'}`,
+          name: userType === 'teacher' ? 'Coordenador CEITEC' : (email.split('@')[0].toUpperCase() || 'ESTUDANTE'),
           email: email.includes('@') ? email : `${email}@ceitec.edu`,
           role: userType,
           avatar: userType === 'teacher' ? '👨‍🏫' : '👤',

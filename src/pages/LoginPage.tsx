@@ -8,23 +8,25 @@ export function LoginPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (isAuthenticated) {
-            navigate(role === 'student' ? '/student' : '/teacher');
+        // Only redirect if fully authenticated and role is present
+        if (isAuthenticated && role) {
+            const dest = role === 'student' ? '/student' : '/teacher';
+            console.log('Auto-redirecting to:', dest);
+            navigate(dest, { replace: true });
         }
     }, [isAuthenticated, role, navigate]);
 
     const handleLogin = (userType: 'student' | 'teacher', userData: any) => {
+        console.log('Handling login for:', userType);
         login(userType, userData);
-
-        // Redirect based on role
-        if (userType === 'student') {
-            navigate('/student');
-        } else {
-            navigate('/teacher');
-        }
     };
 
-    if (isAuthenticated) return null;
+    // Show loading or nothing if already authenticated to prevent flicker
+    if (isAuthenticated && role) return (
+        <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
+        </div>
+    );
 
     return <Login onLogin={handleLogin} />;
 }

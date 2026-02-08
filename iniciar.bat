@@ -4,9 +4,9 @@ echo ==========================================
 echo   Iniciando Servidor de Desenvolvimento
 echo ==========================================
 echo.
-echo Tentando subir em: http://localhost:5173
+echo Tentando subir em: http://127.0.0.1:5173
 echo.
-pnpm exec vite --port 5173 --host localhost --clearScreen false --force
+pnpm exec vite --port 5173 --host 0.0.0.0 --clearScreen false --force
 echo.
 echo ------------------------------------------
 echo O servidor parou. Verifique as mensagens acima.
