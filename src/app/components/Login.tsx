@@ -21,6 +21,7 @@ export function Login({ onLogin }: LoginProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Login attempt started...', { loginMethod, email });
     setIsLoading(true);
 
     try {
