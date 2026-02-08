@@ -27,9 +27,11 @@ export function Login({ onLogin }: LoginProps) {
     try {
       if (loginMethod === 'creds') {
         const userType = email.toLowerCase().includes('prof') ? 'teacher' : 'student';
+        const rawName = email.split('@')[0].split(/[._-]/).map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()).join(' ');
+
         onLogin(userType, {
           id: userType === 'teacher' ? 'prof-1' : `user-${email.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() || 'anon'}`,
-          name: userType === 'teacher' ? 'Coordenador CEITEC' : (email.split('@')[0].toUpperCase() || 'ESTUDANTE'),
+          name: userType === 'teacher' ? `PROF. ${rawName || 'COORDENADOR'}` : (rawName.toUpperCase() || 'ESTUDANTE'),
           email: email.includes('@') ? email : `${email}@ceitec.edu`,
           role: userType,
           avatar: userType === 'teacher' ? '👨‍🏫' : '👤',
@@ -111,7 +113,7 @@ export function Login({ onLogin }: LoginProps) {
             {loginMethod === 'creds' ? (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">IDENTIDADE_DO_AGENTE</label>
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">USUÁRIO_OU_EMAIL</label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 group-focus-within:text-cyan-400 transition-colors" />
                     <Input
@@ -129,7 +131,7 @@ export function Login({ onLogin }: LoginProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">CHAVE_DE_ENCRIPTAÇÃO</label>
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">SENHA_DE_ACESSO</label>
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 group-focus-within:text-cyan-400 transition-colors" />
                     <Input
