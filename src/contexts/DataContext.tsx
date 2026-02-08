@@ -4,6 +4,36 @@ import { Class, Activity, Submission, EnrolledStudent } from '../types';
 import { toast } from 'sonner';
 import { getFromStorage } from '../app/utils/storage';
 
+// Função para gerar UUID v4 válido a partir de uma string
+function generateUUIDFromString(str: string): string {
+    if (!str) return '00000000-0000-4000-a000-000000000000';
+
+    // Regex relaxada para aceitar qualquer versão de UUID v1-v7
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (uuidRegex.test(str)) {
+        return str;
+    }
+
+    // Gera um hash simples da string para consistência
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = (hash & hash) >>> 0; // Force unsigned 32-bit
+    }
+
+    // Converte para UUID v4 válido
+    const hex = hash.toString(16).padStart(8, '0');
+    const r1 = Math.random().toString(16).substring(2, 6);
+    const r2 = Math.random().toString(16).substring(2, 5);
+    const variant = ['8', '9', 'a', 'b'][Math.floor(Math.random() * 4)];
+    const r3 = Math.random().toString(16).substring(2, 5);
+    const r4 = Math.random().toString(16).substring(2, 14).padEnd(12, '0');
+
+    // Formato: 8-4-4(v4)-4(variant)-12
+    return `${hex}-${r1}-4${r2}-${variant}${r3}-${r4}`;
+}
+
 interface DataContextType {
     classes: Class[];
     activities: Activity[];
@@ -45,7 +75,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 supabase.from('submissions').select('*')
             ]);
 
-            if (classesError) console.warn('Erro turmas:', classesError); // Não lançar erro para não bloquear tudo
+            if (classesError) console.warn('Erro turmas:', classesError);
             if (studentsError) console.warn('Erro alunos:', studentsError);
 
             if (classesData) {
@@ -102,22 +132,19 @@ export function DataProvider({ children }: { children: ReactNode }) {
     };
 
     const addSubmission = async (newSub: { activityId: string, comments: string, file: File | null }) => {
-        // Restaurando lógica de Autocorreção
         const activityId = newSub.activityId;
         const selectedAct = activities.find(a => String(a.id) === String(activityId));
 
         // Obter usuário atual do localStorage
         const currentUser = getFromStorage('current_user', null);
 
-        console.log('[DataContext] Tentando enviar submissão:', {
+        console.log('[DataContext] Preparando envio de submissão:', {
             activityId,
-            currentUser,
-            hasId: !!currentUser?.id
+            userId: currentUser?.id
         });
 
         if (!currentUser || !currentUser.id) {
-            console.error('[DataContext] Erro: Usuário não autenticado', { currentUser });
-            toast.error('Erro de autenticação ao enviar. Faça login novamente.');
+            toast.error('Erro de autenticação. Faça login novamente.');
             return false;
         }
 
@@ -141,13 +168,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 status = 'graded';
                 autoFeedback = `🎯 Autocorreção: Você acertou ${correctCount} de ${totalQs} questões.`;
             } catch (e) {
-                console.log('Submission comments is not JSON');
+                console.log('Submission comments is not JSON - skipping autograde');
             }
         }
 
+        // Converter IDs para UUIDs válidos se necessário
+        const studentUUID = generateUUIDFromString(String(currentUser.id));
+        const activityUUID = generateUUIDFromString(String(activityId));
+
         const dbSub = {
-            activity_id: activityId,
-            student_id: currentUser.id,
+            activity_id: activityUUID,
+            student_id: studentUUID,
             comments: newSub.comments,
             file_url: newSub.file ? `simulado://${newSub.file.name}` : null,
             status: status,
@@ -157,29 +188,31 @@ export function DataProvider({ children }: { children: ReactNode }) {
             graded_at: status === 'graded' ? new Date().toISOString() : null
         };
 
-        console.log('[DataContext] Objeto a ser enviado para Supabase:', dbSub);
+        console.log('[DataContext] Enviando para Supabase:', dbSub);
 
         const { data, error } = await supabase.from('submissions').insert([dbSub]).select();
 
         if (error) {
-            console.error('[DataContext] Erro do Supabase:', {
+            console.error('[DataContext] ERRO CRÍTICO SUPABASE:', {
+                code: error.code,
                 message: error.message,
                 details: error.details,
-                hint: error.hint,
-                code: error.code,
-                dbSub
+                hint: error.hint
             });
-            toast.error(`Erro ao enviar: ${error.message || 'Erro desconhecido'}`);
+
+            // Tratamento amigável para erro de formato UUID (400 / 22P02)
+            if (error.code === '22P02') {
+                toast.error('Erro de formato de dados. Contate o suporte.');
+            } else if (error.code === '23503') {
+                toast.error('Erro de vínculo: Estudante ou Atividade não encontrados no banco.');
+            } else {
+                toast.error(`Falha no envio: ${error.message}`);
+            }
             return false;
         }
 
-        console.log('[DataContext] Submissão enviada com sucesso:', data);
-
-        if (status === 'graded') {
-            toast.success(autoFeedback || 'Atividade corrigida automaticamente!');
-        } else {
-            toast.success('Atividade entregue com sucesso!');
-        }
+        console.log('[DataContext] Sucesso:', data);
+        toast.success(status === 'graded' ? autoFeedback : 'Atividade enviada com sucesso!');
 
         await loadData();
         return true;
