@@ -1,109 +1,190 @@
 import { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Key, ShieldCheck, Zap, GraduationCap, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { toast } from 'sonner';
+import { motion } from 'motion/react';
+import { supabase } from '../lib/supabase';
+import { Role } from '../../types';
 
 interface LoginProps {
-  onLogin: (userType: 'student' | 'teacher') => void;
+  onLogin: (userType: Role, userData: any) => void;
 }
 
 export function Login({ onLogin }: LoginProps) {
+  const [loginMethod, setLoginMethod] = useState<'creds' | 'code'>('creds');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [accessCode, setAccessCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simula login - se email contém "prof" é professor, senão é aluno
-    const userType = email.toLowerCase().includes('prof') ? 'teacher' : 'student';
-    onLogin(userType);
+    setIsLoading(true);
+
+    try {
+      if (loginMethod === 'creds') {
+        const userType = email.toLowerCase().includes('prof') ? 'teacher' : 'student';
+        onLogin(userType, {
+          id: userType === 'teacher' ? 'prof-1' : 'student-1',
+          name: userType === 'teacher' ? 'Prof. Ricardo' : 'Estudante Simulado',
+          email: userType === 'teacher' ? 'prof@ceitec.edu' : 'estudante@ceitec.edu',
+          role: userType,
+          avatar: userType === 'teacher' ? '👨‍🏫' : '👤',
+          xp: userType === 'teacher' ? 0 : 1250
+        });
+        toast.success('AUTENTICAÇÃO_SINC_CONCLUÍDA');
+      } else {
+        const { data, error } = await supabase
+          .from('students')
+          .select('*')
+          .eq('access_code', accessCode)
+          .single();
+
+        if (error || !data) {
+          toast.error('CÓDIGO_INVÁLIDO', { description: 'Acesso negado pelo firewall CEITEC.' });
+        } else {
+          onLogin('student', data);
+          toast.success(`BEM-VINDO_AGENTE_${data.name.toUpperCase()}`);
+        }
+      }
+    } catch (err) {
+      toast.error('ERRO_CRÍTICO_SISTEMA');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" 
-         style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #4c1d95 100%)' }}>
-      
-      {/* Background decorativo */}
-      <div className="absolute inset-0 overflow-hidden opacity-10">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-white rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white rounded-full blur-3xl"></div>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#020617] relative overflow-hidden font-sans selection:bg-cyan-500/30">
+
+      {/* Background Tech Effects */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:40px_40px] opacity-10"></div>
       </div>
 
-      <div className="w-full max-w-md relative z-10">
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
-          
-          {/* Logo e Título */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-2xl mb-4 shadow-lg">
-              <span className="text-3xl">🚀</span>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md relative z-10"
+      >
+        <div className="bg-slate-900/40 backdrop-blur-2xl rounded-[2.5rem] p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/5 relative overflow-hidden group">
+          {/* Animated Glow Border */}
+          <div className="absolute inset-0 border border-cyan-500/20 rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl mb-6 shadow-[0_0_20px_rgba(6,182,212,0.4)] relative">
+              <GraduationCap className="w-10 h-10 text-white" />
+              <div className="absolute -inset-2 bg-cyan-500/20 blur-xl rounded-full animate-pulse"></div>
             </div>
-            <h1 className="text-4xl font-bold text-white mb-2">
-              <span className="font-black">INOVATEC</span> <span className="font-light">EDU</span>
+            <h1 className="text-5xl font-black text-white tracking-tighter mb-2 italic">
+              CEITEC<span className="text-cyan-400">_EDU</span>
             </h1>
-            <p className="text-blue-200">Centro de Inovação e Tecnologia</p>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Ambiente de Aprendizagem Criativa</p>
           </div>
 
-          {/* Formulário */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-blue-100">E-mail</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300 w-5 h-5" />
-                <Input
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-blue-200/50 focus:border-cyan-400 focus:ring-cyan-400"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-blue-100">Senha</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300 w-5 h-5" />
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-blue-200/50 focus:border-cyan-400 focus:ring-cyan-400"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-300 hover:text-white transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
-
-            <Button 
-              type="submit"
-              className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold py-6 rounded-xl shadow-lg"
+          {/* Toggle de Acesso */}
+          <div className="flex bg-slate-950 p-1.5 rounded-2xl mb-8 border border-white/5 font-bold uppercase text-[9px] tracking-widest">
+            <button
+              onClick={() => setLoginMethod('creds')}
+              className={`flex-1 py-3 rounded-xl transition-all ${loginMethod === 'creds' ? 'bg-slate-800 text-cyan-400 shadow-inner' : 'text-slate-500 hover:text-white'}`}
             >
-              Entrar
-            </Button>
+              Protocolo_Email
+            </button>
+            <button
+              onClick={() => setLoginMethod('code')}
+              className={`flex-1 py-3 rounded-xl transition-all ${loginMethod === 'code' ? 'bg-slate-800 text-cyan-400 shadow-inner' : 'text-slate-500 hover:text-white'}`}
+            >
+              Código_Acesso
+            </button>
+          </div>
 
-            <div className="text-center">
-              <button type="button" className="text-sm text-blue-200 hover:text-white transition-colors">
-                Esqueceu sua senha?
-              </button>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {loginMethod === 'creds' ? (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Terminal_Identidade</label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 group-focus-within:text-cyan-400 transition-colors" />
+                    <Input
+                      type="email"
+                      placeholder="seu@dominio.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="pl-12 bg-slate-950/50 border-white/5 text-white h-14 rounded-2xl focus:border-cyan-500/50 focus:bg-slate-950 transition-all font-medium"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Código_Encriptado</label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 group-focus-within:text-cyan-400 transition-colors" />
+                    <Input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-12 pr-12 bg-slate-950/50 border-white/5 text-white h-14 rounded-2xl focus:border-cyan-500/50 focus:bg-slate-950 transition-all font-medium"
+                      required
+                    />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="space-y-2 text-center">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Matrícula_Sincronizada</label>
+                  <div className="relative">
+                    <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+                    <Input
+                      placeholder="INV-XXXX"
+                      value={accessCode}
+                      onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
+                      className="pl-12 bg-slate-950/50 border-white/5 text-center text-xl font-mono tracking-[0.4em] h-16 rounded-2xl text-cyan-400 placeholder:text-slate-800"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-16 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black rounded-2xl shadow-[0_4px_20px_rgba(6,182,212,0.3)] transition-all hover:scale-[1.02] flex items-center justify-center gap-2 group text-xs tracking-widest uppercase border-none"
+            >
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  INICIAR_SESSÃO_CORE
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </Button>
+            <div className="mt-4 p-4 bg-slate-950/50 rounded-2xl border border-white/5 text-[10px] text-slate-500 text-center font-bold">
+              {loginMethod === 'creds'
+                ? '💡 DICA: USE "PROF" NO EMAIL PARA ACESSO_COORDENADOR.'
+                : '💡 INFO: INSIRA O CÓDIGO DE MATRÍCULA FORNECIDO.'}
             </div>
           </form>
 
-          {/* Dica para teste */}
-          <div className="mt-6 p-4 bg-blue-900/30 rounded-xl border border-blue-400/20">
-            <p className="text-xs text-blue-200 text-center">
-              💡 Dica: Use qualquer email com "prof" para entrar como professor
-            </p>
-          </div>
+          <footer className="mt-6 text-center bg-slate-950/30 p-4 rounded-2xl border border-white/5">
+            <div className="flex items-center justify-center gap-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">
+              <ShieldCheck className="w-3 h-3 text-cyan-500" /> Sistema de Segurança Ativo
+            </div>
+            <p className="text-[10px] text-slate-600 font-bold mt-1">Versão 2.5 // Baseado em Protocolo Inovatec</p>
+          </footer>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

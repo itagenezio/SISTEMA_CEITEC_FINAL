@@ -1,171 +1,239 @@
-import { ArrowLeft, Users, UserPlus, Mail, TrendingUp, Award } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, Users, UserPlus, Mail, TrendingUp, BookOpen, Plus, Trash2, Key, Download, Pencil, ShieldAlert, GraduationCap, Clock, BookMarked, Filter, LayoutDashboard } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Progress } from './ui/progress';
+import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import { Input } from "./ui/input";
+
+import { Class, EnrolledStudent } from '../../types';
 
 interface ClassManagementProps {
-  onNavigate: (screen: string) => void;
+  onNavigate: (screen: string, id?: string) => void;
+  onAddClass: (newClass: any) => void;
+  selectedClass: Class;
+  classes: Class[];
+  students: EnrolledStudent[];
+  onAddStudent: (student: any) => void;
+  onDeleteClass: (id: string) => Promise<boolean>;
+  onDeleteStudent: (id: string) => Promise<boolean>;
 }
 
-export function ClassManagement({ onNavigate }: ClassManagementProps) {
-  const students = [
-    { id: 1, name: 'Pedro A.', email: 'pedro@email.com', progress: 75, xp: 1450, avatar: '👨‍💻' },
-    { id: 2, name: 'Ana Silva', email: 'ana@email.com', progress: 85, xp: 1680, avatar: '👩‍💻' },
-    { id: 3, name: 'João Santos', email: 'joao@email.com', progress: 60, xp: 1200, avatar: '👨‍🎓' },
-    { id: 4, name: 'Maria Costa', email: 'maria@email.com', progress: 90, xp: 1850, avatar: '👩‍🎓' },
-    { id: 5, name: 'Lucas Oliveira', email: 'lucas@email.com', progress: 55, xp: 1100, avatar: '👨‍💼' },
-    { id: 6, name: 'Julia Fernandes', email: 'julia@email.com', progress: 80, xp: 1600, avatar: '👩‍💼' },
-  ];
+export function ClassManagement({
+  onNavigate,
+  onAddClass,
+  selectedClass,
+  classes,
+  students,
+  onAddStudent,
+  onDeleteClass,
+  onDeleteStudent
+}: ClassManagementProps) {
+  const [isClassModalOpen, setIsClassModalOpen] = useState(false);
+  const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
+  const [isDeleteClassModalOpen, setIsDeleteClassModalOpen] = useState(false);
+
+  const [newClassName, setNewClassName] = useState('');
+  const [selectedDisciplines, setSelectedDisciplines] = useState<string[]>(['Inovação']);
+  const [newStudent, setNewStudent] = useState({
+    name: '',
+    email: '',
+    schedule: '',
+    discipline: selectedClass?.disciplines[0] || 'Inovação'
+  });
+
+  const generateAccessCode = () => {
+    return `INV-${Math.floor(1000 + Math.random() * 9000)}`;
+  };
+
+  const handleCreateClass = () => {
+    if (!newClassName.trim()) return;
+    const newClass = {
+      name: newClassName,
+      disciplines: selectedDisciplines.length > 0 ? selectedDisciplines : ['Geral']
+    };
+    onAddClass(newClass);
+    toast.success(`Turma "${newClassName}" criada!`);
+    setIsClassModalOpen(false);
+    setNewClassName('');
+    setSelectedDisciplines(['Inovação']);
+  };
+
+  const handleAddStudent = () => {
+    if (!newStudent.name || !newStudent.email.includes('@')) {
+      toast.error('Dados inválidos', { description: 'Preencha o nome e um e-mail válido.' });
+      return;
+    }
+
+    const studentWithCode = {
+      name: newStudent.name,
+      email: newStudent.email,
+      classId: selectedClass.id,
+      accessCode: generateAccessCode(),
+      schedule: newStudent.schedule || 'A definir',
+      discipline: newStudent.discipline,
+      xp: 0,
+      progress: 0,
+      avatar: '👤'
+    };
+
+    onAddStudent(studentWithCode);
+    setNewStudent({ ...newStudent, name: '', email: '' });
+    setIsStudentModalOpen(false);
+
+    toast.success('Aluno cadastrado!', {
+      description: `Código: ${studentWithCode.accessCode} | Turma: ${selectedClass?.name}`
+    });
+  };
+
+  const handleDeleteClass = async () => {
+    if (!selectedClass) return;
+    const success = await onDeleteClass(selectedClass.id);
+    if (success) {
+      setIsDeleteClassModalOpen(false);
+      onNavigate('teacher-dashboard');
+      toast.success('Turma excluída com sucesso.');
+    }
+  };
+
+  const handleDeleteStudent = async (id: string) => {
+    if (window.confirm('Confirmar remoção permanente deste registro?')) {
+      const success = await onDeleteStudent(id);
+      if (success) {
+        toast.success('Registro removido do core.');
+      }
+    }
+  };
 
   return (
-    <div className="min-h-screen p-6" 
-         style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)' }}>
-      
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <button 
+    <div className="space-y-8 pb-10">
+      {/* Header Estilo HUD */}
+      <div className="flex flex-col lg:flex-row items-center gap-6 bg-slate-900/40 p-6 rounded-3xl border border-white/5 backdrop-blur-xl">
+        <Button
+          variant="outline"
           onClick={() => onNavigate('teacher-dashboard')}
-          className="w-10 h-10 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl flex items-center justify-center hover:bg-white/20 transition-colors"
+          className="bg-slate-800/50 border-white/10 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl w-14 h-14 p-0 shadow-lg"
         >
-          <ArrowLeft className="w-5 h-5 text-white" />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-white">Gestão de Turmas</h1>
-          <p className="text-blue-200">Turma 9A</p>
-        </div>
-        <Button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
-          <UserPlus className="w-5 h-5 mr-2" />
-          Nova Turma
+          <ArrowLeft className="w-6 h-6" />
         </Button>
+
+        <div className="flex-1 text-center lg:text-left">
+          <div className="flex flex-col sm:flex-row items-center gap-3 justify-center lg:justify-start">
+            <h1 className="text-3xl font-black text-white tracking-widest uppercase font-mono">CORE_{selectedClass?.name || 'SELECTOR'}</h1>
+            <Badge variant="outline" className="border-cyan-500/30 text-cyan-400 bg-cyan-500/5 px-4 h-6 font-mono text-[10px]">
+              ID_{selectedClass?.id || 'NULL'}
+            </Badge>
+          </div>
+          <p className="text-slate-500 text-[10px] font-black mt-2 uppercase tracking-widest flex items-center justify-center lg:justify-start gap-2">
+            <ShieldAlert className="w-3 h-3 text-cyan-500" /> Painel de Controle Acadêmico
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            onClick={() => toast.info('Interface de edição emcriptada.')}
+            className="w-12 h-12 bg-white/5 border border-white/5 hover:border-cyan-500/40 hover:text-cyan-400 transition-all rounded-xl p-0"
+          >
+            <Pencil className="w-5 h-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => setIsDeleteClassModalOpen(true)}
+            className="w-12 h-12 bg-white/5 border border-white/5 hover:border-red-500/40 hover:text-red-400 transition-all rounded-xl p-0"
+          >
+            <Trash2 className="w-5 h-5" />
+          </Button>
+        </div>
       </div>
 
-      {/* Estatísticas da Turma */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Card className="p-6 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 backdrop-blur-lg border-white/20 shadow-xl">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <Users className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-white">10</p>
-              <p className="text-sm text-blue-200">Alunos</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-lg border-white/20 shadow-xl">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <TrendingUp className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-white">68%</p>
-              <p className="text-sm text-blue-200">Progresso Médio</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-lg border-white/20 shadow-xl">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <Award className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-white">24</p>
-              <p className="text-sm text-blue-200">Badges Conquistadas</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Progresso da Turma */}
-      <Card className="p-6 bg-white/10 backdrop-blur-lg border-white/20 shadow-xl mb-8">
-        <h3 className="text-lg font-bold text-white mb-4">Progresso da Turma</h3>
-        
-        <div className="h-48 relative">
-          {/* Gráfico de linha simplificado */}
-          <svg className="w-full h-full" viewBox="0 0 400 150">
-            <defs>
-              <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style={{ stopColor: '#60a5fa', stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: '#34d399', stopOpacity: 1 }} />
-              </linearGradient>
-            </defs>
-            
-            {/* Área sob a curva */}
-            <path
-              d="M 0 120 L 50 100 L 100 90 L 150 95 L 200 80 L 250 70 L 300 75 L 350 60 L 400 55 L 400 150 L 0 150 Z"
-              fill="url(#lineGradient)"
-              opacity="0.2"
-            />
-            
-            {/* Linha */}
-            <path
-              d="M 0 120 L 50 100 L 100 90 L 150 95 L 200 80 L 250 70 L 300 75 L 350 60 L 400 55"
-              stroke="url(#lineGradient)"
-              strokeWidth="3"
-              fill="none"
-            />
-            
-            {/* Pontos */}
-            <circle cx="0" cy="120" r="4" fill="#60a5fa" />
-            <circle cx="50" cy="100" r="4" fill="#60a5fa" />
-            <circle cx="100" cy="90" r="4" fill="#60a5fa" />
-            <circle cx="150" cy="95" r="4" fill="#60a5fa" />
-            <circle cx="200" cy="80" r="4" fill="#34d399" />
-            <circle cx="250" cy="70" r="4" fill="#34d399" />
-            <circle cx="300" cy="75" r="4" fill="#34d399" />
-            <circle cx="350" cy="60" r="4" fill="#34d399" />
-            <circle cx="400" cy="55" r="4" fill="#34d399" />
-          </svg>
-        </div>
-        
-        <div className="flex justify-between text-xs text-blue-200 mt-2">
-          <span>Jan</span>
-          <span>Fev</span>
-          <span>Mar</span>
-          <span>Abr</span>
-          <span>Mai</span>
-        </div>
-      </Card>
-
-      {/* Lista de Alunos */}
-      <div>
-        <h2 className="text-xl font-bold text-white mb-4">Alunos</h2>
-        
-        <div className="space-y-3">
-          {students.map((student) => (
-            <Card 
-              key={student.id}
-              className="p-5 bg-white/10 backdrop-blur-lg border-white/20 shadow-xl hover:bg-white/15 transition-colors"
+      {/* Dashboard de Monitoramento */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card className="p-6 bg-slate-900/40 border border-white/5 backdrop-blur-md space-y-5">
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <UserPlus className="w-4 h-4 text-emerald-400" /> Matrícula & Ingresso
+          </h3>
+          <div className="space-y-3">
+            <Button
+              onClick={() => setIsStudentModalOpen(true)}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 h-12 rounded-xl text-[10px] font-black tracking-widest uppercase"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                  <span className="text-2xl">{student.avatar}</span>
+              <Plus className="w-4 h-4 mr-2" /> Matricular Aluno
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => toast.info('Selecione o arquivo CSV.')}
+              className="w-full bg-white/5 border border-white/5 hover:bg-white/10 h-12 rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-300"
+            >
+              <Download className="w-4 h-4 mr-2" /> Importar CSV
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-slate-900/40 border border-white/5 backdrop-blur-md space-y-6">
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-cyan-400" /> Métricas Atuais
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <p className="text-[10px] text-slate-500 font-bold uppercase">Matriculados</p>
+              <h4 className="text-3xl font-black text-white tracking-tighter">{students.length}</h4>
+            </div>
+            <div className="space-y-1">
+              <p className="text-[10px] text-slate-500 font-bold uppercase">Progresso Médio</p>
+              <h4 className="text-3xl font-black text-white tracking-tighter">{selectedClass?.progress || 0}%</h4>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-slate-900/40 border border-white/5 backdrop-blur-md">
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+            <BookMarked className="w-4 h-4 text-amber-400" /> Disciplinas Ativas
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {selectedClass?.disciplines.map(d => (
+              <Badge key={d} className="bg-slate-800 text-slate-300 border border-white/5 px-3 py-1 font-mono text-[9px] uppercase">
+                {d}
+              </Badge>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      {/* Tabela de Estudantes */}
+      <div className="space-y-6">
+        <h2 className="text-xl font-bold text-white flex items-center gap-3 uppercase tracking-tighter">
+          <LayoutDashboard className="w-5 h-5 text-indigo-400" /> Registros de Matrícula
+        </h2>
+        <div className="grid gap-3">
+          {students.map((student: any) => (
+            <Card key={student.id} className="p-4 bg-slate-900/60 border border-white/5 hover:border-cyan-500/30 transition-all group">
+              <div className="flex flex-col lg:flex-row items-center gap-6">
+                <div className="w-14 h-14 rounded-2xl bg-slate-800 flex items-center justify-center text-3xl border border-white/5">
+                  {student.avatar || '👤'}
                 </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3 className="font-bold text-white">{student.name}</h3>
-                      <p className="text-sm text-blue-200 flex items-center gap-1">
-                        <Mail className="w-3 h-3" />
-                        {student.email}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-white">{student.xp} XP</p>
-                      <Badge className="bg-blue-500/20 text-blue-300 border-blue-400/30 text-xs">
-                        Nível 3
-                      </Badge>
-                    </div>
+                <div className="flex-1 text-center lg:text-left min-w-0">
+                  <h3 className="font-bold text-white text-lg tracking-tight uppercase font-mono">{student.name}</h3>
+                  <div className="flex flex-wrap justify-center lg:justify-start gap-4 mt-1 font-mono text-[10px]">
+                    <span className="text-slate-500 flex items-center gap-1"><Mail className="w-3 h-3" /> {student.email}</span>
+                    <Badge className="bg-cyan-500/10 text-cyan-400 border-none h-4 px-2 tracking-tighter">ACCESS_{student.accessCode}</Badge>
                   </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <Progress value={student.progress} className="flex-1 h-2 bg-blue-900/50" />
-                    <span className="text-sm font-semibold text-white whitespace-nowrap">{student.progress}%</span>
-                  </div>
+                </div>
+                <div className="flex items-center gap-3 pl-6 lg:border-l border-white/5">
+                  <Button variant="ghost" size="icon" className="h-10 w-10 text-slate-500 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-xl">
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => handleDeleteStudent(student.id)} className="h-10 w-10 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             </Card>
@@ -173,20 +241,61 @@ export function ClassManagement({ onNavigate }: ClassManagementProps) {
         </div>
       </div>
 
-      {/* Botão adicionar turma */}
-      <Card 
-        className="p-6 mt-6 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 backdrop-blur-lg border-blue-400/30 shadow-xl cursor-pointer hover:scale-[1.02] transition-transform"
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-white mb-1">Adicionar Nova Turma</h3>
-            <p className="text-sm text-blue-200">Crie e gerencie mais turmas</p>
+      {/* Modals */}
+      <Dialog open={isClassModalOpen} onOpenChange={setIsClassModalOpen}>
+        <DialogContent className="bg-slate-900 border border-white/10 text-white sm:max-w-[500px]">
+          <DialogHeader className="border-b border-white/5 pb-4">
+            <DialogTitle className="text-xl font-black uppercase tracking-widest flex items-center gap-2">
+              <LayoutDashboard className="w-5 h-5 text-indigo-400" /> Inicializar Turma
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-5 py-6">
+            <div className="space-y-1.5 font-mono">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Identidade da Turma</label>
+              <Input placeholder="Ex: 9A_ROBOTICA" value={newClassName} onChange={(e) => setNewClassName(e.target.value)} className="bg-slate-800 border-white/5 h-12 uppercase" />
+            </div>
           </div>
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex items-center justify-center shadow-lg text-2xl">
-            ➕
+          <DialogFooter className="bg-slate-950/50 -mx-6 -mb-6 p-6 border-t border-white/5">
+            <Button variant="ghost" onClick={() => setIsClassModalOpen(false)}>CANCEL</Button>
+            <Button onClick={handleCreateClass} className="bg-indigo-600 hover:bg-indigo-500 h-11 px-8 rounded-xl font-bold">START_TURMA</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isStudentModalOpen} onOpenChange={setIsStudentModalOpen}>
+        <DialogContent className="bg-slate-900 border border-white/10 text-white sm:max-w-[500px]">
+          <DialogHeader className="border-b border-white/5 pb-4">
+            <DialogTitle className="text-xl font-black uppercase tracking-widest flex items-center gap-2">
+              <UserPlus className="w-5 h-5 text-emerald-400" /> Injetar Novo Usuário
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-6 font-mono font-bold">
+            <Input placeholder="NOME_COMPLETO" value={newStudent.name} onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })} className="bg-slate-800 border-white/5 h-12" />
+            <Input placeholder="EMAIL_PROTOCOL" value={newStudent.email} onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })} className="bg-slate-800 border-white/5 h-12" />
           </div>
-        </div>
-      </Card>
+          <DialogFooter className="bg-slate-950/50 -mx-6 -mb-6 p-6 border-t border-white/5">
+            <Button variant="ghost" onClick={() => setIsStudentModalOpen(false)}>CANCEL</Button>
+            <Button onClick={handleAddStudent} className="bg-emerald-600 hover:bg-emerald-500 h-11 px-8 rounded-xl font-bold">CONFIRM_LINK</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDeleteClassModalOpen} onOpenChange={setIsDeleteClassModalOpen}>
+        <DialogContent className="bg-slate-900 border border-red-900/40 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-red-500 flex items-center gap-2 font-black uppercase text-lg tracking-widest">
+              <ShieldAlert className="w-6 h-6 animate-pulse" /> Purge Turma?
+            </DialogTitle>
+            <DialogDescription className="text-slate-500 font-bold text-[10px] uppercase mt-2 leading-tight">
+              A deleção de <strong>{selectedClass?.name}</strong> removerá todas as dependências do core. Operação irreversível.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6">
+            <Button variant="ghost" onClick={() => setIsDeleteClassModalOpen(false)}>CANCEL</Button>
+            <Button variant="destructive" onClick={handleDeleteClass} className="bg-red-900/80 hover:bg-red-800 border-red-600/30">EXECUTE_PURGE</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,317 +1,133 @@
-import { ArrowLeft, Trophy, Star, Award, TrendingUp, Zap, Calendar } from 'lucide-react';
+import { Trophy, Star, Award, TrendingUp, Zap, ShieldCheck, Target, Activity as ActivityIcon } from 'lucide-react';
 import { Card } from './ui/card';
 import { Progress as ProgressBar } from './ui/progress';
 import { Badge } from './ui/badge';
+import { Activity } from '../../types';
+import { motion } from 'motion/react';
 
 interface ProgressProps {
   onNavigate: (screen: string) => void;
+  submissions: any[];
+  activities: Activity[];
+  currentUser: any;
 }
 
-export function Progress({ onNavigate }: ProgressProps) {
+export function Progress({ onNavigate, submissions, activities, currentUser }: ProgressProps) {
+  const xp = currentUser?.xp || 0;
+  const level = Math.floor(xp / 500) + 1;
+  const maxXpForCurrentLevel = level * 500;
+  const progressPercent = (xp / maxXpForCurrentLevel) * 100;
+
+  const completedCount = submissions.filter(s => s.status === 'graded' || s.status === 'delivered').length;
+  const gradedCount = submissions.filter(s => s.status === 'graded').length;
+
+  const avgGrade = gradedCount > 0
+    ? (submissions.filter(s => s.status === 'graded').reduce((acc, s) => acc + (s.grade || 0), 0) / gradedCount).toFixed(1)
+    : '0.0';
+
   const badges = [
-    {
-      id: 1,
-      name: 'Criador Maker',
-      description: 'Completou primeiro projeto',
-      icon: '🎨',
-      color: 'from-blue-400 to-cyan-500',
-      earned: true
-    },
-    {
-      id: 2,
-      name: 'Lógica em Ação',
-      description: 'Dominou conceitos de programação',
-      icon: '🧩',
-      color: 'from-green-400 to-emerald-500',
-      earned: true
-    },
-    {
-      id: 3,
-      name: 'Maker Criativa',
-      description: 'Projeto criativo destacado',
-      icon: '💡',
-      color: 'from-yellow-400 to-orange-500',
-      earned: true
-    },
-    {
-      id: 4,
-      name: 'Startup Criativa',
-      description: 'Desenvolveu plano de negócio',
-      icon: '🚀',
-      color: 'from-purple-400 to-pink-500',
-      earned: true
-    },
-    {
-      id: 5,
-      name: 'Mestre IoT',
-      description: 'Especialista em Internet das Coisas',
-      icon: '🌐',
-      color: 'from-indigo-400 to-blue-500',
-      earned: false
-    },
-    {
-      id: 6,
-      name: 'Empreendedor Pro',
-      description: 'Completou trilha de empreendedorismo',
-      icon: '💼',
-      color: 'from-red-400 to-pink-500',
-      earned: false
-    }
+    { id: 1, name: 'Criador Maker', desc: 'Completou primeiro projeto', icon: '🎨', color: 'blue', earned: submissions.length > 0 },
+    { id: 2, name: 'Lógica em Ação', desc: 'Dominou conceitos core', icon: '🧩', color: 'emerald', earned: xp > 1000 },
+    { id: 3, name: 'Maker Criativa', desc: 'Projeto destacado', icon: '💡', color: 'amber', earned: gradedCount > 0 },
+    { id: 4, name: 'Startup Criativa', desc: 'Plano de negócio ativo', icon: '🚀', color: 'purple', earned: xp > 2000 },
+    { id: 5, name: 'Mestre IoT', desc: 'Especialista em conectividade', icon: '🌐', color: 'indigo', earned: false },
+    { id: 6, name: 'Empreendedor Pro', desc: 'Trilha completa', icon: '💼', color: 'rose', earned: false }
   ];
 
-  const xp = 1450;
-  const maxXp = 2000;
-  const level = 3;
-
   return (
-    <div className="min-h-screen p-6" 
-         style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)' }}>
-      
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <button 
-          onClick={() => onNavigate('student-dashboard')}
-          className="w-10 h-10 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl flex items-center justify-center hover:bg-white/20 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 text-white" />
-        </button>
-        <div>
-          <h1 className="text-3xl font-bold text-white">Meu Progresso</h1>
-          <p className="text-blue-200">Acompanhe sua evolução</p>
+    <div className="space-y-10 pb-10">
+
+      {/* Header Contextual */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 mb-1">
+            <ShieldCheck className="w-4 h-4 text-cyan-400" />
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Relatório de Evolução de Hardware & Software</span>
+          </div>
+          <h1 className="text-4xl font-extrabold text-white tracking-tighter">MEU <span className="text-cyan-400">PROGRESSO</span></h1>
+          <p className="text-slate-400 text-sm font-medium">Monitoramento em tempo real do seu desenvolvimento técnico.</p>
         </div>
       </div>
 
-      {/* Card de XP e Nível */}
-      <Card className="p-8 mb-8 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-lg border-white/20 shadow-xl">
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-28 h-28 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full shadow-2xl mb-4 relative">
-            <span className="text-5xl font-bold text-white">XP</span>
-            <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-xl font-bold text-white">{level}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        {/* Lado Esquerdo: Energy Core (XP) */}
+        <div className="lg:col-span-8 space-y-6">
+          <Card className="p-8 bg-slate-900/40 border border-white/5 backdrop-blur-xl relative overflow-hidden flex flex-col items-center text-center">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+
+            <div className="relative mb-6">
+              <div className="w-32 h-32 rounded-3xl bg-slate-800 border border-white/10 flex items-center justify-center text-5xl font-black text-white shadow-2xl relative overflow-hidden group">
+                <span className="relative z-10">XP</span>
+                <div className="absolute inset-x-0 bottom-0 bg-cyan-500/20 h-1/2 animate-pulse" />
+              </div>
+              <Badge className="absolute -top-3 -right-3 w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 text-white flex items-center justify-center text-xl font-black border-4 border-[#020617] shadow-lg">
+                {level}
+              </Badge>
             </div>
+
+            <div className="space-y-2 mb-8">
+              <h2 className="text-5xl font-black text-white tracking-tight">{xp.toLocaleString()} <span className="text-slate-600 text-2xl">/ {maxXpForCurrentLevel.toLocaleString()}</span></h2>
+              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Módulo Ativo: {level >= 3 ? 'Explorador Sênior' : 'Iniciante Maker'}</p>
+            </div>
+
+            <div className="w-full max-w-xl space-y-3">
+              <ProgressBar value={progressPercent} className="h-4 bg-slate-800 border border-white/5" />
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                Faltam {(maxXpForCurrentLevel - xp).toLocaleString()} Unidades de XP para o Próximo Nível
+              </p>
+            </div>
+          </Card>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { label: 'Missões', value: completedCount, icon: Target, color: 'indigo' },
+              { label: 'Grade_Score', value: avgGrade, icon: Star, color: 'amber' },
+              { label: 'Inovações', value: badges.filter(b => b.earned).length, icon: Trophy, color: 'emerald' },
+              { label: 'Sync_Rate', value: `${((completedCount / (activities.length || 1)) * 100).toFixed(0)}%`, icon: TrendingUp, color: 'cyan' }
+            ].map((stat, i) => (
+              <Card key={i} className="p-4 bg-slate-900/40 border border-white/5 text-center space-y-2">
+                <div className={`w-10 h-10 rounded-xl bg-${stat.color}-500/10 border border-${stat.color}-500/20 flex items-center justify-center mx-auto`}>
+                  <stat.icon className={`w-5 h-5 text-${stat.color}-400`} />
+                </div>
+                <div>
+                  <p className="text-xl font-black text-white tracking-tighter">{stat.value}</p>
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-tighterLeading-none">{stat.label}</p>
+                </div>
+              </Card>
+            ))}
           </div>
-          <h2 className="text-4xl font-bold text-white mb-2">
-            {xp.toLocaleString()} / {maxXp.toLocaleString()}
+        </div>
+
+        {/* Lado Direito: Achievement Grid */}
+        <div className="lg:col-span-4 space-y-6">
+          <h2 className="text-xl font-black text-white flex items-center gap-2 uppercase tracking-tighter">
+            <Award className="w-5 h-5 text-emerald-400" /> Medalhas de Reconhecimento
           </h2>
-          <p className="text-lg text-blue-200">Nível {level} • Criador Maker</p>
+
+          <div className="grid grid-cols-2 gap-3">
+            {badges.map((badge) => (
+              <Card
+                key={badge.id}
+                className={`p-4 border-white/5 relative overflow-hidden transition-all duration-500 ${badge.earned ? 'bg-slate-900/60 border-emerald-500/20' : 'bg-slate-950/40 grayscale opacity-40'}`}
+              >
+                <div className="text-center space-y-3">
+                  <div className={`w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl ${badge.earned ? `bg-${badge.color}-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]` : 'bg-slate-800'}`}>
+                    {badge.icon}
+                  </div>
+                  <div>
+                    <h4 className="text-[10px] font-black text-white uppercase tracking-tighter line-clamp-1">{badge.name}</h4>
+                    <p className="text-[8px] text-slate-500 font-bold uppercase leading-tight mt-1">{badge.desc}</p>
+                  </div>
+                </div>
+                {badge.earned && <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]"></div>}
+              </Card>
+            ))}
+          </div>
         </div>
 
-        <ProgressBar value={(xp / maxXp) * 100} className="h-4 bg-blue-900/50 mb-3" />
-        
-        <p className="text-center text-sm text-blue-200">
-          Faltam {(maxXp - xp).toLocaleString()} XP para o próximo nível
-        </p>
-      </Card>
-
-      {/* Estatísticas */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        <Card className="p-6 bg-white/10 backdrop-blur-lg border-white/20 shadow-xl">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Trophy className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">12</p>
-              <p className="text-sm text-blue-200">Atividades</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 bg-white/10 backdrop-blur-lg border-white/20 shadow-xl">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Star className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">9.2</p>
-              <p className="text-sm text-blue-200">Média</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 bg-white/10 backdrop-blur-lg border-white/20 shadow-xl">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Award className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">4</p>
-              <p className="text-sm text-blue-200">Badges</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 bg-white/10 backdrop-blur-lg border-white/20 shadow-xl">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
-              <TrendingUp className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">85%</p>
-              <p className="text-sm text-blue-200">Conclusão</p>
-            </div>
-          </div>
-        </Card>
       </div>
 
-      {/* Badges */}
-      <div className="mb-8">
-        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <Zap className="w-6 h-6 text-yellow-400" />
-          Badges Conquistadas
-        </h2>
-        
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {badges.map((badge) => (
-            <Card 
-              key={badge.id}
-              className={`p-6 backdrop-blur-lg border-white/20 shadow-xl ${
-                badge.earned 
-                  ? `bg-gradient-to-br ${badge.color}/20` 
-                  : 'bg-white/5 opacity-50'
-              }`}
-            >
-              <div className="text-center">
-                <div className={`w-20 h-20 bg-gradient-to-br ${badge.color} rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg ${
-                  !badge.earned && 'grayscale opacity-40'
-                }`}>
-                  <span className="text-4xl">{badge.icon}</span>
-                </div>
-                <h3 className="font-bold text-white text-sm mb-1">{badge.name}</h3>
-                <p className="text-xs text-blue-200">{badge.description}</p>
-                {badge.earned && (
-                  <Badge className="mt-2 bg-green-500/20 text-green-400 border-green-400/30 text-xs">
-                    ✓ Conquistada
-                  </Badge>
-                )}
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* Progresso por Trilha */}
-      <div className="mb-8">
-        <h2 className="text-xl font-bold text-white mb-4">Progresso por Trilha</h2>
-        
-        <Card className="p-6 bg-white/10 backdrop-blur-lg border-white/20 shadow-xl mb-4">
-          <div className="flex items-center gap-4 mb-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-2xl">🤖</span>
-            </div>
-            <div className="flex-1">
-              <h3 className="font-bold text-white">Programação com PictoBlox</h3>
-              <p className="text-sm text-blue-200">65% concluído</p>
-            </div>
-          </div>
-          <ProgressBar value={65} className="h-2 bg-blue-900/50" />
-        </Card>
-
-        <Card className="p-6 bg-white/10 backdrop-blur-lg border-white/20 shadow-xl">
-          <div className="flex items-center gap-4 mb-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-2xl">💡</span>
-            </div>
-            <div className="flex-1">
-              <h3 className="font-bold text-white">Empreendedorismo Digital</h3>
-              <p className="text-sm text-blue-200">40% concluído</p>
-            </div>
-          </div>
-          <ProgressBar value={40} className="h-2 bg-orange-900/50" />
-        </Card>
-      </div>
-
-      {/* Frequência */}
-      <div>
-        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <Calendar className="w-6 h-6" />
-          Frequência
-        </h2>
-        
-        <Card className="p-6 bg-white/10 backdrop-blur-lg border-white/20 shadow-xl mb-4">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <p className="text-3xl font-bold text-white">92%</p>
-              <p className="text-sm text-blue-200">Presença no mês</p>
-            </div>
-            <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-3xl">✓</span>
-            </div>
-          </div>
-          
-          {/* Calendário de presença */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-blue-200">Segunda-feira</span>
-              <div className="flex gap-2">
-                <div className="w-8 h-8 bg-green-500/30 border border-green-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-green-300">✓</span>
-                </div>
-                <div className="w-8 h-8 bg-green-500/30 border border-green-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-green-300">✓</span>
-                </div>
-                <div className="w-8 h-8 bg-green-500/30 border border-green-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-green-300">✓</span>
-                </div>
-                <div className="w-8 h-8 bg-green-500/30 border border-green-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-green-300">✓</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-blue-200">Quarta-feira</span>
-              <div className="flex gap-2">
-                <div className="w-8 h-8 bg-green-500/30 border border-green-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-green-300">✓</span>
-                </div>
-                <div className="w-8 h-8 bg-green-500/30 border border-green-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-green-300">✓</span>
-                </div>
-                <div className="w-8 h-8 bg-red-500/30 border border-red-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-red-300">✗</span>
-                </div>
-                <div className="w-8 h-8 bg-green-500/30 border border-green-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-green-300">✓</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-blue-200">Sexta-feira</span>
-              <div className="flex gap-2">
-                <div className="w-8 h-8 bg-green-500/30 border border-green-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-green-300">✓</span>
-                </div>
-                <div className="w-8 h-8 bg-green-500/30 border border-green-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-green-300">✓</span>
-                </div>
-                <div className="w-8 h-8 bg-green-500/30 border border-green-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-green-300">✓</span>
-                </div>
-                <div className="w-8 h-8 bg-gray-500/30 border border-gray-400/50 rounded-lg flex items-center justify-center">
-                  <span className="text-xs text-gray-300">-</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-white/10">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500/30 border border-green-400/50 rounded"></div>
-              <span className="text-xs text-blue-200">Presente</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-red-500/30 border border-red-400/50 rounded"></div>
-              <span className="text-xs text-blue-200">Ausente</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-500/30 border border-gray-400/50 rounded"></div>
-              <span className="text-xs text-blue-200">Futuro</span>
-            </div>
-          </div>
-        </Card>
-      </div>
     </div>
   );
 }
