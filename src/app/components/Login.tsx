@@ -89,12 +89,14 @@ export function Login({ onLogin }: LoginProps) {
           {/* Toggle de Acesso */}
           <div className="flex bg-slate-950 p-1.5 rounded-2xl mb-8 border border-white/5 font-bold uppercase text-[9px] tracking-widest">
             <button
+              type="button"
               onClick={() => setLoginMethod('creds')}
               className={`flex-1 py-3 rounded-xl transition-all ${loginMethod === 'creds' ? 'bg-slate-800 text-cyan-400 shadow-inner' : 'text-slate-500 hover:text-white'}`}
             >
               Protocolo_Email
             </button>
             <button
+              type="button"
               onClick={() => setLoginMethod('code')}
               className={`flex-1 py-3 rounded-xl transition-all ${loginMethod === 'code' ? 'bg-slate-800 text-cyan-400 shadow-inner' : 'text-slate-500 hover:text-white'}`}
             >
@@ -110,8 +112,8 @@ export function Login({ onLogin }: LoginProps) {
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 group-focus-within:text-cyan-400 transition-colors" />
                     <Input
-                      type="email"
-                      placeholder="seu@dominio.com"
+                      type="text"
+                      placeholder="usuario_ou_email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-12 bg-slate-950/50 border-white/5 text-white h-14 rounded-2xl focus:border-cyan-500/50 focus:bg-slate-950 transition-all font-medium"
