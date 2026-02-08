@@ -12,33 +12,42 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+interface AuthState {
+    user: User | null;
+    role: Role | null;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(() => getFromStorage('current_user', null));
-    const [role, setRole] = useState<Role | null>(() => getFromStorage('user_type', null));
+    const [state, setState] = useState<AuthState>(() => ({
+        user: getFromStorage('current_user', null),
+        role: getFromStorage('user_type', null)
+    }));
 
     const login = (newRole: Role, userData: User) => {
-        console.log('Auth: Entering login protocol...', { role: newRole });
+        console.log('Auth: Sincronizando sessão...', { role: newRole });
         try {
-            // Force save to disk first
-            localStorage.setItem('inovatec_current_user', JSON.stringify(userData));
-            localStorage.setItem('inovatec_user_type', JSON.stringify(newRole));
-
-            setRole(newRole);
-            setUser(userData);
+            saveToStorage('current_user', userData);
+            saveToStorage('user_type', newRole);
+            setState({ user: userData, role: newRole });
         } catch (e) {
-            console.error('Auth: Critical storage failure!', e);
+            console.error('Auth: Falha crítica no armazenamento!', e);
         }
     };
 
     const logout = () => {
-        localStorage.removeItem('inovatec_current_user');
-        localStorage.removeItem('inovatec_user_type');
-        setRole(null);
-        setUser(null);
+        saveToStorage('current_user', null);
+        saveToStorage('user_type', null);
+        setState({ user: null, role: null });
     };
 
     return (
-        <AuthContext.Provider value={{ user, role, isAuthenticated: !!user, login, logout }}>
+        <AuthContext.Provider value={{
+            user: state.user,
+            role: state.role,
+            isAuthenticated: !!state.user,
+            login,
+            logout
+        }}>
             {children}
         </AuthContext.Provider>
     );

@@ -8,29 +8,29 @@ export function LoginPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Only redirect if fully authenticated and role is present
         if (isAuthenticated && role) {
-            const dest = role === 'student' ? '/student' : '/teacher';
-            console.log('Auto-redirecting to:', dest);
-            navigate(dest, { replace: true });
+            const path = role === 'student' ? '/student' : '/teacher';
+            console.log('[DEBUG] Identificada sessão ativa. Redirecionando para:', path);
+            navigate(path, { replace: true });
         }
     }, [isAuthenticated, role, navigate]);
 
     const handleLogin = (userType: 'student' | 'teacher', userData: any) => {
-        console.log('LoginPage: Handling login for:', userType);
+        console.log('[DEBUG] Processando login para:', userType);
         login(userType, userData);
 
-        // Redundant direct navigation for reliability
+        // Navegação forçada imediata
         const dest = userType === 'student' ? '/student' : '/teacher';
         navigate(dest, { replace: true });
     };
 
-    // Show loading or nothing if already authenticated to prevent flicker
-    if (isAuthenticated && role) return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
-        </div>
-    );
+    if (isAuthenticated && role) {
+        return (
+            <div className="min-h-screen bg-[#020617] flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+            </div>
+        );
+    }
 
     return <Login onLogin={handleLogin} />;
 }
