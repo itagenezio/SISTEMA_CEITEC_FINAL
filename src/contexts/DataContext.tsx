@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { supabase } from '../app/lib/supabase';
 import { Class, Activity, Submission, EnrolledStudent } from '../types';
 import { toast } from 'sonner';
+import { getFromStorage } from '../app/utils/storage';
 
 interface DataContextType {
     classes: Class[];
@@ -17,6 +18,7 @@ interface DataContextType {
     addStudent: (student: Omit<EnrolledStudent, 'id'>) => Promise<boolean>;
     deleteStudent: (id: string) => Promise<boolean>;
     deleteClass: (id: string) => Promise<boolean>;
+    deleteSubmission: (id: string) => Promise<boolean>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -107,8 +109,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         // Obter usuário atual do localStorage (já que context de Auth pode não estar acessível aqui facilmente sem circular dependency)
         // Mas o ideal é passar o studentId como argumento.
         // Como simplificação, pegamos do localStorage que AuthContext salva
-        const userStr = localStorage.getItem('current_user');
-        const currentUser = userStr ? JSON.parse(userStr) : null;
+        const currentUser = getFromStorage('current_user', null);
 
         if (!currentUser?.id) {
             toast.error('Erro de autenticação ao enviar');
@@ -213,6 +214,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
         return true;
     };
 
+    const deleteSubmission = async (id: string) => {
+        const { error } = await supabase.from('submissions').delete().eq('id', id);
+        if (error) { toast.error('Erro ao excluir submissão'); return false; }
+        await loadData();
+        return true;
+    };
+
     return (
         <DataContext.Provider value={{
             classes,
@@ -227,7 +235,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
             gradeSubmission,
             addStudent,
             deleteStudent,
-            deleteClass
+            deleteClass,
+            deleteSubmission
         }}>
             {children}
         </DataContext.Provider>

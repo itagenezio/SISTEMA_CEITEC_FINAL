@@ -1,16 +1,19 @@
-import { ArrowLeft, User, Calendar, CheckCircle, Clock } from 'lucide-react';
+import { ArrowLeft, User, Calendar, CheckCircle, Clock, Trash2, ShieldCheck, Terminal, Search } from 'lucide-react';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
-import { Activity, EnrolledStudent } from '../data/mockData';
+import { Button } from './ui/button';
+import { Activity, EnrolledStudent } from '../../types';
+import { toast } from 'sonner';
 
 interface SubmissionsListProps {
     onNavigate: (screen: string, id?: string) => void;
     submissions: any[];
     activities: Activity[];
     students: EnrolledStudent[];
+    onDeleteSubmission?: (id: string) => Promise<boolean>;
 }
 
-export function SubmissionsList({ onNavigate, submissions, activities, students }: SubmissionsListProps) {
+export function SubmissionsList({ onNavigate, submissions, activities, students, onDeleteSubmission }: SubmissionsListProps) {
     const getStudent = (id: string) => students.find(s => String(s.id) === String(id));
     const getActivity = (id: string) => activities.find(a => String(a.id) === String(id));
 
@@ -18,29 +21,40 @@ export function SubmissionsList({ onNavigate, submissions, activities, students 
     const gradedSubmissions = submissions.filter(s => s.status === 'graded');
 
     return (
-        <div className="min-h-screen p-6"
-            style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)' }}>
+        <div className="space-y-8 pb-10">
+            {/* Header HUD */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="flex items-center gap-6">
+                    <Button
+                        variant="outline"
+                        onClick={() => onNavigate('teacher-dashboard')}
+                        className="bg-slate-800/50 border-white/10 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl w-14 h-14 p-0 shadow-lg shrink-0"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </Button>
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2 mb-1">
+                            <Terminal className="w-4 h-4 text-cyan-400" />
+                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Protocolo de Monitoramento Acadêmico</span>
+                        </div>
+                        <h1 className="text-4xl font-extrabold text-white tracking-tighter uppercase font-mono">ENTREGAS <span className="text-cyan-400">PENDENTES</span></h1>
+                    </div>
+                </div>
 
-            {/* Header */}
-            <div className="flex items-center gap-4 mb-8">
-                <button
-                    onClick={() => onNavigate('teacher-dashboard')}
-                    className="w-10 h-10 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl flex items-center justify-center hover:bg-white/20 transition-colors"
-                >
-                    <ArrowLeft className="w-5 h-5 text-white" />
-                </button>
-                <div>
-                    <h1 className="text-3xl font-bold text-white">Entregas Pendentes</h1>
-                    <p className="text-blue-200">Atividades aguardando correção</p>
+                <div className="flex gap-2">
+                    <Badge className="bg-slate-900 border-white/5 text-slate-400 px-4 h-10 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
+                        {pendingSubmissions.length} AGUARDANDO_SINC
+                    </Badge>
                 </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid gap-4">
                 {pendingSubmissions.length === 0 ? (
-                    <Card className="p-12 bg-white/5 border-2 border-dashed border-white/20 text-center">
-                        <User className="w-12 h-12 text-blue-400 mx-auto mb-4 opacity-50" />
-                        <h3 className="text-xl font-bold text-white mb-2">Tudo em dia!</h3>
-                        <p className="text-blue-200">Nenhum aluno enviou atividades pendentes no momento.</p>
+                    <Card className="p-20 bg-slate-900/20 border-2 border-dashed border-white/5 text-center space-y-4">
+                        <ShieldCheck className="w-16 h-16 text-slate-700 mx-auto" />
+                        <h3 className="text-xl font-bold text-slate-400 uppercase tracking-tight">Status: Tudo em Dia</h3>
+                        <p className="text-slate-600 text-sm">Nenhum relatório de missão aguarda processamento no momento.</p>
                     </Card>
                 ) : (
                     pendingSubmissions.map((submission) => {
@@ -50,35 +64,54 @@ export function SubmissionsList({ onNavigate, submissions, activities, students 
                         return (
                             <Card
                                 key={submission.id}
-                                className="p-6 bg-white/10 backdrop-blur-lg border-white/20 shadow-xl cursor-pointer hover:scale-[1.01] transition-transform"
+                                className="p-6 bg-slate-900/60 border border-white/5 hover:border-cyan-500/30 transition-all cursor-pointer group"
                                 onClick={() => onNavigate('grading', submission.id)}
                             >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex items-center justify-center shadow-lg">
-                                            <span className="text-2xl">{student?.avatar || '👤'}</span>
+                                <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+                                    <div className="flex items-center gap-6 flex-1 min-w-0">
+                                        <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center text-3xl border border-white/5 group-hover:border-cyan-500/20 shadow-xl transition-all">
+                                            {student?.avatar || '👤'}
                                         </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-white">{student?.name || 'Aluno Desconhecido'}</h3>
-                                            <div className="flex flex-wrap items-center gap-4 mt-1">
-                                                <p className="text-sm text-blue-200 flex items-center gap-1">
-                                                    <CheckCircle className="w-3 h-3" />
-                                                    {activity?.title || 'Atividade Removida'}
+                                        <div className="min-w-0">
+                                            <h3 className="text-xl font-black text-white tracking-tight uppercase font-mono truncate">{student?.name || 'ALUNO_DESCONHECIDO'}</h3>
+                                            <div className="flex flex-wrap items-center gap-4 mt-1 font-mono text-[10px]">
+                                                <p className="text-cyan-400 font-bold flex items-center gap-1.5 uppercase">
+                                                    <Terminal className="w-3 h-3" /> {activity?.title || 'MISSION_NULL'}
                                                 </p>
-                                                <p className="text-xs text-blue-300 flex items-center gap-1">
-                                                    <Calendar className="w-3 h-3" />
-                                                    Enviado em {submission.submitted_at ? new Date(submission.submitted_at).toLocaleDateString('pt-BR') : 'Data desconhecida'}
+                                                <p className="text-slate-500 flex items-center gap-1.5 uppercase">
+                                                    <Calendar className="w-3 h-3" /> {submission.submitted_at || submission.submittedAt ? new Date(submission.submitted_at || submission.submittedAt).toLocaleDateString('pt-BR') : 'SYNC_DATE_ERROR'}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="text-right">
-                                        <Badge className="bg-orange-500/20 text-orange-400 border-orange-400/30 mb-2">
-                                            <Clock className="w-3 h-3 mr-1" />
-                                            {submission.status === 'delivered' ? 'Entregue' : 'Pendente'}
-                                        </Badge>
-                                        <p className="text-sm text-cyan-400 font-semibold">Corrigir Agora →</p>
+                                    <div className="flex items-center gap-6">
+                                        <div className="text-right">
+                                            <Badge className="bg-amber-500/10 text-amber-500 border-none font-black text-[9px] uppercase tracking-widest px-3 h-5">
+                                                <Clock className="w-3 h-3 mr-1.5" />
+                                                AGUARDANDO_AVALIAÇÃO
+                                            </Badge>
+                                            <p className="text-cyan-400 text-[10px] font-black uppercase mt-2 group-hover:translate-x-1 transition-transform tracking-widest">Processar Agora →</p>
+                                        </div>
+
+                                        <div className="border-l border-white/5 pl-6">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    if (window.confirm('Excluir entrega permanentemente do servidor?')) {
+                                                        if (onDeleteSubmission) {
+                                                            const success = await onDeleteSubmission(submission.id);
+                                                            if (success) toast.success('Entrega excluída.');
+                                                        }
+                                                    }
+                                                }}
+                                                className="h-10 w-10 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </Card>
@@ -87,29 +120,31 @@ export function SubmissionsList({ onNavigate, submissions, activities, students 
                 )}
 
                 {gradedSubmissions.length > 0 && (
-                    <div className="mt-12">
-                        <h2 className="text-xl font-bold text-white mb-4">Corrigidas Recentemente</h2>
-                        <div className="space-y-3 opacity-80">
-                            {gradedSubmissions.map((submission) => {
+                    <div className="mt-12 space-y-6">
+                        <h2 className="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tighter">
+                            <CheckCircle className="w-5 h-5 text-emerald-500" /> Corrigidos Recentemente
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {gradedSubmissions.slice(0, 6).map((submission) => {
                                 const student = getStudent(submission.student_id);
                                 const activity = getActivity(submission.activity_id);
 
                                 return (
                                     <Card
                                         key={submission.id}
-                                        className="p-5 bg-white/5 backdrop-blur-sm border-white/10 shadow-lg"
+                                        className="p-4 bg-slate-900/40 border border-white/5 opacity-70 hover:opacity-100 transition-opacity"
                                     >
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-xl">{student?.avatar || '👤'}</span>
-                                                <div>
-                                                    <p className="text-sm font-bold text-white">{student?.name}</p>
-                                                    <p className="text-xs text-blue-200">{activity?.title}</p>
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <span className="text-2xl">{student?.avatar || '👤'}</span>
+                                                <div className="min-w-0">
+                                                    <p className="text-xs font-bold text-white uppercase font-mono truncate">{student?.name}</p>
+                                                    <p className="text-[9px] text-slate-500 uppercase truncate">{activity?.title}</p>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-lg font-bold text-green-400">Nota: {submission.grade}</p>
-                                                <p className="text-[10px] text-blue-300">Avaliado em {submission.graded_at ? new Date(submission.graded_at).toLocaleDateString('pt-BR') : 'N/A'}</p>
+                                                <div className="text-xl font-black text-emerald-400 tracking-tighterLeading-none">{submission.grade}</div>
+                                                <p className="text-[8px] text-slate-600 font-bold uppercase mt-1">SCORE</p>
                                             </div>
                                         </div>
                                     </Card>

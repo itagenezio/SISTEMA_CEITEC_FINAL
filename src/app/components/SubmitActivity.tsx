@@ -50,12 +50,22 @@ export function SubmitActivity({ onNavigate, onSubmit, activityId, activities }:
 
       {/* Header Contextual */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-1">
-            <Terminal className="w-4 h-4 text-cyan-400" />
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Protocolo de Submissão Inovatec_OS</span>
+        <div className="flex items-center gap-6">
+          <Button
+            variant="outline"
+            onClick={() => onNavigate('activities')}
+            className="bg-slate-800/50 border-white/10 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl w-14 h-14 p-0 shadow-lg shrink-0"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 mb-1">
+              <Terminal className="w-4 h-4 text-cyan-400" />
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Protocolo de Submissão Inovatec_OS</span>
+            </div>
+            <h1 className="text-4xl font-extrabold text-white tracking-tighter uppercase font-mono">ENVIAR <span className="text-cyan-400">PROJETO</span></h1>
           </div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tighter uppercase font-mono">ENVIAR <span className="text-cyan-400">PROJETO</span></h1>
         </div>
       </div>
 

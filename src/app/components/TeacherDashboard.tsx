@@ -1,4 +1,4 @@
-import { Users, CheckSquare, TrendingUp, BookOpen, BarChart3, Calendar, Plus, Sparkles, LogOut, Wand2, ShieldCheck, Activity as ActivityIcon, Download, Search, LayoutDashboard } from 'lucide-react';
+import { Users, CheckSquare, TrendingUp, BookOpen, BarChart3, Calendar, Plus, Sparkles, LogOut, Wand2, ShieldCheck, Activity as ActivityIcon, Download, Search, LayoutDashboard, Pencil, Trash2 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -151,11 +151,39 @@ export function TeacherDashboard({ onNavigate, classes, activities, onAddActivit
                   <div className="w-14 h-14 rounded-2xl bg-slate-800 flex items-center justify-center text-2xl font-black text-slate-500 border border-white/5 group-hover:border-cyan-500/30 group-hover:text-cyan-400 transition-all">
                     {c.name.substring(0, 2).toUpperCase()}
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors uppercase font-mono">{c.name}</h3>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors uppercase font-mono truncate">{c.name}</h3>
                     <p className="text-xs text-slate-500 font-bold uppercase">{c.studentsCount} ALUNOS</p>
                   </div>
-                  <div className="text-right">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onNavigate('class-management', c.id);
+                      }}
+                      className="h-8 w-8 text-slate-500 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Redireciona para o gerenciamento onde o modal de delete já existe
+                        onNavigate('class-management', c.id);
+                        setTimeout(() => {
+                          toast.info('Use o ícone de lixeira no topo para excluir a turma.');
+                        }, 500);
+                      }}
+                      className="h-8 w-8 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="text-right pl-2">
                     <span className="text-xs font-black text-cyan-400">{c.progress}%</span>
                   </div>
                 </div>

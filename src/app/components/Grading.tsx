@@ -6,14 +6,14 @@ import { Textarea } from './ui/textarea';
 import { Slider } from './ui/slider';
 import { useState } from 'react';
 
-import { Activity, EnrolledStudent } from '../data/mockData';
+import { Activity, EnrolledStudent } from '../../types';
 
 interface GradingProps {
   onNavigate: (screen: string) => void;
   submission: any;
   student: EnrolledStudent | undefined;
   activity: Activity | undefined;
-  onGrade: (id: string, grade: number, feedback: string) => Promise<void>;
+  onGrade: (id: string, grade: number, feedback: string) => Promise<boolean>;
 }
 
 export function Grading({ onNavigate, submission, student, activity, onGrade }: GradingProps) {

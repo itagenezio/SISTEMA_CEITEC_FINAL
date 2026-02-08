@@ -1,17 +1,19 @@
-import { Trophy, Star, ExternalLink, ShieldCheck, Target, BarChart3, Database, Award } from 'lucide-react';
+import { Trophy, Star, ExternalLink, ShieldCheck, Target, BarChart3, Database, Award, ArrowLeft, Trash2, Pencil } from 'lucide-react';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Activity } from '../../types';
 import { motion } from 'motion/react';
+import { toast } from 'sonner';
 
 interface PortfolioProps {
   onNavigate: (screen: string) => void;
   submissions: any[];
   activities: Activity[];
+  onDeleteSubmission?: (id: string) => Promise<boolean>;
 }
 
-export function Portfolio({ onNavigate, submissions, activities }: PortfolioProps) {
+export function Portfolio({ onNavigate, submissions, activities, onDeleteSubmission }: PortfolioProps) {
   const projects = submissions.map(sub => {
     const activity = activities.find(a => String(a.id) === String(sub.activityId || sub.activity_id));
     return {
@@ -36,13 +38,22 @@ export function Portfolio({ onNavigate, submissions, activities }: PortfolioProp
 
       {/* Header Contextual */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-1">
-            <Database className="w-4 h-4 text-emerald-400" />
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Base de Dados de Conquistas Acadêmicas</span>
+        <div className="flex items-center gap-6">
+          <Button
+            variant="outline"
+            onClick={() => onNavigate('student-dashboard')}
+            className="bg-slate-800/50 border-white/10 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl w-14 h-14 p-0 shadow-lg shrink-0"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 mb-1">
+              <Database className="w-4 h-4 text-emerald-400" />
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Base de Dados de Conquistas Acadêmicas</span>
+            </div>
+            <h1 className="text-4xl font-extrabold text-white tracking-tighter">MEU <span className="text-emerald-400">PORTFÓLIO</span></h1>
+            <p className="text-slate-400 text-sm font-medium">Histórico completo de implementações, notas e feedbacks do sistema.</p>
           </div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tighter">MEU <span className="text-emerald-400">PORTFÓLIO</span></h1>
-          <p className="text-slate-400 text-sm font-medium">Histórico completo de implementações, notas e feedbacks do sistema.</p>
         </div>
       </div>
 
@@ -119,11 +130,36 @@ export function Portfolio({ onNavigate, submissions, activities }: PortfolioProp
                     </div>
                   )}
 
-                  <div className="flex flex-col items-end gap-2 pr-2">
-                    <p className="text-[10px] font-mono text-slate-600">{project.date}</p>
-                    <Button variant="ghost" size="sm" className="h-8 text-[10px] font-black tracking-widest text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300">
-                      DETALHES <ExternalLink className="w-3 h-3 ml-2" />
-                    </Button>
+                  <div className="flex flex-col md:flex-row items-center gap-4 pr-2">
+                    <p className="text-[10px] font-mono text-slate-600 self-end md:self-center">{project.date}</p>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => toast.info('Edição bloqueada pelo administrador.')}
+                        className="h-9 w-9 text-slate-500 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-xl"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={async () => {
+                          if (window.confirm('Excluir este registro permanentemente?')) {
+                            if (onDeleteSubmission) {
+                              const success = await onDeleteSubmission(project.id);
+                              if (success) toast.success('Registro removido.');
+                            }
+                          }
+                        }}
+                        className="h-9 w-9 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" className="h-9 text-[10px] font-black tracking-widest text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300">
+                        FOLDER <ExternalLink className="w-3 h-3 ml-2" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </Card>

@@ -1,7 +1,8 @@
-import { Trophy, Star, Award, TrendingUp, Zap, ShieldCheck, Target, Activity as ActivityIcon } from 'lucide-react';
+import { Trophy, Star, Award, TrendingUp, Zap, ShieldCheck, Target, Activity as ActivityIcon, ArrowLeft } from 'lucide-react';
 import { Card } from './ui/card';
 import { Progress as ProgressBar } from './ui/progress';
 import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 import { Activity } from '../../types';
 import { motion } from 'motion/react';
 
@@ -39,13 +40,23 @@ export function Progress({ onNavigate, submissions, activities, currentUser }: P
 
       {/* Header Contextual */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-1">
-            <ShieldCheck className="w-4 h-4 text-cyan-400" />
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Relatório de Evolução de Hardware & Software</span>
+        <div className="flex items-center gap-6">
+          <Button
+            variant="outline"
+            onClick={() => onNavigate('student-dashboard')}
+            className="bg-slate-800/50 border-white/10 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl w-14 h-14 p-0 shadow-lg shrink-0"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 mb-1">
+              <ShieldCheck className="w-4 h-4 text-cyan-400" />
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Relatório de Evolução de Hardware & Software</span>
+            </div>
+            <h1 className="text-4xl font-extrabold text-white tracking-tighter">MEU <span className="text-cyan-400">PROGRESSO</span></h1>
+            <p className="text-slate-400 text-sm font-medium">Monitoramento em tempo real do seu desenvolvimento técnico.</p>
           </div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tighter">MEU <span className="text-cyan-400">PROGRESSO</span></h1>
-          <p className="text-slate-400 text-sm font-medium">Monitoramento em tempo real do seu desenvolvimento técnico.</p>
         </div>
       </div>
 

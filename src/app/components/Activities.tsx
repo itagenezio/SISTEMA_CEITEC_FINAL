@@ -1,4 +1,4 @@
-import { Circle, CheckCircle2, Clock, AlertCircle, Sparkles, Zap, ShieldCheck, Target, ExternalLink } from 'lucide-react';
+import { Circle, CheckCircle2, Clock, AlertCircle, Sparkles, Zap, ShieldCheck, Target, ExternalLink, ArrowLeft } from 'lucide-react';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -46,13 +46,23 @@ export function Activities({ onNavigate, activities, submissions }: ActivitiesPr
 
       {/* Header Contextual */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-1">
-            <Target className="w-4 h-4 text-cyan-400" />
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Protocolo de Aprendizagem Ativo</span>
+        <div className="flex items-center gap-6">
+          <Button
+            variant="outline"
+            onClick={() => onNavigate('student-dashboard')}
+            className="bg-slate-800/50 border-white/10 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl w-14 h-14 p-0 shadow-lg shrink-0"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 mb-1">
+              <Target className="w-4 h-4 text-cyan-400" />
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Protocolo de Aprendizagem Ativo</span>
+            </div>
+            <h1 className="text-4xl font-extrabold text-white tracking-tighter">TRILHAS DE <span className="text-cyan-400">EVOLUÇÃO</span></h1>
+            <p className="text-slate-400 text-sm">Acesse seus módulos de treinamento e complete os desafios para ganhar XP.</p>
           </div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tighter">TRILHAS DE <span className="text-cyan-400">EVOLUÇÃO</span></h1>
-          <p className="text-slate-400 text-sm">Acesse seus módulos de treinamento e complete os desafios para ganhar XP.</p>
         </div>
 
         <div className="flex gap-2">

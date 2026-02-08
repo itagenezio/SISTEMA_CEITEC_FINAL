@@ -35,12 +35,12 @@ export function ActivitiesPage() {
 }
 
 export function PortfolioPage() {
-    const { activities, submissions } = useData();
+    const { activities, submissions, deleteSubmission } = useData();
     const { user } = useAuth();
     const navigate = useNavigate();
-    const mySubs = submissions.filter(s => s.studentId === user?.id);
+    const mySubs = submissions.filter(s => String(s.studentId || s.student_id) === String(user?.id));
 
-    return <Portfolio onNavigate={(s) => handleStudentNavigate(navigate, s)} submissions={mySubs} activities={activities} />;
+    return <Portfolio onNavigate={(s) => handleStudentNavigate(navigate, s)} submissions={mySubs} activities={activities} onDeleteSubmission={deleteSubmission} />;
 }
 
 export function ProgressPage() {

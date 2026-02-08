@@ -71,7 +71,7 @@ export function GradingPage() {
 }
 
 export function SubmissionsListPage() {
-    const { submissions, activities, enrolledStudents } = useData();
+    const { submissions, activities, enrolledStudents, deleteSubmission } = useData();
     const navigate = useNavigate();
 
     return (
@@ -80,6 +80,7 @@ export function SubmissionsListPage() {
             submissions={submissions}
             activities={activities}
             students={enrolledStudents}
+            onDeleteSubmission={deleteSubmission}
         />
     );
 }
