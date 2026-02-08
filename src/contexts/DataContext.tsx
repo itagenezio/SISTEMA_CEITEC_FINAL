@@ -138,14 +138,58 @@ export function DataProvider({ children }: { children: ReactNode }) {
         // Obter usuário atual do localStorage
         const currentUser = getFromStorage('current_user', null);
 
-        console.log('[DataContext] Preparando envio de submissão:', {
-            activityId,
-            userId: currentUser?.id
-        });
-
-        if (!currentUser || !currentUser.id) {
+        if (!currentUser || !currentUser.id || !currentUser.email) {
             toast.error('Erro de autenticação. Faça login novamente.');
             return false;
+        }
+
+        console.log('[DataContext] Iniciando processo de submissão resiliente...', {
+            email: currentUser.email,
+            activityId
+        });
+
+        let studentId = currentUser.id;
+
+        // 1. Verificar se o estudante existe no banco pelo email
+        // Isso resolve o problema de usuários "fantasmas" do login por email
+        try {
+            const { data: existingStudent, error: searchError } = await supabase
+                .from('students')
+                .select('id')
+                .eq('email', currentUser.email)
+                .maybeSingle();
+
+            if (searchError) throw searchError;
+
+            if (existingStudent) {
+                studentId = existingStudent.id;
+                console.log('[DataContext] Estudante encontrado no banco:', studentId);
+            } else {
+                // 2. Se não existir, criar o estudante automaticamente
+                console.log('[DataContext] Estudante não encontrado. Criando registro...');
+                const { data: newStudent, error: createError } = await supabase
+                    .from('students')
+                    .insert([{
+                        name: currentUser.name || 'Estudante Autogerado',
+                        email: currentUser.email,
+                        xp: currentUser.xp || 1250,
+                        avatar: currentUser.avatar || '👤',
+                        role: 'student'
+                    }])
+                    .select()
+                    .single();
+
+                if (createError) {
+                    console.error('[DataContext] Erro ao auto-registrar estudante:', createError);
+                    toast.error('Erro ao preparar perfil de estudante no servidor.');
+                    return false;
+                }
+                studentId = newStudent.id;
+                console.log('[DataContext] Novo estudante registrado com ID:', studentId);
+            }
+        } catch (err: any) {
+            console.error('[DataContext] Erro na verificação de estudante:', err);
+            // Se falhar a busca, tentamos seguir com o UUID gerado, mas provavelmente dará o erro 23503
         }
 
         let autoGrade: number | null = null;
@@ -172,13 +216,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
             }
         }
 
-        // Converter IDs para UUIDs válidos se necessário
-        const studentUUID = generateUUIDFromString(String(currentUser.id));
-        const activityUUID = generateUUIDFromString(String(activityId));
+        // 3. Garantir que os IDs sejam UUIDs válidos para o Supabase
+        const finalStudentId = generateUUIDFromString(String(studentId));
+        const finalActivityId = generateUUIDFromString(String(activityId));
 
         const dbSub = {
-            activity_id: activityUUID,
-            student_id: studentUUID,
+            activity_id: finalActivityId,
+            student_id: finalStudentId,
             comments: newSub.comments,
             file_url: newSub.file ? `simulado://${newSub.file.name}` : null,
             status: status,
@@ -188,30 +232,22 @@ export function DataProvider({ children }: { children: ReactNode }) {
             graded_at: status === 'graded' ? new Date().toISOString() : null
         };
 
-        console.log('[DataContext] Enviando para Supabase:', dbSub);
+        console.log('[DataContext] Enviando submissão final:', dbSub);
 
         const { data, error } = await supabase.from('submissions').insert([dbSub]).select();
 
         if (error) {
-            console.error('[DataContext] ERRO CRÍTICO SUPABASE:', {
-                code: error.code,
-                message: error.message,
-                details: error.details,
-                hint: error.hint
-            });
+            console.error('[DataContext] ERRO SUPABASE NA SUBMISSÃO:', error);
 
-            // Tratamento amigável para erro de formato UUID (400 / 22P02)
-            if (error.code === '22P02') {
-                toast.error('Erro de formato de dados. Contate o suporte.');
-            } else if (error.code === '23503') {
-                toast.error('Erro de vínculo: Estudante ou Atividade não encontrados no banco.');
+            if (error.code === '23503') {
+                toast.error('Erro: A atividade selecionada não existe no banco de dados central.');
             } else {
                 toast.error(`Falha no envio: ${error.message}`);
             }
             return false;
         }
 
-        console.log('[DataContext] Sucesso:', data);
+        console.log('[DataContext] Submissão concluída com sucesso!');
         toast.success(status === 'graded' ? autoFeedback : 'Atividade enviada com sucesso!');
 
         await loadData();
