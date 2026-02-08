@@ -28,9 +28,9 @@ export function Login({ onLogin }: LoginProps) {
       if (loginMethod === 'creds') {
         const userType = email.toLowerCase().includes('prof') ? 'teacher' : 'student';
         onLogin(userType, {
-          id: userType === 'teacher' ? 'prof-1' : 'student-1',
-          name: userType === 'teacher' ? 'Prof. Ricardo' : 'Estudante Simulado',
-          email: userType === 'teacher' ? 'prof@ceitec.edu' : 'estudante@ceitec.edu',
+          id: userType === 'teacher' ? 'prof-1' : `student-${Math.random().toString(36).substr(2, 9)}`,
+          name: userType === 'teacher' ? 'Coordenador CEITEC' : (email.split('@')[0] || 'Agente Inovatec'),
+          email: email.includes('@') ? email : `${email}@ceitec.edu`,
           role: userType,
           avatar: userType === 'teacher' ? '👨‍🏫' : '👤',
           xp: userType === 'teacher' ? 0 : 1250
@@ -114,6 +114,9 @@ export function Login({ onLogin }: LoginProps) {
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 group-focus-within:text-cyan-400 transition-colors" />
                     <Input
                       type="text"
+                      name="terminal_id"
+                      id="terminal_id"
+                      autoComplete="off"
                       placeholder="usuario_ou_email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -129,6 +132,9 @@ export function Login({ onLogin }: LoginProps) {
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 group-focus-within:text-cyan-400 transition-colors" />
                     <Input
                       type={showPassword ? 'text' : 'password'}
+                      name="access_key"
+                      id="access_key"
+                      autoComplete="current-password"
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
