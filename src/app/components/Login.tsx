@@ -21,7 +21,7 @@ export function Login({ onLogin }: LoginProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt started...', { loginMethod, email });
+    console.log('[LOGIN] Tentativa de login iniciada', { loginMethod, email });
     setIsLoading(true);
 
     try {
@@ -29,14 +29,26 @@ export function Login({ onLogin }: LoginProps) {
         const userType = email.toLowerCase().includes('prof') ? 'teacher' : 'student';
         const rawName = email.split('@')[0].split(/[._-]/).map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()).join(' ');
 
-        onLogin(userType, {
-          id: userType === 'teacher' ? 'prof-1' : `user-${email.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() || 'anon'}`,
+        // Gerar ID único e consistente
+        const cleanEmail = email.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        const userId = userType === 'teacher'
+          ? 'prof-1'
+          : `student-${cleanEmail || Date.now()}`;
+
+        const userData = {
+          id: userId,
           name: userType === 'teacher' ? `PROF. ${rawName || 'COORDENADOR'}` : (rawName.toUpperCase() || 'ESTUDANTE'),
           email: email.includes('@') ? email : `${email}@ceitec.edu`,
           role: userType,
           avatar: userType === 'teacher' ? '👨‍🏫' : '👤',
           xp: userType === 'teacher' ? 0 : 1250
-        });
+        };
+
+        console.log('[LOGIN] Dados do usuário gerados:', userData);
+
+        onLogin(userType, userData);
+
+        console.log('[LOGIN] onLogin chamado com sucesso');
         toast.success('AUTENTICAÇÃO_SINC_CONCLUÍDA');
       } else {
         const { data, error } = await supabase
@@ -53,6 +65,7 @@ export function Login({ onLogin }: LoginProps) {
         }
       }
     } catch (err) {
+      console.error('[LOGIN] Erro crítico:', err);
       toast.error('ERRO_CRÍTICO_SISTEMA');
     } finally {
       setIsLoading(false);

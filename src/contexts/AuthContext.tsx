@@ -24,13 +24,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }));
 
     const login = (newRole: Role, userData: User) => {
-        console.log('Auth: Sincronizando sessão...', { role: newRole });
+        console.log('[AUTH] Iniciando login...', { role: newRole, userData });
         try {
+            console.log('[AUTH] Salvando no localStorage...');
             saveToStorage('current_user', userData);
             saveToStorage('user_type', newRole);
+
+            console.log('[AUTH] Verificando salvamento...');
+            const savedUser = getFromStorage('current_user', null);
+            const savedRole = getFromStorage('user_type', null);
+
+            console.log('[AUTH] Dados salvos:', { savedUser, savedRole });
+
+            if (!savedUser || !savedUser.id) {
+                console.error('[AUTH] ERRO: Usuário não foi salvo corretamente!', { savedUser });
+                throw new Error('Falha ao salvar usuário no localStorage');
+            }
+
             setState({ user: userData, role: newRole });
+            console.log('[AUTH] Login concluído com sucesso!');
         } catch (e) {
-            console.error('Auth: Falha crítica no armazenamento!', e);
+            console.error('[AUTH] Falha crítica no armazenamento!', e);
+            throw e;
         }
     };
 
