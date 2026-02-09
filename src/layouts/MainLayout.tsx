@@ -211,9 +211,18 @@ export function MainLayout() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.3 }}
-                            className="p-10 h-full w-full"
+                            className="p-10 min-h-full w-full flex flex-col"
                         >
-                            <Outlet />
+                            <div className="flex-1">
+                                <Outlet />
+                            </div>
+
+                            {/* Footer Pedagógico Operacional */}
+                            <footer className="mt-20 pt-10 border-t border-blue-100/50 text-center">
+                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">
+                                    EDUCADOR GENÉZIO DE LAVOR CEITEC 2026 // ITA TECNOLOGIA EDUCACIONAL
+                                </p>
+                            </footer>
                         </motion.div>
                     </AnimatePresence>
                 </div>
