@@ -3,7 +3,7 @@ import { LoginPage } from './pages/LoginPage';
 import { StudentDashboardPage } from './pages/StudentDashboardPage';
 import { TeacherDashboardPage } from './pages/TeacherDashboardPage';
 import { ActivitiesPage, PortfolioPage, ProgressPage, SubmitActivityPage } from './pages/StudentPages';
-import { ClassManagementPage, GradingPage, SubmissionsListPage, ReportsPage, CalendarPage } from './pages/TeacherPages';
+import { ClassManagementPage, GradingPage, SubmissionsListPage, ReportsPage, CalendarPage, ActivityCreatorPage } from './pages/TeacherPages';
 import { PrivateRoute } from './components/PrivateRoute';
 import { MainLayout } from './layouts/MainLayout';
 
@@ -27,6 +27,8 @@ export function AppRouter() {
                 <Route path="/teacher" element={<TeacherDashboardPage />} />
                 <Route path="/teacher/classes" element={<ClassManagementPage />} />
                 <Route path="/teacher/classes/:classId" element={<ClassManagementPage />} />
+                <Route path="/teacher/activity-creator" element={<ActivityCreatorPage />} />
+                <Route path="/teacher/activity-creator/:classId" element={<ActivityCreatorPage />} />
                 <Route path="/teacher/grading/:submissionId" element={<GradingPage />} />
                 <Route path="/teacher/submissions" element={<SubmissionsListPage />} />
                 <Route path="/teacher/reports" element={<ReportsPage />} />

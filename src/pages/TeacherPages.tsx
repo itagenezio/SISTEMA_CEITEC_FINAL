@@ -4,13 +4,15 @@ import { ClassManagement } from '../app/components/ClassManagement';
 import { Grading } from '../app/components/Grading';
 import { SubmissionsList } from '../app/components/SubmissionsList';
 import { Button } from '../app/components/ui/button';
-import { BarChart3, ArrowLeft, Calendar as CalendarIcon } from 'lucide-react';
+import { BarChart3, ArrowLeft, Calendar as CalendarIcon, Sparkles } from 'lucide-react';
+import { ActivityCreator } from '../app/components/ActivityCreator';
 
 const handleTeacherNavigate = (navigate: any, screen: string, id: string | undefined = undefined) => {
     // Map legacy
     const routeMap: Record<string, string> = {
         'teacher-dashboard': '/teacher',
         'class-management': id ? `/teacher/classes/${id}` : '/teacher/classes',
+        'activity-creator': id ? `/teacher/activity-creator/${id}` : '/teacher/activity-creator',
         'grading': id ? `/teacher/grading/${id}` : '/teacher/grading',
         'submissions-list': '/teacher/submissions',
         'reports': '/teacher/reports',
@@ -47,6 +49,22 @@ export function ClassManagementPage() {
             onAddStudent={addStudent}
             onDeleteClass={deleteClass}
             onDeleteStudent={deleteStudent}
+        />
+    );
+}
+
+export function ActivityCreatorPage() {
+    const { classId } = useParams();
+    const { classes, addActivity } = useData();
+    const navigate = useNavigate();
+
+    const selectedClass = classes.find(c => String(c.id) === String(classId));
+
+    return (
+        <ActivityCreator
+            onNavigate={(s) => handleTeacherNavigate(navigate, s)}
+            onSave={addActivity}
+            selectedClass={selectedClass ? { name: selectedClass.name, id: selectedClass.id } : undefined}
         />
     );
 }

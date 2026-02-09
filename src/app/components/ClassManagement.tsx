@@ -198,7 +198,7 @@ export function ClassManagement({
               <Plus className="w-4 h-4 mr-2" /> Criar Novas Turmas
             </Button>
             <Button
-              onClick={() => setIsActivityModalOpen(true)}
+              onClick={() => onNavigate('activity-creator', selectedClass?.id)}
               className="w-full bg-cyan-600 hover:bg-cyan-500 h-11 rounded-xl text-[9px] font-black tracking-widest uppercase shadow-lg shadow-cyan-500/20"
             >
               <Plus className="w-4 h-4 mr-2" /> Lançar Atividade p/ Turma
