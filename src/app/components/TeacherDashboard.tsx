@@ -21,10 +21,28 @@ interface TeacherDashboardProps {
   classes: Class[];
   activities: Activity[];
   onAddActivity: (activity: any) => void;
+  onDeleteActivity: (id: string) => Promise<boolean>;
 }
 
-export function TeacherDashboard({ onNavigate, classes, activities, onAddActivity }: TeacherDashboardProps) {
+export function TeacherDashboard({ onNavigate, classes, activities, onAddActivity, onDeleteActivity }: TeacherDashboardProps) {
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [activityToDelete, setActivityToDelete] = useState<string | null>(null);
+
+  const confirmDelete = async () => {
+    if (activityToDelete) {
+      const success = await onDeleteActivity(activityToDelete);
+      if (success) {
+        toast.success('Missão removida com sucesso');
+      }
+      setIsDeleteDialogOpen(false);
+      setActivityToDelete(null);
+    }
+  };
+
+  // ... (rest of state and handlers)
+
+  // (Keeping existing handleCreateActivity and handleGenerateAI)
   const [newActivity, setNewActivity] = useState({
     title: '',
     description: '',
@@ -87,6 +105,12 @@ export function TeacherDashboard({ onNavigate, classes, activities, onAddActivit
       toast.success('Questão gerada com sucesso!');
     }, 1500);
   };
+
+  // ... Header remains the same ...
+  // Skipping common lines to target the missions section
+
+  // (Inserting the confirmation dialog before closing the return statement)
+
 
   return (
     <div className="space-y-10 pb-20 relative px-4">
@@ -237,34 +261,110 @@ export function TeacherDashboard({ onNavigate, classes, activities, onAddActivit
                   <p className="text-muted-foreground font-black uppercase text-[10px] tracking-[0.2em] italic">Aguardando implantação de novos protocolos.</p>
                 </div>
               ) : (
-                activities.map((act) => (
-                  <motion.div key={act.id} whileHover={{ scale: 1.02 }}>
-                    <Card
-                      onClick={() => onNavigate('activity-edit', act.id)}
-                      className="p-6 bg-white border border-border hover:border-primary/40 transition-all cursor-pointer rounded-[2rem] shadow-sm hover:shadow-lg group"
-                    >
-                      <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center text-3xl border border-border group-hover:bg-primary/5 transition-all">
-                          {act.icon || '🎯'}
-                        </div>
-                        <div className="flex-1 min-w-0 space-y-1">
-                          <h4 className="font-black text-foreground text-base truncate uppercase tracking-tight italic">{act.title}</h4>
-                          <div className="flex items-center gap-2.5">
-                            <Calendar className="w-3.5 h-3.5 text-primary/60" />
-                            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Deadline: {act.deadline}</span>
+                activities.map((act) => {
+                  const targetClass = classes.find(c => c.id === (act as any).class_id || c.id === (act as any).classId);
+                  return (
+                    <motion.div key={act.id} whileHover={{ scale: 1.01 }}>
+                      <Card className="p-6 bg-white border border-border hover:border-primary/40 transition-all rounded-[2rem] shadow-sm hover:shadow-lg group relative overflow-hidden">
+                        <div className="flex items-center gap-5 relative z-10">
+                          <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center text-3xl border border-border group-hover:bg-primary/5 transition-all">
+                            {act.icon || '🎯'}
+                          </div>
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-black text-foreground text-base truncate uppercase tracking-tight italic">{act.title}</h4>
+                              <Badge className="bg-primary/5 text-primary border-none text-[8px] px-2 py-0.5 uppercase font-black italic">
+                                {(act as any).type || 'Missão'}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-1.5">
+                                <Calendar className="w-3.5 h-3.5 text-primary/60" />
+                                <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">{act.deadline || 'Sem prazo'}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <Users className="w-3.5 h-3.5 text-orange-500/60" />
+                                <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest truncate max-w-[120px]">
+                                  {targetClass?.name || 'Global'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right flex flex-col items-end gap-2">
+                            <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/20 font-black text-[9px] px-3 py-1 uppercase tracking-widest italic">
+                              {act.points} XP
+                            </Badge>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/20 font-black text-[9px] px-3 py-1 uppercase tracking-widest italic">
-                            {act.points} XP
-                          </Badge>
+
+                        {/* Ações da Missão */}
+                        <div className="mt-6 pt-4 border-t border-border flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onNavigate('activity-edit', act.id)}
+                              className="h-9 px-4 rounded-xl text-[9px] font-black uppercase tracking-tighter italic hover:bg-primary/5 hover:text-primary transition-all border border-transparent hover:border-primary/20"
+                            >
+                              <Pencil className="w-3.5 h-3.5 mr-2" /> Editar
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onNavigate('activity-edit', act.id)} // View can be same as edit or a preview
+                              className="h-9 px-4 rounded-xl text-[9px] font-black uppercase tracking-tighter italic hover:bg-primary/5 hover:text-primary transition-all border border-transparent hover:border-primary/20"
+                            >
+                              <Search className="w-3.5 h-3.5 mr-2" /> Visualizar
+                            </Button>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setActivityToDelete(act.id);
+                              setIsDeleteDialogOpen(true);
+                            }}
+                            className="h-9 px-4 rounded-xl text-[9px] font-black uppercase tracking-tighter italic text-red-500 hover:bg-red-50 hover:text-red-600 transition-all border border-transparent hover:border-red-100"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 mr-2" /> Excluir
+                          </Button>
                         </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))
+                      </Card>
+                    </motion.div>
+                  );
+                })
               )}
             </div>
+
+            {/* Dialog de Confirmação de Exclusão */}
+            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+              <DialogContent className="bg-white border-border rounded-[2.5rem] p-10 max-w-md">
+                <DialogHeader className="space-y-4">
+                  <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto text-red-500 border border-red-100">
+                    <Trash2 className="w-8 h-8" />
+                  </div>
+                  <DialogTitle className="text-2xl font-black uppercase italic tracking-tight text-center">Protocolo de Exclusão</DialogTitle>
+                  <DialogDescription className="text-center text-muted-foreground font-bold uppercase text-[10px] tracking-widest leading-relaxed">
+                    Você está prestes a apagar permanentemente este protocolo de missão. Esta ação não pode ser revertida. Confirmar?
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="flex gap-4 sm:justify-center pt-6">
+                  <Button
+                    variant="ghost"
+                    onClick={() => setIsDeleteDialogOpen(false)}
+                    className="flex-1 h-14 rounded-2xl font-black text-[10px] uppercase tracking-widest italic"
+                  >
+                    CANCELAR_BACK
+                  </Button>
+                  <Button
+                    onClick={confirmDelete}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white h-14 rounded-2xl font-black text-[10px] uppercase tracking-widest italic shadow-xl shadow-red-200"
+                  >
+                    EXCLUIR_DEFINITIVO
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </section>
         </div>
 

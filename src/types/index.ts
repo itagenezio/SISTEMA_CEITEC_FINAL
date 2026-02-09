@@ -30,6 +30,9 @@ export interface Activity {
     color?: string;
     discipline: string;
     questions?: Question[];
+    type?: 'atividade' | 'desafio' | 'projeto' | 'avaliação';
+    class_id?: string;
+    classId?: string; // App compatibility
 }
 
 export interface Submission {

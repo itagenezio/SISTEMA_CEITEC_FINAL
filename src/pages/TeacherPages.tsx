@@ -66,6 +66,7 @@ export function ActivityCreatorPage() {
         <ActivityCreator
             onNavigate={(s, id) => handleTeacherNavigate(navigate, s, id)}
             onSave={addActivity}
+            classes={classes}
             selectedClass={selectedClass ? { name: selectedClass.name, id: selectedClass.id } : undefined}
             initialData={initialActivity}
         />

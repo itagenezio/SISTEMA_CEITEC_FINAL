@@ -10,17 +10,27 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { toast } from 'sonner';
-import { Activity, Question } from '../../types';
+import { Activity, Question, Class } from '../../types';
 import { motion, AnimatePresence } from 'motion/react';
+
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "./ui/select";
+import { Textarea } from './ui/textarea';
 
 interface ActivityCreatorProps {
     onNavigate: (screen: string, id?: string) => void;
     onSave: (activity: any) => Promise<boolean>;
+    classes: Class[];
     selectedClass?: { name: string; id: string };
     initialData?: any;
 }
 
-export function ActivityCreator({ onNavigate, onSave, selectedClass, initialData }: ActivityCreatorProps) {
+export function ActivityCreator({ onNavigate, onSave, classes, selectedClass, initialData }: ActivityCreatorProps) {
     const [step, setStep] = useState<1 | 2 | 3>(1); // 1: Setup, 2: Questions, 3: Review/Key
     const [isLoading, setIsLoading] = useState(false);
 
@@ -30,7 +40,9 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass, initialData
         description: initialData?.description || '',
         points: initialData?.points || 100,
         deadline: initialData?.deadline || '',
-        discipline: initialData?.discipline || 'Tecnologia'
+        discipline: initialData?.discipline || 'Tecnologia',
+        type: initialData?.type || 'atividade',
+        classId: initialData?.classId || initialData?.class_id || selectedClass?.id || ''
     });
 
     // Questions State
@@ -90,20 +102,30 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass, initialData
 
     const handleSave = async () => {
         if (!meta.title) return toast.error('Dê um título para a missão');
+        if (!meta.classId) return toast.error('Selecione uma turma para vincular a missão');
 
         setIsLoading(true);
         const activityData = {
-            ...meta,
+            title: meta.title,
+            description: meta.description,
+            points: meta.points,
+            deadline: meta.deadline || null,
+            discipline: meta.discipline,
+            type: meta.type,
+            class_id: meta.classId,
             questions: questions.map(q => ({
-                ...q,
+                id: q.id,
+                prompt: q.prompt,
+                options: q.options || ['', '', '', ''],
                 answer: q.answer
             })),
-            icon: '🎯',
-            color: 'from-blue-500 to-indigo-600'
+            icon: meta.type === 'desafio' ? '⚡' : meta.type === 'avaliação' ? '📋' : meta.type === 'projeto' ? '🏗️' : '🎯',
+            color: meta.type === 'desafio' ? 'from-amber-400 to-orange-600' : 'from-blue-500 to-indigo-600'
         };
 
         const success = await onSave(activityData);
         if (success) {
+            toast.success('M_IMPLANTADA: Protocolo de missão ativo no cluster.');
             setStep(3);
         }
         setIsLoading(false);
@@ -121,11 +143,13 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass, initialData
 
                 <div className="flex items-center gap-8">
                     <Button variant="ghost" onClick={() => onNavigate('teacher-dashboard')} className="rounded-2xl border border-border hover:bg-muted h-12 px-6 font-black text-[10px] uppercase tracking-widest italic group">
-                        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Voltar ao Painel
+                        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> VOLTAR PARA TELA INICIAL
                     </Button>
                     <div className="hidden md:block space-y-1 border-l border-border pl-8">
                         <h1 className="text-xl font-black tracking-tight uppercase italic text-foreground leading-none">
-                            {step === 3 ? 'Protocolo de Gabarito' : 'Setup de Nova <span className="text-primary italic">Missão</span>'}
+                            {step === 3 ? 'Protocolo de Gabarito' : (
+                                <>Setup de Nova <span className="text-primary italic">Missão</span></>
+                            )}
                         </h1>
                         <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">
                             Laboratório de Criação Pedagógica v4.0
@@ -161,7 +185,7 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass, initialData
                                 <div className="space-y-1">
                                     <h3 className="text-3xl font-black uppercase tracking-tight text-foreground italic leading-none">Configuração de <span className="text-primary italic">Missão</span></h3>
                                     <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 opacity-60">
-                                        Cluster: {selectedClass?.name || 'Protocolo Global'} // ID_{Math.random().toString(36).substr(2, 6).toUpperCase()}
+                                        Cluster: {selectedClass?.name || 'Protocolo Global'}
                                     </p>
                                 </div>
                             </div>
@@ -185,6 +209,24 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass, initialData
                                             onChange={e => setMeta({ ...meta, description: e.target.value })}
                                             className="bg-muted/30 border-border h-14 rounded-2xl focus:border-primary transition-all text-sm font-bold italic shadow-inner px-6"
                                         />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] text-primary font-black uppercase tracking-[0.3em] ml-1">Cluster / Turma Selecionada</label>
+                                        <Select
+                                            value={meta.classId}
+                                            onValueChange={(v) => setMeta({ ...meta, classId: v })}
+                                        >
+                                            <SelectTrigger className="bg-muted/30 border-border h-14 rounded-2xl focus:border-primary transition-all text-sm font-black italic shadow-inner px-6">
+                                                <SelectValue placeholder="Selecione a Turma" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white border-border rounded-xl">
+                                                {classes.map((c) => (
+                                                    <SelectItem key={c.id} value={c.id} className="font-bold uppercase text-[10px] tracking-widest">
+                                                        {c.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                 </div>
 
@@ -213,6 +255,23 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass, initialData
                                         </div>
                                     </div>
                                     <div className="space-y-3">
+                                        <label className="text-[10px] text-primary font-black uppercase tracking-[0.3em] ml-1">Tipo de Missão</label>
+                                        <Select
+                                            value={meta.type}
+                                            onValueChange={(v: any) => setMeta({ ...meta, type: v })}
+                                        >
+                                            <SelectTrigger className="bg-muted/30 border-border h-14 rounded-2xl focus:border-primary transition-all text-sm font-black italic shadow-inner px-6">
+                                                <SelectValue placeholder="Tipo de Missão" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white border-border rounded-xl">
+                                                <SelectItem value="atividade" className="font-bold uppercase text-[10px] tracking-widest">Atividade</SelectItem>
+                                                <SelectItem value="desafio" className="font-bold uppercase text-[10px] tracking-widest">Desafio</SelectItem>
+                                                <SelectItem value="projeto" className="font-bold uppercase text-[10px] tracking-widest">Projeto</SelectItem>
+                                                <SelectItem value="avaliação" className="font-bold uppercase text-[10px] tracking-widest">Avaliação</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-3">
                                         <label className="text-[10px] text-primary font-black uppercase tracking-[0.3em] ml-1">Departamento Tecnológico</label>
                                         <Input
                                             placeholder="Ex: Robótica Autônoma"
@@ -224,10 +283,17 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass, initialData
                                 </div>
                             </div>
 
-                            <div className="pt-10 border-t border-border flex justify-end">
+                            <div className="pt-10 border-t border-border flex justify-end gap-4">
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => onNavigate('teacher-dashboard')}
+                                    className="h-16 px-8 text-muted-foreground hover:text-foreground font-black uppercase text-[10px] tracking-widest italic"
+                                >
+                                    CANCELAR
+                                </Button>
                                 <Button
                                     onClick={() => setStep(2)}
-                                    disabled={!meta.title}
+                                    disabled={!meta.title || !meta.classId}
                                     className="bg-primary hover:bg-primary/90 text-white font-black h-16 px-12 rounded-[1.5rem] text-[11px] tracking-widest group flex items-center gap-4 transition-all shadow-2xl shadow-primary/30 uppercase italic"
                                 >
                                     Sincronizar Questões <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -343,7 +409,7 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass, initialData
                                     disabled={isLoading}
                                     className="flex-1 md:flex-initial h-16 px-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black text-xs tracking-[0.2em] uppercase shadow-2xl shadow-primary/20 transition-all italic scale-100 active:scale-95 flex items-center gap-3"
                                 >
-                                    {isLoading ? 'SINCRONIZANDO...' : 'IMPLANTAR MISSÃO NO CLUSTER'}
+                                    {isLoading ? 'SINCRONIZANDO...' : 'ENVIAR NOVA MISSÃO'}
                                 </Button>
                             </div>
                         </div>

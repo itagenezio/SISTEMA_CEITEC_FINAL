@@ -49,6 +49,7 @@ interface DataContextType {
     deleteStudent: (id: string) => Promise<boolean>;
     deleteClass: (id: string) => Promise<boolean>;
     deleteSubmission: (id: string) => Promise<boolean>;
+    deleteActivity: (id: string) => Promise<boolean>;
     seedTestData: () => Promise<void>;
 }
 
@@ -194,7 +195,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     const addActivity = async (act: any) => {
         const { error } = await supabase.from('activities').insert([act]);
-        if (error) { toast.error('Erro ao criar atividade'); return false; }
+        if (error) {
+            console.error('Erro Supabase (activities):', error);
+            toast.error(`Erro ao criar atividade: ${error.message}`);
+            return false;
+        }
         await loadData();
         return true;
     };
@@ -375,6 +380,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
         return true;
     };
 
+    const deleteActivity = async (id: string) => {
+        const { error } = await supabase.from('activities').delete().eq('id', id);
+        if (error) { toast.error('Erro ao excluir missão'); return false; }
+        await loadData();
+        return true;
+    };
+
     return (
         <DataContext.Provider value={{
             classes,
@@ -391,6 +403,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             deleteStudent,
             deleteClass,
             deleteSubmission,
+            deleteActivity,
             seedTestData
         }}>
             {children}

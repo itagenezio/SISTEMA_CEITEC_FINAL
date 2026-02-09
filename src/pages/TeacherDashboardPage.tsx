@@ -4,13 +4,15 @@ import { TeacherDashboard } from '../app/components/TeacherDashboard';
 import { Class, EnrolledStudent } from '../types';
 
 export function TeacherDashboardPage() {
-    const { classes, enrolledStudents, activities, addActivity } = useData();
+    const { classes, enrolledStudents, activities, addActivity, deleteActivity } = useData();
     const navigate = useNavigate();
 
     const handleNavigate = (screen: string, id?: string) => {
         const routeMap: Record<string, string> = {
             'teacher-dashboard': '/teacher',
             'class-management': id ? `/teacher/classes/${id}` : '/teacher/classes',
+            'activity-creator': id ? `/teacher/activity-creator/${id}` : '/teacher/activity-creator',
+            'activity-edit': id ? `/teacher/activity-creator/edit/${id}` : '/teacher/activity-creator',
             'grading': id ? `/teacher/grading/${id}` : '/teacher/grading',
             'submissions-list': '/teacher/submissions',
             'reports': '/teacher/reports',
@@ -40,6 +42,7 @@ export function TeacherDashboardPage() {
             classes={classesWithCounts}
             activities={activities}
             onAddActivity={addActivity}
+            onDeleteActivity={deleteActivity}
         />
     );
 }

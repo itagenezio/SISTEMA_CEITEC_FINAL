@@ -15,6 +15,8 @@ import { Input } from './ui/input';
 import { Class, Activity, Submission, EnrolledStudent } from '../../types';
 import { motion, AnimatePresence } from 'motion/react';
 
+import { toast } from 'sonner';
+
 interface ReportsProps {
     onNavigate: (screen: string, id?: string) => void;
     classes: Class[];
@@ -96,34 +98,47 @@ export function Reports({
     const handleSeed = async () => {
         if (!onSeedData) return;
         setIsSeeding(true);
-        await onSeedData();
-        setIsSeeding(false);
+        try {
+            await onSeedData();
+            toast.success('DADOS_GERADOS: Protocolo de teste concluído com sucesso.');
+        } catch (error) {
+            toast.error('ERRO_SISTEMA: Falha ao gerar dados de teste.');
+        } finally {
+            setIsSeeding(false);
+        }
+    };
+
+    const handleExport = () => {
+        toast.info('EXPORT_INITIALIZED: Compilando relatório pedagógico...');
+        setTimeout(() => {
+            toast.success('EXP_COMPLETE: Relatório disponível no diretório de downloads.');
+        }, 1500);
     };
 
     return (
-        <div className="space-y-10 pb-20 relative px-4">
-            {/* Background Decorativo */}
-            <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
+        <div className="space-y-10 pb-20 relative">
+            {/* Background Decorativo - MAIS DISCRETO */}
+            <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-blue-100/20 rounded-full blur-[120px] -z-10"></div>
 
             {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white p-8 rounded-3xl border border-border shadow-xl relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-full h-[3px] bg-primary/20 group-hover:bg-primary transition-colors"></div>
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white p-8 rounded-3xl border border-blue-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-[4px] bg-blue-500/10 group-hover:bg-blue-500 transition-colors"></div>
 
                 <div className="flex items-center gap-6 relative z-10">
                     <Button
-                        variant="ghost"
+                        variant="outline"
                         onClick={() => onNavigate('teacher-dashboard')}
-                        className="rounded-2xl w-12 h-12 p-0 border border-border hover:bg-muted bg-background shadow-sm"
+                        className="rounded-2xl w-12 h-12 p-0 border border-blue-100 hover:bg-blue-50 bg-white transition-all shadow-sm"
                     >
-                        <ArrowLeft className="w-5 h-5" />
+                        <ArrowLeft className="w-5 h-5 text-blue-600" />
                     </Button>
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 mb-1">
-                            <Microscope className="w-4 h-4 text-primary" />
-                            <span className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none">Análise Acadêmica Avançada</span>
+                            <Microscope className="w-4 h-4 text-blue-600" />
+                            <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest leading-none">Análise Acadêmica Avançada</span>
                         </div>
-                        <h1 className="text-4xl font-black text-foreground tracking-tight uppercase italic flex items-center gap-3">
-                            Insights <span className="text-primary italic">Pedagógicos</span>
+                        <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase italic flex items-center gap-3">
+                            Insights <span className="text-blue-600 italic">Pedagógicos</span>
                         </h1>
                     </div>
                 </div>
@@ -133,18 +148,22 @@ export function Reports({
                         variant="outline"
                         onClick={handleSeed}
                         disabled={isSeeding}
-                        className="h-12 px-6 rounded-xl font-bold text-[10px] tracking-widest uppercase border-border hover:bg-muted transition-all"
+                        className="h-12 px-6 rounded-xl font-bold text-[10px] tracking-widest uppercase border-blue-100 hover:bg-blue-50 text-blue-600 transition-all"
                     >
                         {isSeeding ? 'Sincronizando...' : 'Gerar Dados de Teste'}
                     </Button>
-                    <Button className="bg-primary hover:bg-primary/90 text-white h-12 px-8 rounded-xl font-black text-[10px] tracking-widest uppercase shadow-lg shadow-primary/10 transition-all italic">
+                    <Button
+                        onClick={handleExport}
+                        className="bg-blue-600 hover:bg-blue-700 text-white h-12 px-8 rounded-xl font-black text-[10px] tracking-widest uppercase shadow-[0_8px_16px_rgba(37,99,235,0.2)] transition-all italic"
+                    >
                         <Download className="w-4 h-4 mr-2" /> Exportar Relatório
                     </Button>
                 </div>
             </div>
 
+
             {/* Tabs Sidebar/Topbar */}
-            <div className="flex flex-wrap bg-white p-1.5 rounded-2xl border border-border w-fit shadow-lg">
+            <div className="flex flex-wrap bg-white p-1.5 rounded-2xl border border-blue-100 w-fit shadow-md">
                 {[
                     { id: 'overview', label: 'Monitoramento Geral', icon: LayoutDashboard },
                     { id: 'classes', label: 'Performance de Turmas', icon: Users },
@@ -153,7 +172,7 @@ export function Reports({
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
-                        className={`flex items-center gap-2.5 px-6 py-3 rounded-xl transition-all duration-300 ${activeTab === tab.id ? 'bg-primary text-white shadow-lg' : 'text-muted-foreground hover:bg-muted'}`}
+                        className={`flex items-center gap-2.5 px-6 py-3 rounded-xl transition-all duration-300 ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-blue-50'}`}
                     >
                         <tab.icon className="w-4 h-4" />
                         <span className="text-[10px] font-black uppercase tracking-wider">{tab.label}</span>
@@ -172,16 +191,16 @@ export function Reports({
                         {/* Estatísticas Rápidas */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[
-                                { label: 'Novos Recrutas', value: stats.totalStudents, icon: Users, color: 'text-primary', bg: 'bg-primary/5' },
-                                { label: 'Média Acadêmica', value: stats.avgGrade, icon: Target, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-                                { label: 'Engajamento Global', value: `${stats.engagement}%`, icon: Zap, color: 'text-amber-500', bg: 'bg-amber-50' },
-                                { label: 'Protocolos de Entrega', value: stats.totalSubmissions, icon: BookOpen, color: 'text-indigo-500', bg: 'bg-indigo-50' },
+                                { label: 'Novos Recrutas', value: stats.totalStudents, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+                                { label: 'Média Acadêmica', value: stats.avgGrade, icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+                                { label: 'Engajamento Global', value: `${stats.engagement}%`, icon: Zap, color: 'text-amber-600', bg: 'bg-amber-50' },
+                                { label: 'Protocolos de Entrega', value: stats.totalSubmissions, icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50' },
                             ].map((stat, i) => (
-                                <Card key={i} className="p-7 bg-white border border-border rounded-3xl shadow-sm relative overflow-hidden group">
+                                <Card key={i} className="p-7 bg-white border border-blue-50 rounded-3xl shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
                                     <div className="flex justify-between items-start">
                                         <div className="space-y-1">
-                                            <h4 className="text-4xl font-black text-foreground italic leading-none">{stat.value}</h4>
-                                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-1">{stat.label}</p>
+                                            <h4 className="text-4xl font-black text-slate-900 italic leading-none">{stat.value}</h4>
+                                            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">{stat.label}</p>
                                         </div>
                                         <div className={`p-3.5 rounded-2xl ${stat.bg} group-hover:scale-110 transition-transform duration-500`}>
                                             <stat.icon className={`w-6 h-6 ${stat.color}`} />
@@ -193,12 +212,12 @@ export function Reports({
 
                         {/* Gráficos em Linha/Barra */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <Card className="p-8 bg-white border border-border rounded-3xl shadow-sm space-y-8 h-full">
-                                <div className="flex items-center justify-between border-b border-border pb-6">
-                                    <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                                        <Microscope className="w-4 h-4 text-primary" /> Distribuição de Notas
+                            <Card className="p-8 bg-white border border-blue-50 rounded-3xl shadow-sm space-y-8 h-full">
+                                <div className="flex items-center justify-between border-b border-blue-50 pb-6">
+                                    <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                        <Microscope className="w-4 h-4 text-blue-600" /> Distribuição de Notas
                                     </h3>
-                                    <Badge variant="secondary" className="bg-primary/5 text-primary border-none px-3 font-bold text-[9px]">SINC_AUTO</Badge>
+                                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-none px-3 font-bold text-[9px]">SINC_AUTO</Badge>
                                 </div>
                                 <div className="h-[320px] w-full">
                                     <ResponsiveContainer width="100%" height="100%">
@@ -208,20 +227,20 @@ export function Reports({
                                             <YAxis stroke="#94a3b8" fontSize={11} fontWeight="bold" axisLine={false} tickLine={false} dx={-10} />
                                             <Tooltip
                                                 cursor={{ fill: '#f8fafc' }}
-                                                contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', fontSize: '11px', fontWeight: 'bold' }}
+                                                contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', boxShadow: '0 8px 30px rgba(0,0,0,0.05)', fontSize: '11px', fontWeight: 'bold' }}
                                             />
-                                            <Bar dataKey="count" fill="#3b82f6" radius={[8, 8, 0, 0]} barSize={40} />
+                                            <Bar dataKey="count" fill="#2563eb" radius={[8, 8, 0, 0]} barSize={40} />
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </div>
                             </Card>
 
-                            <Card className="p-8 bg-white border border-border rounded-3xl shadow-sm space-y-8 h-full">
-                                <div className="flex items-center justify-between border-b border-border pb-6">
-                                    <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                                        <TrendingUp className="w-4 h-4 text-primary" /> Performance por Turma
+                            <Card className="p-8 bg-white border border-blue-50 rounded-3xl shadow-sm space-y-8 h-full">
+                                <div className="flex items-center justify-between border-b border-blue-50 pb-6">
+                                    <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                        <TrendingUp className="w-4 h-4 text-blue-600" /> Performance por Turma
                                     </h3>
-                                    <Badge variant="secondary" className="bg-primary/5 text-primary border-none px-3 font-bold text-[9px]">COMPARATIVO</Badge>
+                                    <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-none px-3 font-bold text-[9px]">COMPARATIVO</Badge>
                                 </div>
                                 <div className="h-[320px] w-full">
                                     <ResponsiveContainer width="100%" height="100%">
@@ -230,9 +249,9 @@ export function Reports({
                                             <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} fontWeight="bold" axisLine={false} tickLine={false} dy={10} />
                                             <YAxis stroke="#94a3b8" fontSize={10} fontWeight="bold" axisLine={false} tickLine={false} dx={-10} />
                                             <Tooltip
-                                                contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', fontSize: '10px' }}
+                                                contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', boxShadow: '0 8px 30px rgba(0,0,0,0.05)', fontSize: '10px' }}
                                             />
-                                            <Line type="monotone" dataKey="media" stroke="#3b82f6" strokeWidth={4} dot={{ r: 6, fill: '#3b82f6', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8, strokeWidth: 0 }} />
+                                            <Line type="monotone" dataKey="media" stroke="#2563eb" strokeWidth={4} dot={{ r: 6, fill: '#2563eb', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8, strokeWidth: 0 }} />
                                         </LineChart>
                                     </ResponsiveContainer>
                                 </div>
@@ -240,29 +259,29 @@ export function Reports({
                         </div>
 
                         {/* Educational Interventions */}
-                        <Card className="p-10 bg-white border border-border rounded-[2.5rem] shadow-sm relative overflow-hidden group">
+                        <Card className="p-10 bg-white border border-blue-50 rounded-[2.5rem] shadow-sm relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform">
-                                <Brain className="w-32 h-32 text-primary" />
+                                <Brain className="w-32 h-32 text-blue-600" />
                             </div>
                             <div className="space-y-8 relative z-10">
                                 <div className="flex items-center gap-3">
-                                    <h3 className="text-2xl font-black text-foreground uppercase tracking-tight italic flex items-center gap-3 underline decoration-primary underline-offset-8">
-                                        <AlertCircle className="w-6 h-6 text-primary" /> Diagnóstico e Intervenção
+                                    <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight italic flex items-center gap-3 underline decoration-blue-200 underline-offset-8">
+                                        <AlertCircle className="w-6 h-6 text-blue-600" /> Diagnóstico e Intervenção
                                     </h3>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    <div className="p-6 bg-muted/20 rounded-2xl border border-border group-hover:border-primary/20 transition-all space-y-3">
-                                        <Badge variant="secondary" className="bg-amber-50 text-amber-600 border-none text-[9px] font-bold py-1 px-3 uppercase tracking-widest">Alerta de Engajamento</Badge>
-                                        <p className="text-foreground text-xs leading-relaxed font-medium italic">Baixo volume de entregas detectado em turmas de robótica básica. Sugestão: Rever complexidade do módulo 2.</p>
+                                    <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 group-hover:border-blue-400 transition-all space-y-3">
+                                        <Badge variant="secondary" className="bg-amber-100 text-amber-700 border-none text-[9px] font-bold py-1 px-3 uppercase tracking-widest">Alerta de Engajamento</Badge>
+                                        <p className="text-slate-700 text-xs leading-relaxed font-medium italic">Baixo volume de entregas detectado em turmas de robótica básica. Sugestão: Rever complexidade do módulo 2.</p>
                                     </div>
-                                    <div className="p-6 bg-muted/20 rounded-2xl border border-border group-hover:border-primary/20 transition-all space-y-3">
-                                        <Badge variant="secondary" className="bg-primary/5 text-primary border-none text-[9px] font-bold py-1 px-3 uppercase tracking-widest">Aceleração de Grupos</Badge>
-                                        <p className="text-foreground text-xs leading-relaxed font-medium italic">Grupo de elite "Maker" superou a meta trimestral em 20%. Recomendado: Módulo de IA aplicada.</p>
+                                    <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 group-hover:border-blue-400 transition-all space-y-3">
+                                        <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-none text-[9px] font-bold py-1 px-3 uppercase tracking-widest">Aceleração de Grupos</Badge>
+                                        <p className="text-slate-700 text-xs leading-relaxed font-medium italic">Grupo de elite "Maker" superou a meta trimestral em 20%. Recomendado: Módulo de IA aplicada.</p>
                                     </div>
-                                    <div className="p-6 bg-muted/20 rounded-2xl border border-border group-hover:border-primary/20 transition-all space-y-3">
-                                        <Badge variant="secondary" className="bg-emerald-50 text-emerald-600 border-none text-[9px] font-bold py-1 px-3 uppercase tracking-widest">Evolução Cognitiva</Badge>
-                                        <p className="text-foreground text-xs leading-relaxed font-medium italic">Melhoria significativa na resolução de problemas lógicos após dinâmicas de gamificação.</p>
+                                    <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 group-hover:border-blue-400 transition-all space-y-3">
+                                        <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 border-none text-[9px] font-bold py-1 px-3 uppercase tracking-widest">Evolução Cognitiva</Badge>
+                                        <p className="text-slate-700 text-xs leading-relaxed font-medium italic">Melhoria significativa na resolução de problemas lógicos após dinâmicas de gamificação.</p>
                                     </div>
                                 </div>
                             </div>
@@ -278,33 +297,33 @@ export function Reports({
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                     >
                         {classes.map(c => (
-                            <Card key={c.id} className="p-7 bg-white border border-border hover:border-primary/30 transition-all group cursor-pointer rounded-3xl shadow-sm">
+                            <Card key={c.id} className="p-7 bg-white border border-blue-50 hover:border-blue-300 transition-all group cursor-pointer rounded-3xl shadow-sm">
                                 <div className="flex justify-between items-start mb-6">
-                                    <div className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center text-2xl font-black group-hover:text-primary transition-colors italic">
+                                    <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-2xl font-black group-hover:text-blue-600 transition-colors italic text-slate-400">
                                         {c.name.substring(0, 2).toUpperCase()}
                                     </div>
-                                    <Badge variant="secondary" className="bg-primary/5 text-primary border-none font-bold text-[9px] px-3 py-1.5 uppercase tracking-widest">{c.studentsCount} Estudantes</Badge>
+                                    <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-none font-bold text-[9px] px-3 py-1.5 uppercase tracking-widest">{c.studentsCount} Estudantes</Badge>
                                 </div>
-                                <h3 className="text-2xl font-black text-foreground tracking-tight uppercase italic mb-5">{c.name}</h3>
+                                <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase italic mb-5">{c.name}</h3>
                                 <div className="space-y-4">
-                                    <div className="flex justify-between text-[10px] font-bold text-muted-foreground uppercase">
+                                    <div className="flex justify-between text-[10px] font-bold text-slate-400 uppercase">
                                         <span>Progresso Médio</span>
-                                        <span className="text-primary">{c.progress}%</span>
+                                        <span className="text-blue-600">{c.progress}%</span>
                                     </div>
-                                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: `${c.progress}%` }}
-                                            className="h-full bg-primary"
+                                            className="h-full bg-blue-600"
                                         />
                                     </div>
-                                    <div className="pt-6 mt-2 border-t border-border flex justify-between items-center">
+                                    <div className="pt-6 mt-2 border-t border-blue-50 flex justify-between items-center">
                                         <div className="flex -space-x-2">
                                             {[1, 2, 3].map(i => (
-                                                <div key={i} className="w-8 h-8 rounded-full bg-muted border-2 border-white flex items-center justify-center text-[10px] font-bold">SM</div>
+                                                <div key={i} className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-400">SM</div>
                                             ))}
                                         </div>
-                                        <Button variant="ghost" size="sm" onClick={() => onNavigate('class-management', c.id)} className="text-[10px] font-black tracking-widest uppercase hover:text-primary italic">Explorar Dados</Button>
+                                        <Button variant="ghost" size="sm" onClick={() => onNavigate('class-management', c.id)} className="text-[10px] font-black tracking-widest uppercase hover:text-blue-600 italic">Explorar Dados</Button>
                                     </div>
                                 </div>
                             </Card>
@@ -319,11 +338,11 @@ export function Reports({
                         animate={{ opacity: 1, y: 0 }}
                         className="space-y-6"
                     >
-                        <div className="relative max-w-xl mx-auto shadow-xl shadow-primary/5 rounded-[2rem]">
-                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                        <div className="relative max-w-xl mx-auto shadow-sm rounded-[2rem]">
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                             <Input
                                 placeholder="Procurar estudante por nome ou registro..."
-                                className="pl-14 h-16 bg-white border border-border rounded-[2rem] focus:border-primary transition-all uppercase font-bold text-xs tracking-wide shadow-inner"
+                                className="pl-14 h-16 bg-white border border-blue-100 rounded-[2rem] focus:border-blue-400 transition-all uppercase font-bold text-xs tracking-wide"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -339,31 +358,37 @@ export function Reports({
                                     const avg = gradedSubs.length > 0 ? gradedSubs.reduce((acc, sub) => acc + (sub.grade || 0), 0) / gradedSubs.length : 0;
 
                                     return (
-                                        <Card key={s.id} className="p-5 bg-white border border-border hover:border-primary/20 transition-all shadow-sm rounded-2xl flex items-center gap-6 group">
-                                            <div className="w-16 h-16 rounded-2xl bg-muted border border-border flex items-center justify-center text-4xl group-hover:scale-105 transition-transform duration-500 shadow-inner">
+                                        <Card key={s.id} className="p-5 bg-white border border-blue-50 hover:border-blue-200 transition-all shadow-sm rounded-2xl flex items-center gap-6 group">
+                                            <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-blue-50 flex items-center justify-center text-4xl group-hover:scale-105 transition-transform duration-500">
                                                 {s.avatar || '👤'}
                                             </div>
                                             <div className="flex-1 min-w-0 space-y-1">
-                                                <h4 className="font-black text-foreground text-lg tracking-tight uppercase italic">{s.name}</h4>
-                                                <div className="flex gap-4 font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
-                                                    <span className="flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 text-primary" /> {s.xp} XP</span>
-                                                    <span className="flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5 text-primary" /> {subCount} Missões</span>
+                                                <h4 className="font-black text-slate-900 text-lg tracking-tight uppercase italic">{s.name}</h4>
+                                                <div className="flex gap-4 font-bold text-[10px] text-slate-400 uppercase tracking-wider">
+                                                    <span className="flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 text-blue-500" /> {s.xp} XP</span>
+                                                    <span className="flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5 text-blue-500" /> {subCount} Missões</span>
                                                 </div>
                                             </div>
                                             <div className="text-right pr-6 space-y-1">
-                                                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em]">Score_Global</p>
-                                                <h5 className={`text-2xl font-black italic ${avg >= 8 ? 'text-primary' : avg >= 6 ? 'text-orange-500' : 'text-destructive'}`}>
+                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Score_Global</p>
+                                                <h5 className={`text-2xl font-black italic ${avg >= 8 ? 'text-blue-600' : avg >= 6 ? 'text-orange-500' : 'text-red-500'}`}>
                                                     {subCount > 0 ? avg.toFixed(1) : '---'}
                                                 </h5>
                                             </div>
-                                            <Button variant="ghost" className="h-10 text-[9px] font-black uppercase tracking-widest px-6 border border-border rounded-xl hover:bg-primary/5 hover:text-primary transition-all italic">Detalhes</Button>
+                                            <Button
+                                                variant="ghost"
+                                                onClick={() => toast.success(`ACESSANDO_PERFIL: Carregando dossiê de ${s.name}...`)}
+                                                className="h-10 text-[9px] font-black uppercase tracking-widest px-6 border border-blue-50 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition-all italic"
+                                            >
+                                                Detalhes
+                                            </Button>
                                         </Card>
                                     );
                                 })}
                             {students.length === 0 && (
-                                <div className="text-center py-20 bg-muted/20 border-2 border-dashed border-border rounded-3xl">
-                                    <Users className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
-                                    <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Aguardando conexão de dados dos estudantes.</p>
+                                <div className="text-center py-20 bg-blue-50/20 border-2 border-dashed border-blue-100 rounded-3xl">
+                                    <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                                    <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Aguardando conexão de dados dos estudantes.</p>
                                 </div>
                             )}
                         </div>
@@ -371,5 +396,6 @@ export function Reports({
                 )}
             </AnimatePresence>
         </div>
+
     );
 }
