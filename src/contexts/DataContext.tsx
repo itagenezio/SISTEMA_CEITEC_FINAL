@@ -98,7 +98,19 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 })));
             }
 
-            if (activitiesData) setActivities(activitiesData);
+            if (activitiesData) {
+                setActivities(activitiesData.map((a: any) => {
+                    try {
+                        if (a.description?.startsWith('{"')) {
+                            const extra = JSON.parse(a.description);
+                            return { ...a, ...extra };
+                        }
+                    } catch (e) {
+                        console.warn('Falha ao decodificar metadados da atividade:', a.id);
+                    }
+                    return a;
+                }));
+            }
             if (subsData) setSubmissions(subsData);
 
         } catch (error: any) {
@@ -194,10 +206,29 @@ export function DataProvider({ children }: { children: ReactNode }) {
     };
 
     const addActivity = async (act: any) => {
-        const { error } = await supabase.from('activities').insert([act]);
+        // Estratégia de Blob: Empacota campos extras (questions, type, class_id, icon, color) no description
+        // Isso resolve o problema de colunas inexistentes na tabela 'activities'
+        const { title, points, deadline, discipline, ...extra } = act;
+
+        const dbAct = {
+            title,
+            points,
+            deadline: deadline || null,
+            discipline,
+            description: JSON.stringify({
+                description: act.description || '',
+                questions: act.questions || [],
+                type: act.type || 'atividade',
+                class_id: act.class_id || act.classId || '',
+                icon: act.icon || '🎯',
+                color: act.color || 'from-blue-500 to-indigo-600'
+            })
+        };
+
+        const { error } = await supabase.from('activities').insert([dbAct]);
         if (error) {
             console.error('Erro Supabase (activities):', error);
-            toast.error(`Erro ao criar atividade: ${error.message}`);
+            toast.error(`Erro ao criar missão: ${error.message}`);
             return false;
         }
         await loadData();
