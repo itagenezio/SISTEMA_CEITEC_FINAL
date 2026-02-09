@@ -38,21 +38,17 @@ export function Portfolio({ onNavigate, submissions, activities, onDeleteSubmiss
 
       {/* Header Contextual */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           <Button
             variant="outline"
             onClick={() => onNavigate('student-dashboard')}
-            className="bg-slate-800/50 border-white/10 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl w-14 h-14 p-0 shadow-lg shrink-0"
+            className="bg-white/10 border-white/20 text-white rounded-xl w-10 h-10 p-0"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 mb-1">
-              <Database className="w-4 h-4 text-emerald-400" />
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Base de Dados de Conquistas Acadêmicas</span>
-            </div>
-            <h1 className="text-4xl font-extrabold text-white tracking-tighter">MEU <span className="text-emerald-400">PORTFÓLIO</span></h1>
-            <p className="text-slate-400 text-sm font-medium">Histórico completo de implementações, notas e feedbacks do sistema.</p>
+          <div>
+            <h1 className="text-3xl font-bold text-white">Meu Portfólio</h1>
+            <p className="text-blue-200">Seu histórico de conquistas e projetos</p>
           </div>
         </div>
       </div>
@@ -64,14 +60,14 @@ export function Portfolio({ onNavigate, submissions, activities, onDeleteSubmiss
           { label: 'Média de Desempenho', value: avgGrade, icon: BarChart3, color: 'emerald' },
           { label: 'Certificações Core', value: projects.filter(p => p.grade && p.grade >= 9).length, icon: Award, color: 'amber' }
         ].map((stat, i) => (
-          <Card key={i} className="p-6 bg-slate-900/40 border border-white/5 backdrop-blur-md relative overflow-hidden group">
-            <div className="flex items-center gap-4 relative z-10">
-              <div className={`w-14 h-14 rounded-2xl bg-${stat.color}-500/10 border border-${stat.color}-500/20 flex items-center justify-center`}>
-                <stat.icon className={`w-7 h-7 text-${stat.color}-400`} />
+          <Card key={i} className="p-6 bg-white/5 border-white/10 hover:bg-white/10 transition-colors">
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-xl bg-${stat.color}-500/20 flex items-center justify-center`}>
+                <stat.icon className={`w-6 h-6 text-${stat.color}-400`} />
               </div>
               <div>
-                <p className="text-4xl font-black text-white tracking-tighter leading-none">{stat.value}</p>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">{stat.label}</p>
+                <p className="text-2xl font-bold text-white">{stat.value}</p>
+                <p className="text-sm text-slate-400">{stat.label}</p>
               </div>
             </div>
           </Card>
@@ -109,35 +105,35 @@ export function Portfolio({ onNavigate, submissions, activities, onDeleteSubmiss
                   </div>
 
                   <div className="flex-1 text-center md:text-left">
-                    <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-2">
+                    <div className="flex flex-wrap justify-center md:justify-start gap-3 mb-3">
                       {project.tags.map(tag => (
-                        <Badge key={tag} className="bg-white/5 text-slate-500 border-none font-black text-[8px] tracking-[0.2em] px-2 h-4">
+                        <Badge key={tag} className="bg-slate-950/60 text-slate-300 border border-white/5 font-black text-[10px] tracking-[0.2em] px-3 py-1 h-auto rounded-lg">
                           {tag}
                         </Badge>
                       ))}
-                      <Badge className={`border-none font-black text-[8px] tracking-[0.2em] px-2 h-4 ${project.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                      <Badge className={`border border-emerald-500/20 font-black text-[10px] tracking-[0.2em] px-3 py-1 h-auto rounded-lg ${project.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
                         {project.status === 'approved' ? 'STATUS_SYNCED' : 'STATUS_PENDING'}
                       </Badge>
                     </div>
-                    <h3 className="text-xl font-black text-white tracking-tighter uppercase font-mono">{project.title}</h3>
-                    <p className="text-sm text-slate-500 font-medium mt-1">{project.description}</p>
+                    <h3 className="text-2xl font-black text-white tracking-tighter uppercase font-mono italic">{project.title}</h3>
+                    <p className="text-base text-slate-300 font-bold mt-2 italic leading-relaxed">"{project.description}"</p>
                   </div>
 
                   {project.grade && (
-                    <div className="px-6 border-l border-white/5 text-center">
-                      <p className="text-[10px] font-black text-slate-500 uppercase mb-1">Grade_Score</p>
-                      <div className="text-3xl font-black text-emerald-400 tracking-tighter">{project.grade}</div>
+                    <div className="px-6 border-l border-white/10 text-right">
+                      <p className="text-[10px] text-slate-500 uppercase">Grade_Score</p>
+                      <div className="text-2xl font-bold text-green-400">{project.grade}</div>
                     </div>
                   )}
 
-                  <div className="flex flex-col md:flex-row items-center gap-4 pr-2">
-                    <p className="text-[10px] font-mono text-slate-600 self-end md:self-center">{project.date}</p>
+                  <div className="flex items-center gap-4">
+                    <p className="text-xs text-slate-500">{project.date}</p>
                     <div className="flex items-center gap-2">
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => toast.info('Edição bloqueada pelo administrador.')}
-                        className="h-9 w-9 text-slate-500 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-xl"
+                        onClick={() => toast.info('Acesso restrito para edição.')}
+                        className="h-8 w-8 text-slate-400 hover:text-blue-400"
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
@@ -145,18 +141,18 @@ export function Portfolio({ onNavigate, submissions, activities, onDeleteSubmiss
                         variant="ghost"
                         size="icon"
                         onClick={async () => {
-                          if (window.confirm('Excluir este registro permanentemente?')) {
+                          if (window.confirm('Deseja excluir este registro?')) {
                             if (onDeleteSubmission) {
                               const success = await onDeleteSubmission(project.id);
-                              if (success) toast.success('Registro removido.');
+                              if (success) toast.success('Registro excluído do portfólio.');
                             }
                           }
                         }}
-                        className="h-9 w-9 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl"
+                        className="h-8 w-8 text-slate-400 hover:text-red-400"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" className="h-9 text-[10px] font-black tracking-widest text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300">
+                      <Button variant="outline" size="sm" className="h-8 border-blue-500/30 text-[10px] text-blue-400 hover:bg-blue-500 hover:text-white rounded-lg">
                         FOLDER <ExternalLink className="w-3 h-3 ml-2" />
                       </Button>
                     </div>

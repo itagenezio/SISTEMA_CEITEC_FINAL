@@ -40,22 +40,17 @@ export function Progress({ onNavigate, submissions, activities, currentUser }: P
 
       {/* Header Contextual */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           <Button
             variant="outline"
             onClick={() => onNavigate('student-dashboard')}
-            className="bg-slate-800/50 border-white/10 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl w-14 h-14 p-0 shadow-lg shrink-0"
+            className="bg-white/10 border-white/20 text-white rounded-xl w-10 h-10 p-0"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5" />
           </Button>
-
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 mb-1">
-              <ShieldCheck className="w-4 h-4 text-cyan-400" />
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Relatório de Evolução de Hardware & Software</span>
-            </div>
-            <h1 className="text-4xl font-extrabold text-white tracking-tighter">MEU <span className="text-cyan-400">PROGRESSO</span></h1>
-            <p className="text-slate-400 text-sm font-medium">Monitoramento em tempo real do seu desenvolvimento técnico.</p>
+          <div>
+            <h1 className="text-3xl font-bold text-white">Meu Progresso</h1>
+            <p className="text-blue-200">Acompanhe sua evolução e conquistas</p>
           </div>
         </div>
       </div>
@@ -77,15 +72,15 @@ export function Progress({ onNavigate, submissions, activities, currentUser }: P
               </Badge>
             </div>
 
-            <div className="space-y-2 mb-8">
-              <h2 className="text-5xl font-black text-white tracking-tight">{xp.toLocaleString()} <span className="text-slate-600 text-2xl">/ {maxXpForCurrentLevel.toLocaleString()}</span></h2>
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Módulo Ativo: {level >= 3 ? 'Explorador Sênior' : 'Iniciante Maker'}</p>
+            <div className="space-y-1 mb-6">
+              <h2 className="text-5xl font-bold text-white">{xp.toLocaleString()} <span className="text-blue-200 text-2xl">/ {maxXpForCurrentLevel.toLocaleString()}</span></h2>
+              <p className="text-blue-200 uppercase tracking-wider text-sm">Próximo Nível: Explorador Sênior</p>
             </div>
 
-            <div className="w-full max-w-xl space-y-3">
-              <ProgressBar value={progressPercent} className="h-4 bg-slate-800 border border-white/5" />
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                Faltam {(maxXpForCurrentLevel - xp).toLocaleString()} Unidades de XP para o Próximo Nível
+            <div className="w-full max-w-xl space-y-2">
+              <ProgressBar value={progressPercent} className="h-4 bg-white/10" />
+              <p className="text-xs text-blue-200 font-medium">
+                Sua barra de energia atual para o nível {level + 1}
               </p>
             </div>
           </Card>
@@ -97,13 +92,13 @@ export function Progress({ onNavigate, submissions, activities, currentUser }: P
               { label: 'Inovações', value: badges.filter(b => b.earned).length, icon: Trophy, color: 'emerald' },
               { label: 'Sync_Rate', value: `${((completedCount / (activities.length || 1)) * 100).toFixed(0)}%`, icon: TrendingUp, color: 'cyan' }
             ].map((stat, i) => (
-              <Card key={i} className="p-4 bg-slate-900/40 border border-white/5 text-center space-y-2">
-                <div className={`w-10 h-10 rounded-xl bg-${stat.color}-500/10 border border-${stat.color}-500/20 flex items-center justify-center mx-auto`}>
+              <Card key={i} className="p-4 bg-white/5 border-white/10 text-center space-y-2">
+                <div className={`w-10 h-10 rounded-xl bg-${stat.color}-500/20 flex items-center justify-center mx-auto`}>
                   <stat.icon className={`w-5 h-5 text-${stat.color}-400`} />
                 </div>
                 <div>
-                  <p className="text-xl font-black text-white tracking-tighter">{stat.value}</p>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-tighterLeading-none">{stat.label}</p>
+                  <p className="text-2xl font-bold text-white">{stat.value}</p>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wider">{stat.label}</p>
                 </div>
               </Card>
             ))}
@@ -127,8 +122,8 @@ export function Progress({ onNavigate, submissions, activities, currentUser }: P
                     {badge.icon}
                   </div>
                   <div>
-                    <h4 className="text-[10px] font-black text-white uppercase tracking-tighter line-clamp-1">{badge.name}</h4>
-                    <p className="text-[8px] text-slate-500 font-bold uppercase leading-tight mt-1">{badge.desc}</p>
+                    <h4 className="text-xs font-bold text-white uppercase">{badge.name}</h4>
+                    <p className="text-[10px] text-slate-500 leading-tight mt-1">{badge.desc}</p>
                   </div>
                 </div>
                 {badge.earned && <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]"></div>}

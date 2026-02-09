@@ -14,26 +14,27 @@ import { Activity, Question } from '../../types';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface ActivityCreatorProps {
-    onNavigate: (screen: string) => void;
+    onNavigate: (screen: string, id?: string) => void;
     onSave: (activity: any) => Promise<boolean>;
     selectedClass?: { name: string; id: string };
+    initialData?: any;
 }
 
-export function ActivityCreator({ onNavigate, onSave, selectedClass }: ActivityCreatorProps) {
+export function ActivityCreator({ onNavigate, onSave, selectedClass, initialData }: ActivityCreatorProps) {
     const [step, setStep] = useState<1 | 2 | 3>(1); // 1: Setup, 2: Questions, 3: Review/Key
     const [isLoading, setIsLoading] = useState(false);
 
     // Activity Meta
     const [meta, setMeta] = useState({
-        title: '',
-        description: '',
-        points: 100,
-        deadline: '',
-        discipline: 'Tecnologia'
+        title: initialData?.title || '',
+        description: initialData?.description || '',
+        points: initialData?.points || 100,
+        deadline: initialData?.deadline || '',
+        discipline: initialData?.discipline || 'Tecnologia'
     });
 
     // Questions State
-    const [questions, setQuestions] = useState<Question[]>([
+    const [questions, setQuestions] = useState<Question[]>(initialData?.questions || [
         { id: '1', prompt: '', options: ['', '', '', ''], answer: 'A' }
     ]);
 
@@ -124,22 +125,22 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass }: ActivityC
         <div className="min-h-screen bg-slate-950 text-white p-4 md:p-8 space-y-8 print:bg-white print:text-black">
             {/* Top Navbar HUD */}
             <div className="flex items-center justify-between bg-slate-900/60 p-4 rounded-2xl border border-white/5 backdrop-blur-xl mb-8 print:hidden">
-                <div className="flex items-center gap-4">
-                    <Button variant="ghost" onClick={() => onNavigate('class-management')} className="rounded-xl border border-white/5 bg-white/5 hover:bg-white/10">
-                        <ArrowLeft className="w-4 h-4 mr-2" /> VOLTAR
+                <div className="flex items-center gap-6">
+                    <Button variant="ghost" onClick={() => onNavigate('class-management')} className="rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 h-12 px-6 font-bold text-white">
+                        <ArrowLeft className="w-5 h-5 mr-3" /> VOLTAR_MENU
                     </Button>
                     <div className="h-8 w-[1px] bg-white/10 mx-2 hidden md:block"></div>
                     <div className="hidden md:block">
-                        <h2 className="text-sm font-black uppercase tracking-widest text-slate-500">Protocolo_Criadouro</h2>
-                        <h1 className="text-lg font-black tracking-tighter uppercase">{step === 3 ? 'Gabarito Gerado' : 'Configurando Nova Missão'}</h1>
+                        <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-cyan-500">Protocolo_Criadouro_v2.5</h2>
+                        <h1 className="text-xl font-black tracking-tighter uppercase text-white">{step === 3 ? 'Gabarito Gerado' : 'Configurando Nova Missão'}</h1>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     {[1, 2, 3].map((s) => (
                         <div
                             key={s}
-                            className={`w-3 h-3 rounded-full transition-all duration-500 ${step >= s ? 'bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]' : 'bg-slate-800'}`}
+                            className={`w-4 h-4 rounded-full transition-all duration-500 ${step >= s ? 'bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.6)]' : 'bg-slate-800'}`}
                         />
                     ))}
                 </div>
@@ -154,79 +155,83 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass }: ActivityC
                         exit={{ opacity: 0, x: -20 }}
                         className="max-w-4xl mx-auto space-y-6"
                     >
-                        <Card className="p-8 bg-slate-900/40 border border-white/5 backdrop-blur-md space-y-8">
-                            <div className="flex items-center gap-4 border-b border-white/5 pb-6">
-                                <div className="p-4 bg-indigo-500/10 rounded-2xl border border-indigo-500/20">
-                                    <Layout className="w-8 h-8 text-indigo-400" />
+                        <Card className="p-10 bg-slate-950/40 border border-white/5 backdrop-blur-3xl space-y-10 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+                            <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px] -z-10 group-hover:bg-blue-600/20 transition-all duration-700"></div>
+
+                            <div className="flex items-center gap-6 border-b border-white/5 pb-10">
+                                <div className="p-4 bg-blue-600/20 rounded-3xl border border-blue-500/30 shadow-lg shadow-blue-500/10">
+                                    <Monitor className="w-10 h-10 text-blue-400" />
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter">Setup de Infraestrutura</h3>
-                                    <p className="text-slate-500 text-sm font-bold uppercase tracking-widest">Defina as bases da atividade para {selectedClass?.name || 'a Turma'}</p>
+                                    <h3 className="text-4xl font-black uppercase tracking-tighter text-white italic">Configuração de Infraestrutura</h3>
+                                    <p className="text-blue-300 text-xs font-black uppercase tracking-[0.4em] flex items-center gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> Definir as bases da atividade para {selectedClass?.name || 'Aruduino Pro'}
+                                    </p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-6 font-mono font-bold">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] text-slate-500 uppercase tracking-widest">Identificador da Missão</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <div className="space-y-8 font-mono font-bold">
+                                    <div className="space-y-3">
+                                        <label className="text-xs text-blue-300 font-black uppercase tracking-[0.3em] ml-1">Identificador da LY</label>
                                         <Input
                                             placeholder="NOME_DA_ATIVIDADE"
                                             value={meta.title}
                                             onChange={e => setMeta({ ...meta, title: e.target.value })}
-                                            className="bg-slate-800 border-white/5 h-12 uppercase"
+                                            className="bg-slate-900/60 border-white/10 h-14 uppercase rounded-2xl focus:border-blue-500/50 focus:ring-blue-500/20 transition-all text-white placeholder:text-slate-500 font-black tracking-widest"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] text-slate-500 uppercase tracking-widest">Descrição Técnica (Protocolo)</label>
+                                    <div className="space-y-3">
+                                        <label className="text-xs text-blue-300 font-black uppercase tracking-[0.3em] ml-1">Descrição Técnica (Protocolo)</label>
                                         <Input
                                             placeholder="O que os alunos devem realizar?"
                                             value={meta.description}
                                             onChange={e => setMeta({ ...meta, description: e.target.value })}
-                                            className="bg-slate-800 border-white/5 h-12"
+                                            className="bg-slate-900/60 border-white/10 h-14 rounded-2xl focus:border-blue-500/50 transition-all text-white placeholder:text-slate-500"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-6 font-mono font-bold">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-slate-500 uppercase tracking-widest">Data Limite</label>
+                                <div className="space-y-8 font-mono font-bold">
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div className="space-y-3">
+                                            <label className="text-xs text-blue-300 font-black uppercase tracking-[0.3em] ml-1">Limite de Dados</label>
                                             <Input
                                                 type="date"
                                                 value={meta.deadline}
                                                 onChange={e => setMeta({ ...meta, deadline: e.target.value })}
-                                                className="bg-slate-800 border-white/5 h-12"
+                                                className="bg-slate-900/60 border-white/10 h-14 rounded-2xl focus:border-blue-500/50 transition-all text-white"
                                             />
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-slate-500 uppercase tracking-widest">XP Power</label>
+                                        <div className="space-y-3">
+                                            <label className="text-xs text-blue-300 font-black uppercase tracking-[0.3em] ml-1">XP Power</label>
                                             <Input
                                                 type="number"
                                                 value={meta.points}
                                                 onChange={e => setMeta({ ...meta, points: Number(e.target.value) })}
-                                                className="bg-slate-800 border-white/5 h-12"
+                                                className="bg-slate-900/60 border-white/10 h-14 rounded-2xl focus:border-blue-500/50 transition-all text-white font-black"
                                             />
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] text-slate-500 uppercase tracking-widest">Disciplina Associada</label>
+                                    <div className="space-y-3">
+                                        <label className="text-xs text-blue-300 font-black uppercase tracking-[0.3em] ml-1">Disciplina Associada</label>
                                         <Input
                                             placeholder="Ex: Robótica"
                                             value={meta.discipline}
                                             onChange={e => setMeta({ ...meta, discipline: e.target.value })}
-                                            className="bg-slate-800 border-white/5 h-12 uppercase"
+                                            className="bg-slate-900/60 border-white/10 h-14 uppercase rounded-2xl focus:border-blue-500/50 transition-all text-white placeholder:text-slate-500"
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="pt-8 border-t border-white/5 flex justify-end">
+                            <div className="pt-10 border-t border-white/5 flex justify-end">
                                 <Button
                                     onClick={() => setStep(2)}
                                     disabled={!meta.title}
-                                    className="bg-indigo-600 hover:bg-indigo-500 h-14 px-10 rounded-2xl font-black text-xs tracking-[0.2em] shadow-xl shadow-indigo-500/20"
+                                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black h-16 px-12 rounded-3xl text-sm tracking-[0.2em] shadow-[0_0_30px_rgba(37,99,235,0.3)] group border-none flex items-center gap-4 transition-all hover:scale-[1.02]"
                                 >
-                                    PRÓXIMA FASE: ITENS <ArrowRight className="w-4 h-4 ml-2" />
+                                    PRÓXIMA FASE: ITENS <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                 </Button>
                             </div>
                         </Card>
@@ -242,70 +247,75 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass }: ActivityC
                         className="max-w-4xl mx-auto space-y-6"
                     >
                         {/* AI Assistant Banner */}
-                        <Card className="p-6 bg-gradient-to-r from-cyan-900/40 to-indigo-900/40 border border-cyan-500/20 backdrop-blur-xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform">
-                                <Brain className="w-20 h-20 text-cyan-400" />
+                        <Card className="p-8 bg-gradient-to-r from-blue-900/60 to-indigo-900/60 border border-cyan-500/30 backdrop-blur-3xl relative overflow-hidden group rounded-[2.5rem] shadow-2xl">
+                            <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:rotate-12 transition-transform duration-700">
+                                <Brain className="w-32 h-32 text-cyan-400" />
                             </div>
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center animate-pulse">
-                                        <Sparkles className="w-6 h-6 text-cyan-400" />
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                                <div className="flex items-center gap-6">
+                                    <div className="w-16 h-16 rounded-2xl bg-cyan-500/20 flex items-center justify-center animate-pulse border border-cyan-500/30">
+                                        <Sparkles className="w-8 h-8 text-cyan-400" />
                                     </div>
-                                    <div>
-                                        <h4 className="text-lg font-black uppercase tracking-tighter">Sincronizador Cerebral IA</h4>
-                                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Gere questões automáticas com base na disciplina de {meta.discipline}</p>
+                                    <div className="space-y-1">
+                                        <h4 className="text-2xl font-black uppercase tracking-tighter text-white italic">Sincronizador Cerebral IA</h4>
+                                        <p className="text-sm text-cyan-100/70 font-bold uppercase tracking-widest">Gerar questões automáticas para: <span className="text-cyan-400">{meta.discipline}</span></p>
                                     </div>
                                 </div>
                                 <Button
                                     onClick={handleGenerateAI}
                                     disabled={isLoading}
-                                    className="bg-cyan-500 hover:bg-cyan-400 text-black font-black h-12 px-8 rounded-xl text-[10px] tracking-widest uppercase shadow-[0_0_15px_rgba(6,182,212,0.4)]"
+                                    className="bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black h-14 px-10 rounded-2xl text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(34,211,238,0.4)] border-none transition-all active:scale-95"
                                 >
-                                    {isLoading ? 'ANALISANDO...' : 'INVOCAR_DADOS_IA'}
+                                    {isLoading ? 'ANALISANDO REDE...' : 'INVOCAR_DADOS_IA'}
                                 </Button>
                             </div>
                         </Card>
 
                         {/* Questions List */}
-                        <div className="space-y-6">
+                        <div className="space-y-8">
                             {questions.map((q, idx) => (
-                                <Card key={q.id} className="p-8 bg-slate-900/40 border border-white/5 backdrop-blur-md relative group">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => removeQuestion(q.id)}
-                                        className="absolute top-4 right-4 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded-xl"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </Button>
+                                <Card key={q.id} className="p-10 bg-slate-900/40 border border-white/10 backdrop-blur-3xl relative group rounded-[2.5rem] shadow-xl hover:border-cyan-500/30 transition-all">
+                                    <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => removeQuestion(q.id)}
+                                            className="text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl"
+                                        >
+                                            <Trash2 className="w-5 h-5" />
+                                        </Button>
+                                    </div>
 
-                                    <div className="space-y-6 font-mono">
-                                        <div className="flex items-center gap-3">
-                                            <Badge className="h-8 w-8 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center text-xs font-black">
+                                    <div className="space-y-8">
+                                        <div className="flex items-start gap-6">
+                                            <div className="h-12 w-12 rounded-2xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center text-lg font-black shrink-0 shadow-lg">
                                                 {idx + 1}
-                                            </Badge>
-                                            <Input
-                                                placeholder="ENUNCIADO_DO_ITEM..."
-                                                value={q.prompt}
-                                                onChange={e => updateQuestion(q.id, 'prompt', e.target.value)}
-                                                className="bg-transparent border-none border-b border-white/5 rounded-none text-lg font-black focus:border-cyan-500/50 transition-all p-0 h-10"
-                                            />
+                                            </div>
+                                            <div className="flex-1 space-y-3">
+                                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Enunciado da Pergunta</label>
+                                                <Input
+                                                    placeholder="Digite aqui a sua pergunta..."
+                                                    value={q.prompt}
+                                                    onChange={e => updateQuestion(q.id, 'prompt', e.target.value)}
+                                                    className="bg-slate-950/30 border-white/10 rounded-2xl text-xl font-bold text-white placeholder:text-slate-400 focus:border-cyan-500/50 transition-all h-16 px-6"
+                                                />
+                                            </div>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
                                             {['A', 'B', 'C', 'D'].map((letter, optIdx) => (
-                                                <div key={letter} className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${q.answer === letter ? 'bg-cyan-500/10 border-cyan-500/40' : 'bg-slate-800/50 border-white/5'}`}>
+                                                <div key={letter} className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${q.answer === letter ? 'bg-cyan-500/10 border-cyan-500/50 shadow-lg shadow-cyan-500/5' : 'bg-slate-800/30 border-white/5 hover:border-white/10'}`}>
                                                     <button
                                                         onClick={() => updateQuestion(q.id, 'answer', letter)}
-                                                        className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs transition-colors ${q.answer === letter ? 'bg-cyan-500 text-black' : 'bg-slate-700 text-slate-400 hover:bg-slate-600'}`}
+                                                        className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm transition-all ${q.answer === letter ? 'bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.4)]' : 'bg-slate-700 text-slate-300 hover:text-white'}`}
                                                     >
                                                         {letter}
                                                     </button>
                                                     <Input
-                                                        placeholder={`ALTERNATIVA_${letter}`}
+                                                        placeholder={`Alternativa ${letter}...`}
                                                         value={q.options?.[optIdx] || ''}
                                                         onChange={e => updateOption(q.id, optIdx, e.target.value)}
-                                                        className="bg-transparent border-none h-8 text-xs font-bold font-mono focus:ring-0"
+                                                        className="bg-transparent border-none h-12 text-sm font-bold text-white placeholder:text-slate-400 focus:ring-0 px-2"
                                                     />
                                                 </div>
                                             ))}
@@ -315,28 +325,28 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass }: ActivityC
                             ))}
                         </div>
 
-                        <div className="pt-10 flex flex-col md:flex-row items-center justify-between gap-6 pb-20 border-t border-white/5">
+                        <div className="pt-10 flex flex-col md:flex-row items-center justify-between gap-8 pb-20 border-t border-white/5">
                             <Button
                                 variant="outline"
                                 onClick={addQuestion}
-                                className="w-full md:w-auto h-14 px-10 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-black text-xs tracking-widest uppercase"
+                                className="w-full md:w-auto h-16 px-10 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-black text-xs tracking-widest uppercase text-white shadow-xl flex items-center gap-3"
                             >
-                                <Plus className="w-4 h-4 mr-2" /> ADICIONAR ITEM MANUAL
+                                <Plus className="w-6 h-6 mr-1" /> ADICIONAR ITEM MANUALMENTE
                             </Button>
                             <div className="flex gap-4 w-full md:w-auto">
                                 <Button
                                     variant="ghost"
                                     onClick={() => setStep(1)}
-                                    className="h-14 px-6 text-slate-500 font-black uppercase text-[10px]"
+                                    className="h-16 px-8 text-slate-400 hover:text-white font-black uppercase text-xs tracking-widest"
                                 >
                                     VOLTAR CONFIG
                                 </Button>
                                 <Button
                                     onClick={handleSave}
                                     disabled={isLoading}
-                                    className="flex-1 md:flex-initial h-14 px-12 rounded-2xl bg-indigo-600 hover:bg-indigo-500 font-black text-xs tracking-[0.2em] shadow-xl shadow-indigo-500/30"
+                                    className="flex-1 md:flex-initial h-16 px-12 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm tracking-[0.2em] shadow-2xl shadow-blue-500/30 border-none italic"
                                 >
-                                    {isLoading ? 'SINC_BANCO...' : 'SALVAR E GERAR GABARITO'}
+                                    {isLoading ? 'SINCRONIZANDO...' : 'SALVAR E GERAR GABARITO'}
                                 </Button>
                             </div>
                         </div>
@@ -357,12 +367,12 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass }: ActivityC
                                 <CheckCircle2 className="w-10 h-10 text-emerald-400" />
                             </div>
                             <div>
-                                <h3 className="text-3xl font-black uppercase tracking-tighter">Missão Implantada</h3>
-                                <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.3em] mt-2">DADOS TRANSF_COMPLETE // GABARITO_DISPONIVEL</p>
+                                <h3 className="text-4xl font-black uppercase tracking-tighter text-white italic">Missão Implantada</h3>
+                                <p className="text-slate-400 font-black uppercase text-xs tracking-[0.3em] mt-3">DADOS TRANSF_COMPLETE // GABARITO_DISPONIVEL</p>
                             </div>
-                            <div className="flex flex-wrap justify-center gap-4 pt-4">
-                                <Badge variant="outline" className="border-white/10 px-6 py-2 bg-white/5 rounded-xl font-mono text-[10px] uppercase">{questions.length} ITENS_SYNC</Badge>
-                                <Badge variant="outline" className="border-white/10 px-6 py-2 bg-white/5 rounded-xl font-mono text-[10px] uppercase">{meta.points} XP_CAP</Badge>
+                            <div className="flex flex-wrap justify-center gap-5 pt-4">
+                                <Badge variant="outline" className="border-white/10 px-8 py-3 bg-white/5 rounded-2xl font-mono text-xs uppercase tracking-widest">{questions.length} ITENS_SYNC</Badge>
+                                <Badge variant="outline" className="border-white/10 px-8 py-3 bg-white/5 rounded-2xl font-mono text-xs uppercase tracking-widest">{meta.points} XP_CAP</Badge>
                             </div>
 
                             <div className="pt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -437,11 +447,11 @@ export function ActivityCreator({ onNavigate, onSave, selectedClass }: ActivityC
 
             {/* Info Tips print:hidden */}
             {step < 3 && (
-                <div className="fixed bottom-6 right-6 flex items-center gap-3 bg-slate-900/80 p-4 rounded-2xl border border-white/5 backdrop-blur-md shadow-2xl print:hidden animate-pulse hover:animate-none group cursor-help max-w-xs transition-all">
-                    <div className="p-2 bg-cyan-500/10 rounded-lg">
-                        <Info className="w-4 h-4 text-cyan-400" />
+                <div className="fixed bottom-8 right-8 flex items-center gap-4 bg-slate-900/90 p-5 rounded-[2rem] border border-cyan-500/30 backdrop-blur-xl shadow-2xl print:hidden animate-pulse hover:animate-none group cursor-help max-w-sm transition-all">
+                    <div className="p-3 bg-cyan-500/20 rounded-2xl border border-cyan-500/30">
+                        <Info className="w-6 h-6 text-cyan-400" />
                     </div>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase leading-relaxed">Dica de Especialista: Questões bem estruturadas aumentam a taxa de retenção em 40%. Use a IA para rascunhar e refine manualmente.</p>
+                    <p className="text-xs font-black text-slate-100 uppercase leading-relaxed tracking-wider">Dica de Especialista: Questões bem estruturadas aumentam a taxa de retenção em 40%. Use a IA para rascunhar e refine manualmente.</p>
                 </div>
             )}
         </div>

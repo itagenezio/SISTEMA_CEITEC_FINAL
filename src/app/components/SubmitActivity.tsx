@@ -59,12 +59,12 @@ export function SubmitActivity({ onNavigate, onSubmit, activityId, activities }:
             <ArrowLeft className="w-6 h-6" />
           </Button>
 
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 mb-1">
-              <Terminal className="w-4 h-4 text-cyan-400" />
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Protocolo de Submissão Inovatec_OS</span>
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 mb-2">
+              <Terminal className="w-5 h-5 text-cyan-400" />
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Protocolo de Submissão Inovatec_OS</span>
             </div>
-            <h1 className="text-4xl font-extrabold text-white tracking-tighter uppercase font-mono">ENVIAR <span className="text-cyan-400">PROJETO</span></h1>
+            <h1 className="text-5xl font-black text-white tracking-tighter uppercase font-mono italic">ENVIAR <span className="text-cyan-400 italic">PROJETO</span></h1>
           </div>
         </div>
       </div>
@@ -83,7 +83,7 @@ export function SubmitActivity({ onNavigate, onSubmit, activityId, activities }:
               <h2 className="text-3xl font-black text-white uppercase tracking-widest font-mono">Missão Cumprida!</h2>
               <p className="text-slate-400 font-medium">Relatório de atividade sincronizado com o servidor central.</p>
             </div>
-            <Badge className="bg-emerald-500/10 text-emerald-400 border-none px-6 py-2 font-black uppercase text-[10px]">REDIRECIONANDO_SISTEMA_PORTFOLIO...</Badge>
+            <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-8 py-3 font-black uppercase text-xs tracking-widest">REDIRECIONANDO_SISTEMA_PORTFOLIO...</Badge>
           </motion.div>
         ) : !selectedActivity ? (
           <Card className="p-20 bg-slate-900/40 border border-white/5 text-center space-y-6">
@@ -105,12 +105,12 @@ export function SubmitActivity({ onNavigate, onSubmit, activityId, activities }:
                   <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${selectedActivity.color || 'from-indigo-600 to-cyan-600'} flex items-center justify-center text-4xl shadow-xl border border-white/10`}>
                     {selectedActivity.icon || '🎯'}
                   </div>
-                  <div className="space-y-1">
-                    <h2 className="text-2xl font-black text-white tracking-tighter uppercase font-mono">{selectedActivity.title}</h2>
-                    <p className="text-slate-400 text-sm font-medium line-clamp-1">{selectedActivity.description}</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <Badge className="bg-white/5 text-slate-500 border-none font-black text-[9px] h-5">DEADLINE: {selectedActivity.deadline}</Badge>
-                      <Badge className="bg-cyan-500/10 text-cyan-400 border-none font-black text-[9px] h-5">{selectedActivity.points} XP POWER</Badge>
+                  <div className="space-y-2">
+                    <h2 className="text-3xl font-black text-white tracking-tighter uppercase font-mono italic">{selectedActivity.title}</h2>
+                    <p className="text-base text-slate-300 font-bold line-clamp-2 italic">"{selectedActivity.description}"</p>
+                    <div className="flex items-center gap-5 mt-4">
+                      <Badge className="bg-white/10 text-slate-100 border border-white/10 font-black text-xs h-7 px-4">DEADLINE: {selectedActivity.deadline}</Badge>
+                      <Badge className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-black text-xs h-7 px-4">{selectedActivity.points} XP POWER</Badge>
                     </div>
                   </div>
                 </div>
@@ -143,10 +143,10 @@ export function SubmitActivity({ onNavigate, onSubmit, activityId, activities }:
                                       ? 'bg-cyan-500/10 border-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.1)]'
                                       : 'bg-slate-950/40 border-white/5 text-slate-400 hover:bg-slate-800 hover:border-white/10'}`}
                                   >
-                                    <div className={`w-6 h-6 rounded-full border flex items-center justify-center font-black text-[10px] ${answers[q.id] === opt ? 'bg-cyan-500 border-cyan-500 text-white' : 'border-white/10 text-slate-700'}`}>
+                                    <div className={`w-8 h-8 rounded-xl border flex items-center justify-center font-black text-xs ${answers[q.id] === opt ? 'bg-cyan-500 border-cyan-500 text-white' : 'border-white/20 text-slate-500 space-y-2'}`}>
                                       {String.fromCharCode(65 + optIdx)}
                                     </div>
-                                    <span className="font-bold flex-1">{opt}</span>
+                                    <span className="font-black text-base flex-1">{opt}</span>
                                   </button>
                                 ))}
                               </div>
@@ -184,19 +184,19 @@ export function SubmitActivity({ onNavigate, onSubmit, activityId, activities }:
                 </h3>
 
                 <label className="block group">
-                  <div className="border-2 border-dashed border-white/5 rounded-3xl p-8 text-center cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-800 border border-white/5 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-xl">
-                      <Upload className="w-8 h-8 text-cyan-400" />
+                  <div className="border-2 border-dashed border-white/10 rounded-[2.5rem] p-10 text-center cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all">
+                    <div className="w-20 h-20 rounded-[1.5rem] bg-slate-800 border border-white/10 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-2xl">
+                      <Upload className="w-10 h-10 text-cyan-400" />
                     </div>
                     {file ? (
-                      <div className="space-y-1">
-                        <p className="text-white font-bold text-xs truncate max-w-[200px] mx-auto uppercase font-mono">{file.name}</p>
-                        <p className="text-[10px] text-slate-500 font-black uppercase">{(file.size / 1024).toFixed(1)} KB_READY</p>
+                      <div className="space-y-2">
+                        <p className="text-white font-black text-sm truncate max-w-[250px] mx-auto uppercase font-mono">{file.name}</p>
+                        <p className="text-xs text-cyan-400 font-black uppercase">{(file.size / 1024).toFixed(1)} KB_READY</p>
                       </div>
                     ) : (
-                      <div className="space-y-1">
-                        <p className="text-white font-black text-[10px] uppercase tracking-widest">Selecionar_Arquivo</p>
-                        <p className="text-[9px] text-slate-500 font-bold uppercase">PNG, PDF, SB3 (MAX: 10MB)</p>
+                      <div className="space-y-2">
+                        <p className="text-white font-black text-sm uppercase tracking-[0.2em] italic">Selecionar_Arquivo</p>
+                        <p className="text-xs text-slate-500 font-black uppercase tracking-widest">PNG, PDF, SB3 (MAX: 10MB)</p>
                       </div>
                     )}
                     <input
@@ -210,19 +210,19 @@ export function SubmitActivity({ onNavigate, onSubmit, activityId, activities }:
                 <Button
                   onClick={handleSubmit}
                   disabled={isSending}
-                  className="w-full h-14 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.3)] disabled:opacity-50 transition-all uppercase tracking-widest text-xs"
+                  className="w-full h-16 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.3)] disabled:opacity-50 transition-all uppercase tracking-[0.2em] text-sm italic"
                 >
                   {isSending ? (
-                    <><Loader2 className="w-5 h-5 mr-3 animate-spin" /> SINCROCINIZANDO...</>
+                    <><Loader2 className="w-6 h-6 mr-3 animate-spin" /> SINCRONIZANDO...</>
                   ) : (
-                    <><Send className="w-5 h-5 mr-3" /> CONFIRMAR_DEPLOY</>
+                    <><Send className="w-6 h-6 mr-3" /> CONFIRMAR_DEPLOY</>
                   )}
                 </Button>
               </Card>
 
-              <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl flex items-start gap-3">
-                <Zap className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                <p className="text-[9px] font-black text-amber-500/70 uppercase leading-relaxed tracking-widest">
+              <div className="p-6 bg-amber-500/10 border border-amber-500/20 rounded-[1.5rem] flex items-start gap-4 shadow-lg">
+                <Zap className="w-6 h-6 text-amber-500 mt-0.5 shrink-0" />
+                <p className="text-xs font-black text-amber-500/80 uppercase leading-relaxed tracking-widest italic">
                   Aviso: Certifique-se de que todos os sub-módulos foram preenchidos antes do deploy final.
                 </p>
               </div>

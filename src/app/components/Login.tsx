@@ -95,7 +95,7 @@ export function Login({ onLogin }: LoginProps) {
             <h1 className="text-5xl font-black text-white tracking-tighter mb-2 italic">
               CEITEC<span className="text-cyan-400">_EDU</span>
             </h1>
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Ambiente de Aprendizagem Criativa</p>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Ambiente de Aprendizagem Criativa</p>
           </div>
 
           {/* Toggle de Acesso */}
@@ -174,7 +174,7 @@ export function Login({ onLogin }: LoginProps) {
                       placeholder="INV-XXXX"
                       value={accessCode}
                       onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
-                      className="pl-12 bg-slate-950/50 border-white/5 text-center text-xl font-mono tracking-[0.4em] h-16 rounded-2xl text-cyan-400 placeholder:text-slate-800"
+                      className="pl-12 bg-slate-950/60 border-white/10 text-center text-2xl font-mono tracking-[0.5em] h-20 rounded-3xl text-cyan-400 placeholder:text-slate-800 focus:border-cyan-500/50 shadow-inner"
                       required
                     />
                   </div>

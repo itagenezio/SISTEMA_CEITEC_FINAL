@@ -113,7 +113,7 @@ export function Reports({
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 relative z-10">
+                <div className="flex items-center gap-4 relative z-10">
                     <Button
                         onClick={handleSeed}
                         disabled={isSeeding}
@@ -128,7 +128,7 @@ export function Reports({
             </div>
 
             {/* Tabs Navigation */}
-            <div className="flex bg-slate-900/40 p-1.5 rounded-2xl border border-white/5 w-fit font-bold uppercase text-[10px] tracking-widest mx-auto lg:mx-0">
+            <div className="flex bg-slate-900/60 p-2 rounded-2xl border border-white/10 w-fit font-black uppercase text-xs tracking-widest mx-auto lg:mx-0 shadow-2xl">
                 {[
                     { id: 'overview', label: 'Dashboard Geral', icon: TrendingUp },
                     { id: 'classes', label: 'Monitoramento Turmas', icon: Users },
@@ -137,9 +137,9 @@ export function Reports({
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
-                        className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all ${activeTab === tab.id ? 'bg-slate-800 text-cyan-400 shadow-inner' : 'text-slate-500 hover:text-white'}`}
+                        className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all ${activeTab === tab.id ? 'bg-slate-800 text-cyan-400 shadow-[inset_0_0_15px_rgba(0,0,0,0.5)] border border-white/5 font-black' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
                     >
-                        <tab.icon className="w-4 h-4" />
+                        <tab.icon className="w-5 h-5" />
                         {tab.label}
                     </button>
                 ))}
@@ -167,10 +167,10 @@ export function Reports({
                                     <div className="flex justify-between items-start relative z-10">
                                         <div>
                                             <h4 className="text-3xl font-black text-white tracking-tighter">{stat.value}</h4>
-                                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">{stat.label}</p>
+                                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1 leading-none">{stat.label}</p>
                                         </div>
-                                        <div className={`p-3 rounded-2xl bg-${stat.color}-500/10 border border-${stat.color}-500/20`}>
-                                            <stat.icon className={`w-5 h-5 text-${stat.color}-400`} />
+                                        <div className={`p-4 rounded-2xl bg-${stat.color}-500/10 border border-${stat.color}-500/20 shadow-inner`}>
+                                            <stat.icon className={`w-6 h-6 text-${stat.color}-400`} />
                                         </div>
                                     </div>
                                 </Card>
@@ -181,22 +181,22 @@ export function Reports({
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <Card className="p-8 bg-slate-900/40 border border-white/5 backdrop-blur-xl space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-[12px] font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
+                                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
                                         <Microscope className="w-4 h-4 text-cyan-400" /> Distribuição de Notas (Global)
                                     </h3>
-                                    <Badge className="bg-cyan-500/10 text-cyan-400 border-none px-3 font-black text-[9px]">FREQUÊNCIA_SINC</Badge>
+                                    <Badge className="bg-cyan-500/10 text-cyan-400 border-none px-3 font-bold text-[9px]">FREQUÊNCIA_SINC</Badge>
                                 </div>
                                 <div className="h-[300px] w-full">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={gradesData}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                                            <XAxis dataKey="range" stroke="#64748b" fontSize={10} fontWeight="bold" />
-                                            <YAxis stroke="#64748b" fontSize={10} fontWeight="bold" />
+                                            <XAxis dataKey="range" stroke="#94a3b8" fontSize={12} fontWeight="bold" />
+                                            <YAxis stroke="#94a3b8" fontSize={12} fontWeight="bold" />
                                             <Tooltip
-                                                contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px', fontSize: '10px' }}
-                                                itemStyle={{ color: '#22d3ee', fontWeight: 'bold' }}
+                                                contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}
+                                                itemStyle={{ color: '#22d3ee', fontWeight: 'black' }}
                                             />
-                                            <Bar dataKey="count" fill="#06b6d4" radius={[4, 4, 0, 0]} barSize={40} />
+                                            <Bar dataKey="count" fill="#06b6d4" radius={[6, 6, 0, 0]} barSize={45} />
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </div>
@@ -204,10 +204,10 @@ export function Reports({
 
                             <Card className="p-8 bg-slate-900/40 border border-white/5 backdrop-blur-xl space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-[12px] font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
+                                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
                                         <TrendingUp className="w-4 h-4 text-indigo-400" /> Performance por Turma
                                     </h3>
-                                    <Badge className="bg-indigo-500/10 text-indigo-400 border-none px-3 font-black text-[9px]">MÉDIA_COMPARATIVA</Badge>
+                                    <Badge className="bg-indigo-500/10 text-indigo-400 border-none px-3 font-bold text-[9px]">MÉDIA_COMPARATIVA</Badge>
                                 </div>
                                 <div className="h-[300px] w-full">
                                     <ResponsiveContainer width="100%" height="100%">
@@ -238,18 +238,18 @@ export function Reports({
                                     <h3 className="text-xl font-black text-white uppercase tracking-tighter">Foco em Intervenção Pedagógica</h3>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    <div className="p-4 bg-slate-950/40 rounded-2xl border border-white/5 space-y-2">
-                                        <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Alerta de Baixo Engajamento</p>
-                                        <p className="text-slate-400 text-xs font-medium leading-relaxed">34% dos alunos da Turma 9A não realizaram o upload do projeto final. Necessário revisão dos pré-requisitos técnicos.</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="p-6 bg-slate-950/60 rounded-[1.5rem] border border-white/5 space-y-3 shadow-inner">
+                                        <p className="text-xs font-black text-amber-500 uppercase tracking-widest italic">Alerta de Baixo Engajamento</p>
+                                        <p className="text-slate-200 text-sm font-bold leading-relaxed">34% dos alunos da Turma 9A não realizaram o upload do projeto final. Necessário revisão dos pré-requisitos técnicos.</p>
                                     </div>
-                                    <div className="p-4 bg-slate-950/40 rounded-2xl border border-white/5 space-y-2">
-                                        <p className="text-[10px] font-black text-cyan-500 uppercase tracking-widest">Oportunidade de Aceleração</p>
-                                        <p className="text-slate-400 text-xs font-medium leading-relaxed">Grupo "Alpha" atingiu 9.8 de média global. Sugestão: Introduzir módulo avançado de Arquitetura de Software.</p>
+                                    <div className="p-6 bg-slate-950/60 rounded-[1.5rem] border border-white/5 space-y-3 shadow-inner">
+                                        <p className="text-xs font-black text-cyan-500 uppercase tracking-widest italic">Oportunidade de Aceleração</p>
+                                        <p className="text-slate-200 text-sm font-bold leading-relaxed">Grupo "Alpha" atingiu 9.8 de média global. Sugestão: Introduzir módulo avançado de Arquitetura de Software.</p>
                                     </div>
-                                    <div className="p-4 bg-slate-950/40 rounded-2xl border border-white/5 space-y-2">
-                                        <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Insight de Lógica</p>
-                                        <p className="text-slate-400 text-xs font-medium leading-relaxed">Melhora de 15% na compreensão de loops após a atividade gamificada no PictoBlox.</p>
+                                    <div className="p-6 bg-slate-950/60 rounded-[1.5rem] border border-white/5 space-y-3 shadow-inner">
+                                        <p className="text-xs font-black text-emerald-500 uppercase tracking-widest italic">Insight de Lógica</p>
+                                        <p className="text-slate-200 text-sm font-bold leading-relaxed">Melhora de 15% na compreensão de loops após a atividade gamificada no PictoBlox.</p>
                                     </div>
                                 </div>
                             </div>

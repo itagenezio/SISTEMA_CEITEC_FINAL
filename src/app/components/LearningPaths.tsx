@@ -36,12 +36,12 @@ export function LearningPaths({ onNavigate }: LearningPathsProps) {
   ];
 
   return (
-    <div className="min-h-screen p-6" 
-         style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)' }}>
-      
+    <div className="min-h-screen p-6"
+      style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)' }}>
+
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
-        <button 
+        <button
           onClick={() => onNavigate('student-dashboard')}
           className="w-10 h-10 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl flex items-center justify-center hover:bg-white/20 transition-colors"
         >
@@ -56,7 +56,7 @@ export function LearningPaths({ onNavigate }: LearningPathsProps) {
       {/* Trilhas */}
       <div className="space-y-6">
         {paths.map((path) => (
-          <Card 
+          <Card
             key={path.id}
             className={`p-8 bg-gradient-to-br ${path.bgColor} backdrop-blur-lg border-white/20 shadow-xl cursor-pointer hover:scale-[1.02] transition-transform`}
             onClick={() => onNavigate('activities')}
@@ -71,7 +71,7 @@ export function LearningPaths({ onNavigate }: LearningPathsProps) {
                     <h2 className="text-2xl font-bold text-white mb-1">{path.title}</h2>
                     <p className="text-blue-100">{path.description}</p>
                   </div>
-                  <Button 
+                  <Button
                     size="sm"
                     className={`bg-gradient-to-r ${path.color} text-white shadow-lg hover:opacity-90`}
                   >
@@ -79,7 +79,7 @@ export function LearningPaths({ onNavigate }: LearningPathsProps) {
                     Iniciar
                   </Button>
                 </div>
-                
+
                 <div className="flex items-center gap-4 mt-4">
                   <Badge className="bg-white/20 text-white border-white/20">
                     {path.completed}/{path.lessons} aulas
@@ -93,7 +93,7 @@ export function LearningPaths({ onNavigate }: LearningPathsProps) {
 
             {/* Barra de progresso */}
             <div className="relative h-3 bg-white/10 rounded-full overflow-hidden">
-              <div 
+              <div
                 className={`h-full bg-gradient-to-r ${path.color} rounded-full transition-all duration-500`}
                 style={{ width: `${path.progress}%` }}
               ></div>
@@ -108,7 +108,7 @@ export function LearningPaths({ onNavigate }: LearningPathsProps) {
                 </div>
                 <p className="text-xs text-blue-200">Introdução e conceitos básicos</p>
               </div>
-              
+
               <div className="p-4 bg-white/10 rounded-xl border border-white/10">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-5 h-5 bg-blue-500 rounded-full animate-pulse" />
@@ -116,7 +116,7 @@ export function LearningPaths({ onNavigate }: LearningPathsProps) {
                 </div>
                 <p className="text-xs text-blue-200">Praticando e desenvolvendo</p>
               </div>
-              
+
               <div className="p-4 bg-white/10 rounded-xl border border-white/10 opacity-60">
                 <div className="flex items-center gap-2 mb-2">
                   <Lock className="w-5 h-5 text-gray-400" />

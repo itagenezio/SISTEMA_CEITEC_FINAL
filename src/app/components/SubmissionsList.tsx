@@ -32,13 +32,11 @@ export function SubmissionsList({ onNavigate, submissions, activities, students,
                     >
                         <ArrowLeft className="w-6 h-6" />
                     </Button>
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-2 mb-1">
-                            <Terminal className="w-4 h-4 text-cyan-400" />
-                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Protocolo de Monitoramento Acadêmico</span>
-                        </div>
-                        <h1 className="text-4xl font-extrabold text-white tracking-tighter uppercase font-mono">ENTREGAS <span className="text-cyan-400">PENDENTES</span></h1>
+                    <div className="flex items-center gap-3 mb-2">
+                        <Terminal className="w-5 h-5 text-cyan-400" />
+                        <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Protocolo de Monitoramento Acadêmico</span>
                     </div>
+                    <h1 className="text-5xl font-black text-white tracking-tighter uppercase font-mono italic">ENTREGAS <span className="text-cyan-400 italic">PENDENTES</span></h1>
                 </div>
 
                 <div className="flex gap-2">
@@ -72,26 +70,26 @@ export function SubmissionsList({ onNavigate, submissions, activities, students,
                                         <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center text-3xl border border-white/5 group-hover:border-cyan-500/20 shadow-xl transition-all">
                                             {student?.avatar || '👤'}
                                         </div>
-                                        <div className="min-w-0">
-                                            <h3 className="text-xl font-black text-white tracking-tight uppercase font-mono truncate">{student?.name || 'ALUNO_DESCONHECIDO'}</h3>
-                                            <div className="flex flex-wrap items-center gap-4 mt-1 font-mono text-[10px]">
-                                                <p className="text-cyan-400 font-bold flex items-center gap-1.5 uppercase">
-                                                    <Terminal className="w-3 h-3" /> {activity?.title || 'MISSION_NULL'}
+                                        <div className="min-w-0 space-y-2">
+                                            <h3 className="text-2xl font-black text-white tracking-tight uppercase font-mono truncate">{student?.name || 'ALUNO_DESCONHECIDO'}</h3>
+                                            <div className="flex flex-wrap items-center gap-5 mt-1 font-mono text-xs">
+                                                <p className="text-cyan-400 font-black flex items-center gap-2 uppercase tracking-widest">
+                                                    <Terminal className="w-4 h-4" /> {activity?.title || 'MISSION_NULL'}
                                                 </p>
-                                                <p className="text-slate-500 flex items-center gap-1.5 uppercase">
-                                                    <Calendar className="w-3 h-3" /> {submission.submitted_at || submission.submittedAt ? new Date(submission.submitted_at || submission.submittedAt).toLocaleDateString('pt-BR') : 'SYNC_DATE_ERROR'}
+                                                <p className="text-slate-300 flex items-center gap-2 uppercase font-black tracking-widest">
+                                                    <Calendar className="w-4 h-4 text-slate-500" /> {submission.submitted_at || submission.submittedAt ? new Date(submission.submitted_at || submission.submittedAt).toLocaleDateString('pt-BR') : 'SYNC_DATE_ERROR'}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="flex items-center gap-6">
-                                        <div className="text-right">
-                                            <Badge className="bg-amber-500/10 text-amber-500 border-none font-black text-[9px] uppercase tracking-widest px-3 h-5">
-                                                <Clock className="w-3 h-3 mr-1.5" />
+                                        <div className="text-right space-y-3">
+                                            <Badge className="bg-amber-500/10 text-amber-500 border border-amber-500/20 font-black text-xs uppercase tracking-[0.2em] px-5 py-2 h-auto rounded-xl">
+                                                <Clock className="w-4 h-4 mr-2" />
                                                 AGUARDANDO_AVALIAÇÃO
                                             </Badge>
-                                            <p className="text-cyan-400 text-[10px] font-black uppercase mt-2 group-hover:translate-x-1 transition-transform tracking-widest">Processar Agora →</p>
+                                            <p className="text-cyan-400 text-xs font-black uppercase mt-2 group-hover:translate-x-2 transition-transform tracking-[0.3em] italic">Processar Agora →</p>
                                         </div>
 
                                         <div className="border-l border-white/5 pl-6">
@@ -135,16 +133,16 @@ export function SubmissionsList({ onNavigate, submissions, activities, students,
                                         className="p-4 bg-slate-900/40 border border-white/5 opacity-70 hover:opacity-100 transition-opacity"
                                     >
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3 min-w-0">
-                                                <span className="text-2xl">{student?.avatar || '👤'}</span>
-                                                <div className="min-w-0">
-                                                    <p className="text-xs font-bold text-white uppercase font-mono truncate">{student?.name}</p>
-                                                    <p className="text-[9px] text-slate-500 uppercase truncate">{activity?.title}</p>
+                                            <div className="flex items-center gap-4 min-w-0">
+                                                <span className="text-3xl">{student?.avatar || '👤'}</span>
+                                                <div className="min-w-0 space-y-1">
+                                                    <p className="text-sm font-black text-white uppercase font-mono truncate">{student?.name}</p>
+                                                    <p className="text-xs font-black text-slate-400 uppercase truncate tracking-widest">{activity?.title}</p>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-xl font-black text-emerald-400 tracking-tighterLeading-none">{submission.grade}</div>
-                                                <p className="text-[8px] text-slate-600 font-bold uppercase mt-1">SCORE</p>
+                                                <div className="text-2xl font-black text-emerald-400 tracking-tighter leading-none italic">{submission.grade}</div>
+                                                <p className="text-[10px] text-slate-500 font-black uppercase mt-2 tracking-[0.2em]">SCORE</p>
                                             </div>
                                         </div>
                                     </Card>

@@ -13,6 +13,7 @@ const handleTeacherNavigate = (navigate: any, screen: string, id: string | undef
         'teacher-dashboard': '/teacher',
         'class-management': id ? `/teacher/classes/${id}` : '/teacher/classes',
         'activity-creator': id ? `/teacher/activity-creator/${id}` : '/teacher/activity-creator',
+        'activity-edit': id ? `/teacher/activity-creator/edit/${id}` : '/teacher/activity-creator',
         'grading': id ? `/teacher/grading/${id}` : '/teacher/grading',
         'submissions-list': '/teacher/submissions',
         'reports': '/teacher/reports',
@@ -54,17 +55,19 @@ export function ClassManagementPage() {
 }
 
 export function ActivityCreatorPage() {
-    const { classId } = useParams();
-    const { classes, addActivity } = useData();
+    const { classId, activityId } = useParams();
+    const { classes, activities, addActivity } = useData();
     const navigate = useNavigate();
 
     const selectedClass = classes.find(c => String(c.id) === String(classId));
+    const initialActivity = activities.find(a => String(a.id) === String(activityId));
 
     return (
         <ActivityCreator
-            onNavigate={(s) => handleTeacherNavigate(navigate, s)}
+            onNavigate={(s, id) => handleTeacherNavigate(navigate, s, id)}
             onSave={addActivity}
             selectedClass={selectedClass ? { name: selectedClass.name, id: selectedClass.id } : undefined}
+            initialData={initialActivity}
         />
     );
 }

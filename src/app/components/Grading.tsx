@@ -45,8 +45,8 @@ export function Grading({ onNavigate, submission, student, activity, onGrade }: 
           <ArrowLeft className="w-5 h-5 text-white" />
         </button>
         <div>
-          <h1 className="text-3xl font-bold text-white">Correção de Atividades</h1>
-          <p className="text-blue-200">Avalie o trabalho do aluno</p>
+          <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">Correção de Atividades</h1>
+          <p className="text-cyan-400 font-bold uppercase tracking-widest text-xs">Protocolo de Avaliação // Validar Desempenho do Agente</p>
         </div>
       </div>
 
@@ -73,14 +73,14 @@ export function Grading({ onNavigate, submission, student, activity, onGrade }: 
                   <span className="text-3xl">{student?.avatar || '👤'}</span>
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-white mb-1">Corrigir Atividade: {student?.name || 'Aluno'}</h2>
-                  <p className="text-sm text-blue-200 mb-2">{activity?.title || 'Atividade'}</p>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge className="bg-blue-500/20 text-blue-300 border-blue-400/30">
-                      Entregue
+                  <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-tight">{student?.name || 'Aluno'}</h2>
+                  <p className="text-base text-cyan-100 font-bold mb-3">{activity?.title || 'Atividade'}</p>
+                  <div className="flex flex-wrap gap-3">
+                    <Badge className="bg-blue-500/20 text-blue-300 border-blue-400/40 px-4 py-1 text-xs font-black uppercase tracking-widest">
+                      STATUS: ENTREGUE
                     </Badge>
-                    <Badge className="bg-purple-500/20 text-purple-300 border-purple-400/30">
-                      {submission.submitted_at ? `Enviado em ${new Date(submission.submitted_at).toLocaleDateString('pt-BR')}` : 'Data pendente'}
+                    <Badge className="bg-indigo-500/20 text-indigo-300 border-indigo-400/40 px-4 py-1 text-xs font-black uppercase tracking-widest">
+                      {submission.submitted_at ? `DATA: ${new Date(submission.submitted_at).toLocaleDateString('pt-BR')}` : 'Data pendente'}
                     </Badge>
                   </div>
                 </div>
@@ -134,10 +134,10 @@ export function Grading({ onNavigate, submission, student, activity, onGrade }: 
             </h3>
 
             <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-blue-200">Atribua uma nota de 0 a 10</span>
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-slate-100 font-black uppercase tracking-widest text-sm">Atribuir Nota (Escala 0_10):</span>
                 <div className="text-right">
-                  <span className="text-5xl font-bold text-white">{grade.toFixed(1)}</span>
+                  <span className="text-6xl font-black text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] italic">{grade.toFixed(1)}</span>
                 </div>
               </div>
 
@@ -150,7 +150,7 @@ export function Grading({ onNavigate, submission, student, activity, onGrade }: 
                 className="mb-2"
               />
 
-              <div className="flex justify-between text-xs text-blue-200">
+              <div className="flex justify-between text-sm font-black text-blue-300 uppercase tracking-widest mt-2">
                 <span>0</span>
                 <span>2.5</span>
                 <span>5.0</span>
@@ -173,15 +173,15 @@ export function Grading({ onNavigate, submission, student, activity, onGrade }: 
             </div>
 
             {/* Feedback */}
-            <div className="mb-6">
-              <label className="text-white font-semibold mb-3 block">
-                Feedback para o Aluno
+            <div className="mb-8">
+              <label className="text-white font-black uppercase tracking-widest text-sm mb-4 block">
+                Feedback para o Aluno (Observações do Mentor)
               </label>
               <Textarea
                 placeholder="Escreva comentários e sugestões para o aluno..."
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
-                className="min-h-40 bg-white/10 border-white/20 text-white placeholder:text-blue-200/50 focus:border-cyan-400 focus:ring-cyan-400"
+                className="min-h-48 bg-slate-900/60 border-white/10 text-white placeholder:text-slate-600 focus:border-cyan-400 focus:ring-0 text-base font-medium rounded-2xl p-6"
               />
             </div>
 
@@ -198,29 +198,29 @@ export function Grading({ onNavigate, submission, student, activity, onGrade }: 
           <Card className="p-6 bg-gradient-to-br from-orange-500/20 to-yellow-500/20 backdrop-blur-lg border-white/20 shadow-xl">
             <h3 className="text-lg font-bold text-white mb-4">Próximas Correções</h3>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-white/10 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">👩‍💻</span>
+              <div className="flex items-center justify-between p-4 bg-slate-950/40 rounded-2xl border border-white/5">
+                <div className="flex items-center gap-4">
+                  <span className="text-3xl">👩‍💻</span>
                   <div>
-                    <p className="text-white font-semibold">Ana Silva</p>
-                    <p className="text-xs text-blue-200">Desafio de Robótica</p>
+                    <p className="text-white font-black uppercase text-sm">Ana Silva</p>
+                    <p className="text-xs text-blue-300 font-bold tracking-widest">DESAFIO_ROBOTICA</p>
                   </div>
                 </div>
-                <Badge className="bg-orange-500/30 text-orange-200 border-orange-400/30">
-                  Pendente
+                <Badge className="bg-orange-500/20 text-orange-400 border-orange-400/40 px-4 py-1 text-[10px] font-black uppercase tracking-widest">
+                  PENDENTE
                 </Badge>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-white/10 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">👨‍🎓</span>
+              <div className="flex items-center justify-between p-4 bg-slate-950/40 rounded-2xl border border-white/5">
+                <div className="flex items-center gap-4">
+                  <span className="text-3xl">👨‍🎓</span>
                   <div>
-                    <p className="text-white font-semibold">João Santos</p>
-                    <p className="text-xs text-blue-200">Plano de Negócio</p>
+                    <p className="text-white font-black uppercase text-sm">João Santos</p>
+                    <p className="text-xs text-blue-300 font-bold tracking-widest">PLANO_NEGOCIO</p>
                   </div>
                 </div>
-                <Badge className="bg-orange-500/30 text-orange-200 border-orange-400/30">
-                  Pendente
+                <Badge className="bg-orange-500/20 text-orange-400 border-orange-400/40 px-4 py-1 text-[10px] font-black uppercase tracking-widest">
+                  PENDENTE
                 </Badge>
               </div>
             </div>

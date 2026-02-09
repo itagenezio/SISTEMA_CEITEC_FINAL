@@ -29,6 +29,7 @@ export function AppRouter() {
                 <Route path="/teacher/classes/:classId" element={<ClassManagementPage />} />
                 <Route path="/teacher/activity-creator" element={<ActivityCreatorPage />} />
                 <Route path="/teacher/activity-creator/:classId" element={<ActivityCreatorPage />} />
+                <Route path="/teacher/activity-creator/edit/:activityId" element={<ActivityCreatorPage />} />
                 <Route path="/teacher/grading/:submissionId" element={<GradingPage />} />
                 <Route path="/teacher/submissions" element={<SubmissionsListPage />} />
                 <Route path="/teacher/reports" element={<ReportsPage />} />
