@@ -49,6 +49,7 @@ interface DataContextType {
     deleteStudent: (id: string) => Promise<boolean>;
     deleteClass: (id: string) => Promise<boolean>;
     deleteSubmission: (id: string) => Promise<boolean>;
+    seedTestData: () => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -110,6 +111,73 @@ export function DataProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         loadData();
     }, []);
+
+    const seedTestData = async () => {
+        toast.info('Iniciando carga de dados fictícios...');
+        try {
+            // 1. Criar Turma de Teste
+            const { data: testClass, error: classError } = await supabase
+                .from('classes')
+                .insert([{
+                    name: 'Turma de Elite Alpha',
+                    students_count: 5,
+                    progress: 45,
+                    disciplines: ['Robótica Avançada', 'Lógica IA']
+                }])
+                .select().single();
+
+            if (classError) throw classError;
+
+            // 2. Criar 5 Alunos fictícios
+            const studentsToCreate = [
+                { name: 'Gabriel Tech', email: 'gabriel@tesla.com', xp: 2100, class_id: testClass.id, access_code: 'INV-0001', avatar: '🚀' },
+                { name: 'Sofia Maker', email: 'sofia@maker.com', xp: 1850, class_id: testClass.id, access_code: 'INV-0002', avatar: '👩‍💻' },
+                { name: 'Lucas Hardware', email: 'lucas@hw.com', xp: 900, class_id: testClass.id, access_code: 'INV-0003', avatar: '🤖' },
+                { name: 'Beatriz Logic', email: 'bia@logic.com', xp: 2500, class_id: testClass.id, access_code: 'INV-0004', avatar: '🧠' },
+                { name: 'Enzo Code', email: 'enzo@code.com', xp: 450, class_id: testClass.id, access_code: 'INV-0005', avatar: '🎮' },
+            ];
+
+            const { data: createdStudents, error: studentsError } = await supabase
+                .from('students')
+                .insert(studentsToCreate)
+                .select();
+
+            if (studentsError) throw studentsError;
+
+            // 3. Obter atividades existentes para vincular (ou criar uma se não houver)
+            let activityId = activities[0]?.id;
+            if (!activityId) {
+                const { data: newAct } = await supabase.from('activities').insert([{
+                    title: 'Desafio Arduíno Global',
+                    description: 'Projeto de automação residencial com sensores.',
+                    points: 500,
+                    deadline: '2026-12-31',
+                    discipline: 'Robótica'
+                }]).select().single();
+                activityId = newAct.id;
+            }
+
+            // 4. Gerar resultados fictícios (Submissões)
+            const submissionsToCreate = createdStudents.map((s, idx) => ({
+                activity_id: activityId,
+                student_id: s.id,
+                comments: `Relatório de conclusão do projeto ${idx + 1}`,
+                status: 'graded',
+                grade: [9.5, 8.8, 4.5, 10, 3.2][idx], // Alguns altos, alguns baixos para análise
+                feedback: idx % 2 === 0 ? 'Excelente performance técnica!' : 'Necessário revisar conceitos de circuitos.',
+                submitted_at: new Date().toISOString()
+            }));
+
+            const { error: subsError } = await supabase.from('submissions').insert(submissionsToCreate);
+            if (subsError) throw subsError;
+
+            toast.success('Ambiente de teste gerado com sucesso!');
+            await loadData();
+        } catch (err: any) {
+            console.error('Erro no Seed:', err);
+            toast.error('Falha ao gerar dados de teste.');
+        }
+    };
 
     const addClass = async (newClass: any) => {
         const dbClass = {
@@ -322,7 +390,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
             addStudent,
             deleteStudent,
             deleteClass,
-            deleteSubmission
+            deleteSubmission,
+            seedTestData
         }}>
             {children}
         </DataContext.Provider>

@@ -86,17 +86,29 @@ export function SubmissionsListPage() {
     );
 }
 
+import { Reports } from '../app/components/Reports';
+
 export function ReportsPage() {
+    const {
+        classes,
+        activities,
+        submissions,
+        enrolledStudents,
+        loading,
+        seedTestData
+    } = useData();
     const navigate = useNavigate();
+
     return (
-        <div className="min-h-screen bg-[#1e3a8a] p-8 text-white flex flex-col items-center justify-center text-center">
-            <BarChart3 className="w-20 h-20 text-cyan-400 mb-6 animate-pulse" />
-            <h1 className="text-4xl font-bold mb-4">Relatórios Consolidados</h1>
-            <p className="text-blue-200 max-w-md mb-8">Esta funcionalidade está sendo preparada para exibir o desempenho analítico de todas as suas turmas.</p>
-            <Button onClick={() => navigate('/teacher')} className="bg-white/10 border-white/20 hover:bg-white/20">
-                <ArrowLeft className="mr-2" /> Voltar ao Dashboard
-            </Button>
-        </div>
+        <Reports
+            onNavigate={(s, id) => handleTeacherNavigate(navigate, s, id)}
+            classes={classes}
+            activities={activities}
+            submissions={submissions}
+            students={enrolledStudents}
+            loading={loading}
+            onSeedData={seedTestData}
+        />
     );
 }
 
