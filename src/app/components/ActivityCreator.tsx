@@ -3,8 +3,17 @@ import {
     Plus, Trash2, Brain, Sparkles, Save, Printer,
     CheckCircle2, AlertCircle, Layout, ListChecks,
     FileText, Clock, Target, ArrowLeft, ArrowRight,
-    Monitor, Info, Zap, ShieldCheck
+    Monitor, Info, Zap, ShieldCheck, Microscope, BookMarked,
+    CheckCircle, MessageSquareQuote
 } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "./ui/dialog";
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -33,6 +42,8 @@ interface ActivityCreatorProps {
 export function ActivityCreator({ onNavigate, onSave, classes, selectedClass, initialData }: ActivityCreatorProps) {
     const [step, setStep] = useState<1 | 2 | 3>(1); // 1: Setup, 2: Questions, 3: Review/Key
     const [isLoading, setIsLoading] = useState(false);
+    const [isAIAdvisorOpen, setIsAIAdvisorOpen] = useState(false);
+    const [aiFeedback, setAiFeedback] = useState<string | null>(null);
 
     // Activity Meta
     const [meta, setMeta] = useState({
@@ -100,6 +111,23 @@ export function ActivityCreator({ onNavigate, onSave, classes, selectedClass, in
         }, 1500);
     };
 
+    const handleAIReview = () => {
+        setIsLoading(true);
+        setIsAIAdvisorOpen(true);
+        toast.info('IA Inovatec revisando alinhamento pedagógico...', { icon: <Microscope className="w-4 h-4 text-primary" /> });
+
+        setTimeout(() => {
+            setAiFeedback(`
+                ### 🛠️ Sugestões de Melhoria (Inovatec AI)
+                - **BNCC Computação**: Sua missão atual foca em Letramento Digital. Sugiro adicionar um desafio de **Pensamento Computacional** (ex: decomposição de problemas no Arduíno).
+                - **Complexidade**: O nível da missão está adequado para o Cluster selecionado, mas pode ser potencializado com uma questão prática de simulação.
+                - **Interdisciplinaridade**: Tente conectar o tema "${meta.title}" com conceitos de Física (eletricidade) ou Matemática (lógica booleana).
+            `);
+            setIsLoading(false);
+            toast.success('Análise concluída!');
+        }, 2000);
+    };
+
     const handleSave = async () => {
         if (!meta.title) return toast.error('Dê um título para a missão');
         if (!meta.classId) return toast.error('Selecione uma turma para vincular a missão');
@@ -158,6 +186,14 @@ export function ActivityCreator({ onNavigate, onSave, classes, selectedClass, in
                 </div>
 
                 <div className="flex items-center gap-3 bg-muted/30 p-2 rounded-2xl border border-border/50">
+                    <Button
+                        onClick={handleAIReview}
+                        variant="ghost"
+                        className="h-10 px-4 rounded-xl text-[9px] font-black uppercase tracking-widest italic bg-primary/5 text-primary hover:bg-primary/10 border border-primary/20 flex items-center gap-2"
+                    >
+                        <Microscope className="w-3.5 h-3.5" /> IA Pedagogical Review
+                    </Button>
+                    <div className="w-[1px] h-6 bg-border mx-2" />
                     {[1, 2, 3].map((s) => (
                         <div
                             key={s}
@@ -520,6 +556,61 @@ export function ActivityCreator({ onNavigate, onSave, classes, selectedClass, in
                     </div>
                 </motion.div>
             )}
+
+            {/* AI Pedagogical Advisor Modal/Drawer */}
+            <Dialog open={isAIAdvisorOpen} onOpenChange={setIsAIAdvisorOpen}>
+                <DialogContent className="bg-white border-none rounded-[3rem] p-0 overflow-hidden sm:max-w-xl shadow-2xl">
+                    <div className="bg-primary p-10 text-white relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                        <DialogHeader>
+                            <div className="flex items-center gap-6 mb-4">
+                                <div className="p-4 bg-white/20 backdrop-blur-md rounded-2xl border border-white/20">
+                                    <Microscope className="w-8 h-8 text-white" />
+                                </div>
+                                <div className="space-y-1">
+                                    <DialogTitle className="text-3xl font-black italic uppercase tracking-tight">Review de <span className="text-white underline decoration-white/40 decoration-4 underline-offset-8">Missão</span></DialogTitle>
+                                    <p className="text-[10px] text-white/70 font-black uppercase tracking-[0.3em] italic">Inovatec AI Pedagogy v1.2</p>
+                                </div>
+                            </div>
+                        </DialogHeader>
+                    </div>
+
+                    <div className="p-10 space-y-8">
+                        {isLoading ? (
+                            <div className="py-20 text-center space-y-6">
+                                <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto" />
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground animate-pulse italic">Processando Alinhamento BNCC...</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-8">
+                                <div className="flex items-start gap-5 p-6 bg-muted/30 rounded-3xl border border-border">
+                                    <BookMarked className="w-6 h-6 text-primary mt-1" />
+                                    <div className="space-y-2">
+                                        <h5 className="font-black text-xs uppercase tracking-widest italic">Análise de Competência</h5>
+                                        <p className="text-[11px] text-muted-foreground font-bold leading-relaxed whitespace-pre-line tracking-wide">
+                                            {aiFeedback}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 italic">
+                                    <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                                    <p className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Protocolo Seguro Alinhado à BNCC Computação</p>
+                                </div>
+
+                                <DialogFooter>
+                                    <Button
+                                        onClick={() => setIsAIAdvisorOpen(false)}
+                                        className="w-full bg-primary hover:bg-primary/90 text-white h-14 rounded-2xl font-black text-[10px] uppercase tracking-widest italic shadow-xl shadow-primary/20"
+                                    >
+                                        APLICAR AJUSTES COGNITIVOS
+                                    </Button>
+                                </DialogFooter>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

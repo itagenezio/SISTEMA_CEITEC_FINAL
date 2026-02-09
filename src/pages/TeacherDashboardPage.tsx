@@ -11,6 +11,7 @@ export function TeacherDashboardPage() {
         const routeMap: Record<string, string> = {
             'teacher-dashboard': '/teacher',
             'class-management': id ? `/teacher/classes/${id}` : '/teacher/classes',
+            'mission-management': '/teacher/missions',
             'activity-creator': id ? `/teacher/activity-creator/${id}` : '/teacher/activity-creator',
             'activity-edit': id ? `/teacher/activity-creator/edit/${id}` : '/teacher/activity-creator',
             'grading': id ? `/teacher/grading/${id}` : '/teacher/grading',

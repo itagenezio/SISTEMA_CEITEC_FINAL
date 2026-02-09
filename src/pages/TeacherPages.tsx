@@ -6,12 +6,14 @@ import { SubmissionsList } from '../app/components/SubmissionsList';
 import { Button } from '../app/components/ui/button';
 import { BarChart3, ArrowLeft, Calendar as CalendarIcon, Sparkles } from 'lucide-react';
 import { ActivityCreator } from '../app/components/ActivityCreator';
+import { MissionManagement } from '../app/components/MissionManagement';
 
 const handleTeacherNavigate = (navigate: any, screen: string, id: string | undefined = undefined) => {
     // Map legacy
     const routeMap: Record<string, string> = {
         'teacher-dashboard': '/teacher',
         'class-management': id ? `/teacher/classes/${id}` : '/teacher/classes',
+        'mission-management': '/teacher/missions',
         'activity-creator': id ? `/teacher/activity-creator/${id}` : '/teacher/activity-creator',
         'activity-edit': id ? `/teacher/activity-creator/edit/${id}` : '/teacher/activity-creator',
         'grading': id ? `/teacher/grading/${id}` : '/teacher/grading',
@@ -56,19 +58,42 @@ export function ClassManagementPage() {
 
 export function ActivityCreatorPage() {
     const { classId, activityId } = useParams();
-    const { classes, activities, addActivity } = useData();
+    const { classes, activities, addActivity, updateActivity } = useData();
     const navigate = useNavigate();
 
     const selectedClass = classes.find(c => String(c.id) === String(classId));
     const initialActivity = activities.find(a => String(a.id) === String(activityId));
 
+    const handleSave = async (data: any) => {
+        if (activityId) {
+            return await updateActivity(activityId, data);
+        } else {
+            return await addActivity(data);
+        }
+    };
+
     return (
         <ActivityCreator
             onNavigate={(s, id) => handleTeacherNavigate(navigate, s, id)}
-            onSave={addActivity}
+            onSave={handleSave}
             classes={classes}
             selectedClass={selectedClass ? { name: selectedClass.name, id: selectedClass.id } : undefined}
             initialData={initialActivity}
+        />
+    );
+}
+
+export function MissionManagementPage() {
+    const { classes, activities, deleteActivity, updateActivity } = useData();
+    const navigate = useNavigate();
+
+    return (
+        <MissionManagement
+            onNavigate={(s, id) => handleTeacherNavigate(navigate, s, id)}
+            classes={classes}
+            activities={activities}
+            onDeleteActivity={deleteActivity}
+            onUpdateActivity={updateActivity}
         />
     );
 }

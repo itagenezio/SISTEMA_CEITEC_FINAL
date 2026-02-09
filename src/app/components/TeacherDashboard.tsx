@@ -147,7 +147,7 @@ export function TeacherDashboard({ onNavigate, classes, activities, onAddActivit
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto relative z-10">
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
             <Button
-              onClick={() => onNavigate('activity-creator')}
+              onClick={() => onNavigate('mission-management')}
               className="h-16 px-10 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl shadow-2xl shadow-primary/20 transition-all group w-full sm:w-auto text-[10px] tracking-widest uppercase italic"
             >
               <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform" />

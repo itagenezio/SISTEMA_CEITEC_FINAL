@@ -50,6 +50,7 @@ interface DataContextType {
     deleteClass: (id: string) => Promise<boolean>;
     deleteSubmission: (id: string) => Promise<boolean>;
     deleteActivity: (id: string) => Promise<boolean>;
+    updateActivity: (id: string, act: any) => Promise<boolean>;
     seedTestData: () => Promise<void>;
 }
 
@@ -418,6 +419,35 @@ export function DataProvider({ children }: { children: ReactNode }) {
         return true;
     };
 
+    const updateActivity = async (id: string, act: any) => {
+        const { title, points, deadline, discipline, ...extra } = act;
+
+        const dbAct = {
+            title,
+            points,
+            deadline: deadline || null,
+            discipline,
+            description: JSON.stringify({
+                description: act.description || '',
+                questions: act.questions || [],
+                type: act.type || 'atividade',
+                class_id: act.class_id || act.classId || '',
+                icon: act.icon || '🎯',
+                color: act.color || 'from-blue-500 to-indigo-600',
+                status: act.status || 'draft'
+            })
+        };
+
+        const { error } = await supabase.from('activities').update(dbAct).eq('id', id);
+        if (error) {
+            console.error('Erro Supabase (activities):', error);
+            toast.error(`Erro ao atualizar missão: ${error.message}`);
+            return false;
+        }
+        await loadData();
+        return true;
+    };
+
     return (
         <DataContext.Provider value={{
             classes,
@@ -435,6 +465,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             deleteClass,
             deleteSubmission,
             deleteActivity,
+            updateActivity,
             seedTestData
         }}>
             {children}
