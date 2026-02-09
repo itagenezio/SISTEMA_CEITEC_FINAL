@@ -71,26 +71,8 @@ export function ClassManagement({
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 10 },
     show: { opacity: 1, y: 0 }
-  };
-
-  const handleCreateActivity = () => {
-    if (!newActivity.title || !newActivity.deadline) {
-      toast.error('Preencha os campos obrigatórios');
-      return;
-    }
-
-    const activityData = {
-      ...newActivity,
-      icon: '📝',
-      color: 'from-blue-400 to-indigo-500'
-    };
-
-    onAddActivity(activityData);
-    toast.success('Atividade lançada para a turma!');
-    setIsActivityModalOpen(false);
-    setNewActivity({ title: '', description: '', points: 100, deadline: '', discipline: selectedClass?.disciplines[0] || 'Tecnologia' });
   };
 
   const generateAccessCode = () => {
@@ -107,12 +89,11 @@ export function ClassManagement({
     toast.success(`Turma "${newClassName}" criada!`);
     setIsClassModalOpen(false);
     setNewClassName('');
-    setSelectedDisciplines(['Inovação']);
   };
 
   const handleAddStudent = () => {
     if (!newStudent.name || !newStudent.email.includes('@')) {
-      toast.error('Dados inválidos', { description: 'Preencha o nome e um e-mail válido.' });
+      toast.error('Preencha nome e e-mail corretamente.');
       return;
     }
 
@@ -131,10 +112,7 @@ export function ClassManagement({
     onAddStudent(studentWithCode);
     setNewStudent({ ...newStudent, name: '', email: '' });
     setIsStudentModalOpen(false);
-
-    toast.success('Aluno cadastrado!', {
-      description: `Código: ${studentWithCode.accessCode} | Turma: ${selectedClass?.name}`
-    });
+    toast.success('Estudante cadastrado com sucesso!');
   };
 
   const handleDeleteClass = async () => {
@@ -143,189 +121,166 @@ export function ClassManagement({
     if (success) {
       setIsDeleteClassModalOpen(false);
       onNavigate('teacher-dashboard');
-      toast.success('Turma excluída com sucesso.');
+      toast.success('Turma removida.');
     }
   };
 
   const handleDeleteStudent = async (id: string) => {
-    if (window.confirm('Confirmar remoção permanente deste registro?')) {
+    if (window.confirm('Deseja realmente remover este estudante?')) {
       const success = await onDeleteStudent(id);
       if (success) {
-        toast.success('Registro removido do core.');
+        toast.success('Estudante removido.');
       }
     }
   };
 
   return (
-    <div className="space-y-12 pb-20 relative px-2">
-      {/* Background Decorativo */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[120px] -z-10 pointer-events-none animate-pulse"></div>
-      <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+    <div className="space-y-10 pb-20 relative px-4">
+      {/* Elementos de Fundo */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
 
-      {/* Header Estilo HUD - PREMIUM */}
+      {/* Header Profissional */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col lg:flex-row items-center gap-8 bg-slate-900/60 p-8 rounded-[2.5rem] border border-white/5 backdrop-blur-2xl shadow-2xl relative overflow-hidden group"
+        className="flex flex-col lg:flex-row items-center gap-6 bg-white p-8 rounded-3xl border border-border shadow-xl relative overflow-hidden group"
       >
-        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
+        <div className="absolute top-0 left-0 w-full h-[3px] bg-primary/10 group-hover:bg-primary transition-colors"></div>
 
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button
-            variant="outline"
-            onClick={() => onNavigate('teacher-dashboard')}
-            className="bg-slate-800/40 border-white/10 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl w-16 h-16 p-0 shadow-xl group/back transition-all"
-          >
-            <ArrowLeft className="w-7 h-7 group-hover/back:-translate-x-1 transition-transform" />
-          </Button>
-        </motion.div>
+        <Button
+          variant="ghost"
+          onClick={() => onNavigate('teacher-dashboard')}
+          className="rounded-2xl w-12 h-12 p-0 border border-border hover:bg-muted bg-background shadow-sm"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
 
-        <div className="flex-1 text-center lg:text-left space-y-3">
-          <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-            <h1 className="text-4xl font-black text-white tracking-tighter uppercase font-mono leading-none flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
-              ID_NODE_{selectedClass?.name || 'SELECTOR'}
+        <div className="flex-1 text-center lg:text-left space-y-1">
+          <div className="flex flex-col sm:flex-row items-center gap-3 justify-center lg:justify-start">
+            <h1 className="text-3xl font-black text-foreground tracking-tight uppercase italic flex items-center gap-3">
+              <Users className="w-5 h-5 text-primary" /> {selectedClass?.name || 'Turma Selecionada'}
             </h1>
-            <Badge variant="outline" className="border-cyan-500/40 text-cyan-400 bg-cyan-500/10 px-5 py-2 font-mono text-xs tracking-widest uppercase">
-              UUID_{selectedClass?.id || 'NULL'}
+            <Badge variant="secondary" className="bg-primary/5 text-primary border-none font-bold text-[9px] px-3 uppercase tracking-widest">
+              ID: {selectedClass?.id.slice(0, 8)}
             </Badge>
           </div>
-          <p className="text-slate-400 text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center lg:justify-start gap-3">
-            <ShieldAlert className="w-5 h-5 text-cyan-500" /> Terminal de Gerenciamento Acadêmico <span className="text-cyan-500">//</span> Protocolo Inovatec_OS
+          <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest flex items-center justify-center lg:justify-start gap-2">
+            Gestão de Registro Acadêmico // CEITEC EDU
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <motion.div whileHover={{ scale: 1.1 }}>
-            <Button
-              variant="ghost"
-              onClick={() => toast.info('Acesso emcriptado. Use o painel central.')}
-              className="w-14 h-14 bg-white/5 border border-white/10 hover:border-cyan-500/40 hover:text-cyan-400 transition-all rounded-2xl p-0 shadow-lg"
-            >
-              <Pencil className="w-6 h-6" />
-            </Button>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.1 }}>
-            <Button
-              variant="ghost"
-              onClick={() => setIsDeleteClassModalOpen(true)}
-              className="w-14 h-14 bg-white/5 border border-white/10 hover:border-red-500/40 hover:text-red-500 transition-all rounded-2xl p-0 shadow-lg"
-            >
-              <Trash2 className="w-6 h-6" />
-            </Button>
-          </motion.div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            className="w-10 h-10 border border-border hover:bg-muted text-muted-foreground hover:text-primary transition-all rounded-xl p-0"
+          >
+            <Pencil className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => setIsDeleteClassModalOpen(true)}
+            className="w-10 h-10 border border-border hover:bg-destructive/5 text-muted-foreground hover:text-destructive transition-all rounded-xl p-0"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
         </div>
       </motion.div>
 
-      {/* Dashboard de Monitoramento - GRID DINÂMICO */}
+      {/* Dashboard Grid */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        {/* Card de Operações */}
         <motion.div variants={itemVariants}>
-          <Card className="p-8 bg-slate-900/40 border border-white/5 backdrop-blur-3xl space-y-6 rounded-[2.5rem] shadow-xl hover:border-indigo-500/30 transition-all duration-500 group">
-            <div className="flex items-center justify-between border-b border-white/5 pb-4">
-              <h3 className="text-xs font-black text-slate-300 uppercase tracking-[0.3em] flex items-center gap-3">
-                <Zap className="w-5 h-5 text-indigo-400" /> Operações de Escopo
-              </h3>
-              <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
-            </div>
-            <div className="space-y-4">
-              <Button
-                onClick={() => setIsClassModalOpen(true)}
-                className="w-full bg-indigo-600/10 hover:bg-indigo-600 border border-indigo-500/20 text-indigo-400 hover:text-white h-16 rounded-2xl text-xs font-black tracking-widest uppercase transition-all duration-300 group/btn italic"
-              >
-                <Plus className="w-5 h-5 mr-3 group-hover/btn:rotate-90 transition-transform" /> Criar Novas Turmas
-              </Button>
+          <Card className="p-7 bg-white border border-border rounded-3xl shadow-sm space-y-6 hover:shadow-lg transition-all group">
+            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+              <Zap className="w-4 h-4 text-primary" /> Ações Rápidas
+            </h3>
+            <div className="space-y-3">
               <Button
                 onClick={() => onNavigate('activity-creator', selectedClass?.id)}
-                className="w-full bg-cyan-600/10 hover:bg-cyan-600 border border-cyan-500/20 text-cyan-400 hover:text-white h-16 rounded-2xl text-xs font-black tracking-widest uppercase transition-all duration-300 group/btn italic"
+                className="w-full bg-primary hover:bg-primary/90 text-white h-12 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all shadow-lg shadow-primary/10 italic"
               >
-                <Plus className="w-5 h-5 mr-3 group-hover/btn:rotate-90 transition-transform" /> Lançar Atividade p/ Turma
+                <Plus className="w-4 h-4 mr-2" /> Lançar Atividade
               </Button>
               <Button
                 onClick={() => setIsStudentModalOpen(true)}
-                className="w-full bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 text-emerald-400 hover:text-white h-16 rounded-2xl text-xs font-black tracking-widest uppercase transition-all duration-300 group/btn italic"
+                variant="outline"
+                className="w-full border-border hover:bg-muted text-foreground h-12 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all italic"
               >
-                <UserPlus className="w-5 h-5 mr-3 group-hover/btn:scale-110 transition-transform" /> Matricular Aluno_Core
+                <UserPlus className="w-4 h-4 mr-2" /> Matricular Estudante
+              </Button>
+              <Button
+                onClick={() => setIsClassModalOpen(true)}
+                variant="ghost"
+                className="w-full text-muted-foreground hover:text-foreground h-10 rounded-xl text-[9px] font-bold tracking-widest uppercase italic"
+              >
+                <Plus className="w-3 h-3 mr-2" /> Criar nova turma
               </Button>
             </div>
           </Card>
         </motion.div>
 
-        {/* Card de Métricas */}
         <motion.div variants={itemVariants}>
-          <Card className="p-8 bg-slate-900/40 border border-white/5 backdrop-blur-3xl space-y-8 rounded-[2.5rem] shadow-xl hover:border-cyan-500/30 transition-all duration-500 group h-full flex flex-col justify-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl group-hover:bg-cyan-500/10 transition-colors"></div>
-            <h3 className="text-xs font-black text-slate-300 uppercase tracking-[0.3em] flex items-center gap-3 mb-2">
-              <TrendingUp className="w-6 h-6 text-cyan-400" /> Sincronização de Dados
-            </h3>
-            <div className="grid grid-cols-2 gap-8 relative z-10">
-              <div className="space-y-3">
-                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none">Recrutas</p>
-                <h4 className="text-6xl font-black text-white tracking-tighter italic">{students.length}</h4>
+          <Card className="p-7 bg-white border border-border rounded-3xl shadow-sm relative overflow-hidden group h-full flex flex-col justify-center">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-primary" /> Desempenho Global
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mb-1">Estudantes</p>
+                <h4 className="text-4xl font-black text-foreground italic">{students.length}</h4>
               </div>
-              <div className="space-y-3">
-                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none">Eficácia_Cluster</p>
-                <h4 className="text-6xl font-black text-white tracking-tighter italic">{selectedClass?.progress || 0}<span className="text-cyan-500 text-3xl">%</span></h4>
+              <div>
+                <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mb-1">Engajamento</p>
+                <h4 className="text-4xl font-black text-foreground italic">{selectedClass?.progress || 0}%</h4>
               </div>
             </div>
-            <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden mt-6">
+            <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden mt-6">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${selectedClass?.progress || 0}%` }}
-                transition={{ duration: 2, ease: "easeOut" }}
-                className="h-full bg-gradient-to-r from-cyan-600 to-blue-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]"
+                className="h-full bg-primary"
               />
             </div>
           </Card>
         </motion.div>
 
-        {/* Card de Disciplinas */}
         <motion.div variants={itemVariants}>
-          <Card className="p-8 bg-slate-900/40 border border-white/5 backdrop-blur-3xl rounded-[2.5rem] shadow-xl hover:border-amber-500/30 transition-all duration-500 group h-full">
-            <h3 className="text-xs font-black text-slate-300 uppercase tracking-[0.3em] flex items-center gap-3 mb-6">
-              <BookMarked className="w-6 h-6 text-amber-400" /> Nodos de Conhecimento
+          <Card className="p-7 bg-white border border-border rounded-3xl shadow-sm h-full group">
+            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2 mb-5">
+              <BookMarked className="w-4 h-4 text-primary" /> Disciplinas
             </h3>
-            <div className="flex flex-wrap gap-3">
-              {selectedClass?.disciplines.map((d, i) => (
-                <motion.div
-                  key={d}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 + i * 0.1 }}
-                >
-                  <Badge className="bg-slate-950/60 text-slate-400 border border-white/10 px-5 py-2.5 font-mono text-xs uppercase tracking-widest rounded-xl hover:text-amber-400 hover:border-amber-500/40 transition-all group-hover:bg-slate-900 shadow-lg">
-                    {d}
-                  </Badge>
-                </motion.div>
+            <div className="flex flex-wrap gap-2">
+              {selectedClass?.disciplines.map((d) => (
+                <Badge key={d} variant="secondary" className="bg-muted text-muted-foreground border-none px-4 py-1.5 font-bold text-[9px] uppercase tracking-widest rounded-lg">
+                  {d}
+                </Badge>
               ))}
-              <Badge className="bg-amber-500/10 text-amber-500 border border-amber-500/20 px-5 py-2.5 font-mono text-xs uppercase tracking-widest rounded-xl cursor-pointer hover:bg-amber-500/20 transition-all">
-                <Plus className="w-4 h-4 mr-2" /> Inject_Node
+              <Badge variant="outline" className="border-dashed border-primary/40 text-primary px-4 py-1.5 font-bold text-[9px] uppercase tracking-widest rounded-lg cursor-pointer hover:bg-primary/5 transition-colors">
+                + Adicionar
               </Badge>
             </div>
           </Card>
         </motion.div>
       </motion.div>
 
-      {/* Tabela de Estudantes - LISTA MODERNA */}
-      <div className="space-y-8">
-        <div className="flex items-center justify-between border-b border-white/5 pb-6">
-          <h2 className="text-3xl font-black text-white flex items-center gap-5 tracking-tighter uppercase italic">
-            <div className="p-3 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 leading-none">
-              <Users className="w-8 h-8 text-indigo-400" />
-            </div>
-            REGISTROS_DE_MATRÍCULA
+      {/* Lista de Estudantes */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between border-b border-border pb-5">
+          <h2 className="text-2xl font-black text-foreground flex items-center gap-3 uppercase italic">
+            <Users className="w-6 h-6 text-primary" /> Lista de Estudantes
           </h2>
-          <div className="flex gap-4">
-            <Button variant="outline" className="bg-slate-900 border-white/10 text-xs font-black uppercase tracking-widest h-12 px-6 rounded-xl hover:bg-white/5">
-              <Filter className="w-4 h-4 mr-2" /> Filtrar_Logs
+          <div className="flex gap-3">
+            <Button variant="outline" size="sm" className="h-10 text-[10px] uppercase font-bold tracking-widest px-5 rounded-xl border-border">
+              <Filter className="w-3.5 h-3.5 mr-2" /> Filtrar
             </Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-widest h-12 px-6 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.2)] italic">
-              <Download className="w-4 h-4 mr-2" /> exportar_data
+            <Button size="sm" className="h-10 text-[10px] uppercase font-black tracking-widest px-6 rounded-xl bg-primary text-white shadow-lg shadow-primary/10">
+              <Download className="w-3.5 h-3.5 mr-2" /> Exportar
             </Button>
           </div>
         </div>
@@ -334,138 +289,124 @@ export function ClassManagement({
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="grid gap-4"
+          className="grid gap-3"
         >
-          {students.map((student: any, i) => (
+          {students.map((student: any) => (
             <motion.div key={student.id} variants={itemVariants}>
-              <Card className="p-6 bg-slate-900/60 border border-white/10 hover:border-cyan-500/40 transition-all duration-500 group relative overflow-hidden rounded-[2.5rem] shadow-lg backdrop-blur-xl">
-                <div className="absolute top-0 left-0 w-1 h-full bg-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-                <div className="flex flex-col lg:flex-row items-center gap-8 relative z-10">
-                  <div className="w-20 h-20 rounded-[1.8rem] bg-slate-950 flex items-center justify-center text-4xl border border-white/10 group-hover:border-cyan-500/30 transition-all duration-500 relative overflow-hidden shadow-inner">
-                    <span className="relative z-10">{student.avatar || '👤'}</span>
-                    <div className="absolute inset-0 bg-gradient-to-t from-cyan-500/5 to-transparent"></div>
+              <Card className="p-5 bg-white border border-border hover:border-primary/30 transition-all shadow-sm rounded-2xl group relative overflow-hidden">
+                <div className="flex flex-col lg:flex-row items-center gap-6 relative z-10">
+                  <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center text-3xl border border-border group-hover:bg-primary/5 transition-colors">
+                    {student.avatar || '👤'}
                   </div>
 
-                  <div className="flex-1 text-center lg:text-left min-w-0 space-y-2">
-                    <h3 className="font-black text-white text-2xl tracking-tighter uppercase font-mono italic flex items-center justify-center lg:justify-start gap-4">
+                  <div className="flex-1 text-center lg:text-left space-y-1">
+                    <h3 className="font-black text-foreground text-xl tracking-tight uppercase italic flex items-center justify-center lg:justify-start gap-3">
                       {student.name}
-                      <div className="h-[1px] flex-1 bg-gradient-to-r from-white/10 to-transparent hidden lg:block"></div>
                     </h3>
-                    <div className="flex flex-wrap justify-center lg:justify-start gap-6 font-mono font-bold">
-                      <span className="text-slate-500 text-[10px] uppercase tracking-widest flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-slate-700" /> {student.email}
+                    <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+                      <span className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 opacity-50" /> {student.email}
                       </span>
-                      <Badge className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 h-6 px-4 tracking-[0.2em] font-black text-[9px] rounded-lg shadow-[0_0_10px_rgba(6,182,212,0.1)]">
-                        KEY_{student.accessCode}
+                      <Badge className="bg-primary/10 text-primary border-none h-6 px-3 text-[9px] font-bold rounded-lg uppercase">
+                        Cod: {student.accessCode}
                       </Badge>
-                      <span className="text-[10px] text-slate-600 flex items-center gap-2 uppercase tracking-widest">
-                        <Target className="w-4 h-4 text-slate-700" /> RANKING: LEVEL_{Math.floor(student.xp / 500) + 1}
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1.5">
+                        <Target className="w-3.5 h-3.5 opacity-50" /> Nível {Math.floor(student.xp / 500) + 1}
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 pl-8 lg:border-l border-white/5">
-                    <motion.div whileHover={{ scale: 1.1 }}>
-                      <Button variant="ghost" size="icon" className="h-12 w-12 text-slate-600 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-2xl border border-white/5 hover:border-cyan-500/30 transition-all">
-                        <Pencil className="w-5 h-5" />
-                      </Button>
-                    </motion.div>
-                    <motion.div whileHover={{ scale: 1.1 }}>
-                      <Button variant="ghost" size="icon" onClick={() => handleDeleteStudent(student.id)} className="h-12 w-12 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded-2xl border border-white/5 hover:border-red-500/30 transition-all">
-                        <Trash2 className="w-5 h-5" />
-                      </Button>
-                    </motion.div>
+                  <div className="flex items-center gap-2 pl-6 lg:border-l border-border">
+                    <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-xl border border-border transition-all">
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDeleteStudent(student.id)} className="h-10 w-10 text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-xl border border-border transition-all">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
               </Card>
             </motion.div>
           ))}
           {students.length === 0 && (
-            <Card className="p-20 bg-slate-900/40 border border-dashed border-white/10 rounded-[3rem] text-center space-y-4">
-              <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto opacity-30">
-                <Users className="w-10 h-10 text-white" />
-              </div>
-              <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px]">Nenhum recrutado detectado no core.</p>
-              <Button onClick={() => setIsStudentModalOpen(true)} variant="outline" className="border-cyan-500/30 text-cyan-500 hover:bg-cyan-500 hover:text-white rounded-xl uppercase font-black text-[10px] tracking-widest px-8">Injetar Estagiário_V1</Button>
+            <Card className="p-20 bg-muted/20 border border-dashed border-border rounded-3xl text-center">
+              <Users className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
+              <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Nenhum estudante nesta turma.</p>
+              <Button onClick={() => setIsStudentModalOpen(true)} variant="outline" className="mt-4 border-primary/30 text-primary hover:bg-primary/5 rounded-xl uppercase font-black text-[10px] tracking-widest px-8 h-10 italic">Conectar Primeiro Aluno</Button>
             </Card>
           )}
         </motion.div>
       </div>
 
-      {/* Modals - ESTILIZADOS */}
+      {/* Modals Core */}
       <Dialog open={isClassModalOpen} onOpenChange={setIsClassModalOpen}>
-        <DialogContent className="bg-slate-900/95 border border-white/10 text-white sm:max-w-[500px] backdrop-blur-3xl rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
-          <DialogHeader className="border-b border-white/5 pb-6 space-y-2">
-            <DialogTitle className="text-3xl font-black uppercase italic tracking-tighter flex items-center gap-4 leading-none">
-              <div className="p-2.5 rounded-2xl bg-indigo-500/20 border border-indigo-500/30"><LayoutDashboard className="w-7 h-7 text-indigo-400" /></div> INICIALIZAR_NODE
+        <DialogContent className="bg-white border-none text-foreground sm:max-w-[450px] shadow-2xl rounded-3xl p-0 overflow-hidden">
+          <div className="bg-primary p-7 text-white">
+            <DialogTitle className="text-2xl font-black uppercase italic tracking-tight flex items-center gap-3">
+              <LayoutDashboard className="w-6 h-6" /> Novo Node Turma
             </DialogTitle>
-            <DialogDescription className="text-slate-500 text-[9px] uppercase font-black tracking-[0.4em] flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div> Cluster_Deployment_Interface
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-6 py-8">
-            <div className="space-y-2 font-mono">
-              <label className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] ml-1">Identidade da Turma</label>
+            <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest mt-1 italic">Expanda os perímetros do CEITEC</p>
+          </div>
+          <div className="p-7 space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Nome da nova turma</label>
               <Input
-                placeholder="Ex: CLUSTER_9A_ROBOTICA"
+                placeholder="Ex: 1º ANO - ROBÓTICA"
                 value={newClassName}
                 onChange={(e) => setNewClassName(e.target.value)}
-                className="bg-slate-950/50 border-white/10 h-14 uppercase rounded-2xl font-black text-white shadow-inner tracking-widest"
+                className="bg-muted/50 border-border h-12 uppercase rounded-xl font-bold text-foreground text-sm"
               />
             </div>
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={() => setIsClassModalOpen(false)} className="flex-1 font-bold text-[10px] uppercase h-12 rounded-xl">Cancelar</Button>
+              <Button onClick={handleCreateClass} className="flex-1 bg-primary text-white hover:bg-primary/90 font-black h-12 rounded-xl text-[10px] uppercase shadow-lg shadow-primary/20 italic">Inicializar Turma</Button>
+            </div>
           </div>
-          <DialogFooter className="bg-slate-950/80 -mx-6 -mb-6 p-8 border-t border-white/5 flex gap-4">
-            <Button variant="ghost" onClick={() => setIsClassModalOpen(false)} className="text-slate-600 font-black text-[10px] uppercase tracking-widest">Abortar</Button>
-            <Button onClick={handleCreateClass} className="bg-indigo-600 hover:bg-indigo-500 text-white font-black h-14 px-10 rounded-2xl text-[10px] uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(79,70,229,0.3)] italic flex-1">Start_Protocolo</Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isStudentModalOpen} onOpenChange={setIsStudentModalOpen}>
-        <DialogContent className="bg-slate-900/95 border border-white/10 text-white sm:max-w-[500px] backdrop-blur-3xl rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-600"></div>
-          <DialogHeader className="border-b border-white/5 pb-6 space-y-2">
-            <DialogTitle className="text-3xl font-black uppercase italic tracking-tighter flex items-center gap-4 leading-none">
-              <div className="p-2.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/30"><UserPlus className="w-7 h-7 text-emerald-400" /></div> INJETAR_USUÁRIO
+        <DialogContent className="bg-white border-none text-foreground sm:max-w-[450px] shadow-2xl rounded-3xl p-0 overflow-hidden">
+          <div className="bg-primary p-7 text-white">
+            <DialogTitle className="text-2xl font-black uppercase italic tracking-tight flex items-center gap-3">
+              <UserPlus className="w-6 h-6" /> Registro de Aluno
             </DialogTitle>
-            <DialogDescription className="text-slate-500 text-[9px] uppercase font-black tracking-[0.4em] flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div> Registro_Integrity_Module
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-6 py-8 font-mono">
-            <div className="space-y-2 font-mono">
-              <label className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] ml-1">Identificação_Codename</label>
-              <Input placeholder="NOME_COMPLETO_DO_ALUNO" value={newStudent.name} onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })} className="bg-slate-950/50 border-white/10 h-14 uppercase rounded-2xl font-black text-white shadow-inner tracking-widest" />
+            <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest mt-1 italic">Matrícula direta no Inovatec Node</p>
+          </div>
+          <div className="p-7 space-y-5">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Nome Completo</label>
+              <Input placeholder="NOME DO ESTUDANTE" value={newStudent.name} onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })} className="bg-muted/50 border-border h-12 uppercase rounded-xl font-bold text-sm" />
             </div>
-            <div className="space-y-2 font-mono">
-              <label className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] ml-1">Protocolo_Email</label>
-              <Input placeholder="ALUNO@CEITEC.EDU" value={newStudent.email} onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })} className="bg-slate-950/50 border-white/10 h-14 rounded-2xl font-black text-white shadow-inner tracking-widest" />
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">E-mail para Acesso</label>
+              <Input placeholder="ESTUDANTE@EMAIL.COM" value={newStudent.email} onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })} className="bg-muted/50 border-border h-12 uppercase rounded-xl font-bold text-sm" />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button variant="ghost" onClick={() => setIsStudentModalOpen(false)} className="flex-1 font-bold text-[10px] uppercase h-12 rounded-xl">Cancelar</Button>
+              <Button onClick={handleAddStudent} className="flex-1 bg-primary text-white hover:bg-primary/90 font-black h-12 rounded-xl text-[10px] uppercase shadow-lg shadow-primary/20 italic">Vincular Estudante</Button>
             </div>
           </div>
-          <DialogFooter className="bg-slate-950/80 -mx-6 -mb-6 p-8 border-t border-white/5 flex gap-4">
-            <Button variant="ghost" onClick={() => setIsStudentModalOpen(false)} className="text-slate-600 font-black text-[10px] uppercase tracking-widest">Abortar</Button>
-            <Button onClick={handleAddStudent} className="bg-emerald-600 hover:bg-emerald-500 text-white font-black h-14 px-10 rounded-2xl text-[10px] uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(16,185,129,0.3)] italic flex-1">Confirmar_Link</Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Outros Modals (Simplificados p/ consistência) */}
       <Dialog open={isDeleteClassModalOpen} onOpenChange={setIsDeleteClassModalOpen}>
-        <DialogContent className="bg-slate-900 border border-red-900/40 text-white rounded-[2.5rem] shadow-2xl">
-          <DialogHeader className="p-4">
-            <DialogTitle className="text-red-500 flex items-center gap-4 font-black uppercase text-2xl tracking-tighter italic">
-              <div className="p-2 bg-red-500/10 rounded-xl"><ShieldAlert className="w-8 h-8 animate-pulse" /></div> PURGE_NODE?
-            </DialogTitle>
-            <DialogDescription className="text-slate-500 font-black text-[10px] uppercase mt-4 leading-relaxed tracking-[0.2em]">
-              A deleção do nodo <strong className="text-white italic">{selectedClass?.name}</strong> removerá todas as dependências do core. Operação irreversível. Toda a data_link será perdida.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="mt-8 flex gap-3">
-            <Button variant="ghost" onClick={() => setIsDeleteClassModalOpen(false)} className="text-slate-600 uppercase font-black text-[10px] tracking-widest">Abortar_Purge</Button>
-            <Button variant="destructive" onClick={handleDeleteClass} className="bg-red-600 hover:bg-red-500 text-white font-black h-12 px-8 rounded-xl text-[10px] uppercase italic tracking-[0.2em] shadow-lg shadow-red-900/40 border-none">Execute_Purge</Button>
-          </DialogFooter>
+        <DialogContent className="bg-white border border-destructive/20 text-foreground rounded-3xl shadow-2xl overflow-hidden p-0 max-w-sm">
+          <div className="p-7 space-y-5 text-center">
+            <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto">
+              <ShieldAlert className="w-8 h-8 text-destructive animate-pulse" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-black uppercase tracking-tight italic">Remover Turma?</h3>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase leading-relaxed tracking-wider px-4">
+                Esta ação removerá permanentemente a turma <span className="text-foreground">{selectedClass?.name}</span> e todos os dados vinculados.
+              </p>
+            </div>
+          </div>
+          <div className="p-4 bg-muted/30 flex gap-2">
+            <Button variant="ghost" onClick={() => setIsDeleteClassModalOpen(false)} className="flex-1 font-bold text-[10px] uppercase h-10">Abortar</Button>
+            <Button variant="destructive" onClick={handleDeleteClass} className="flex-1 bg-destructive hover:bg-destructive/90 text-white font-black h-10 rounded-xl text-[10px] uppercase italic">Confirmar Remoção</Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

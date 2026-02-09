@@ -18,25 +18,19 @@ export function Activities({ onNavigate, activities, submissions }: ActivitiesPr
     return 'pending';
   };
 
-  const getRealProgress = (activityId: string) => {
-    const sub = submissions.find(s => String(s.activityId || s.activity_id) === String(activityId));
-    if (sub) return 100;
-    return 0;
-  };
-
   const getStatusInfo = (status: string) => {
     switch (status) {
       case 'completed':
         return {
-          icon: <CheckCircle2 className="w-4 h-4" />,
-          label: 'Módulo Concluído',
-          color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+          icon: <CheckCircle2 className="w-3.5 h-3.5" />,
+          label: 'Sincronizado',
+          color: 'bg-emerald-50 text-emerald-600 border-emerald-100'
         };
       default:
         return {
-          icon: <Circle className="w-4 h-4" />,
-          label: 'Missão Disponível',
-          color: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]'
+          icon: <Circle className="w-3.5 h-3.5" />,
+          label: 'Disponível',
+          color: 'bg-primary/5 text-primary border-primary/20'
         };
     }
   };
@@ -52,63 +46,53 @@ export function Activities({ onNavigate, activities, submissions }: ActivitiesPr
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 15 },
     show: { opacity: 1, y: 0 }
   };
 
   return (
-    <div className="space-y-12 pb-20 relative px-2">
-      {/* Elementos de Fundo Decorativos */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-600/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[150px] -z-10 pointer-events-none"></div>
+    <div className="space-y-12 pb-20 relative px-4">
+      {/* Background Decorativo */}
+      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
 
-      {/* Header Contextual Futurista */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-white/5 pb-8">
-        <div className="flex flex-col md:flex-row items-center gap-8 group">
-          <motion.div
-            whileHover={{ scale: 1.05, rotate: -5 }}
-            whileTap={{ scale: 0.95 }}
+      {/* Header Contextual Pro */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-border pb-10">
+        <div className="flex items-center gap-8">
+          <Button
+            variant="ghost"
+            onClick={() => onNavigate('student-dashboard')}
+            className="rounded-2xl w-14 h-14 p-0 border border-border hover:bg-muted bg-white shadow-sm"
           >
-            <Button
-              variant="outline"
-              onClick={() => onNavigate('student-dashboard')}
-              className="bg-slate-900/60 border-white/10 text-slate-400 hover:text-cyan-400 hover:border-cyan-500/50 hover:bg-slate-800 rounded-[2rem] w-16 h-16 p-0 shadow-2xl backdrop-blur-xl transition-all duration-300"
-            >
-              <ArrowLeft className="w-7 h-7" />
-            </Button>
-          </motion.div>
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
 
-          <div className="space-y-2 text-center md:text-left">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center justify-center md:justify-start gap-3"
-            >
-              <div className="h-0.5 w-6 bg-cyan-500"></div>
-              <span className="text-xs font-black text-cyan-400 uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">Sincronização de Progresso Ativa</span>
-            </motion.div>
-            <h1 className="text-5xl md:text-6xl font-black text-white tracking-tighter leading-none italic uppercase font-mono">
-              HUB DE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 animate-gradient-x">MISSÕES</span>
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2.5 mb-1.5 ml-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.6)]"></div>
+              <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Conexão Operacional v2.5</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tighter uppercase italic">
+              Hub de <span className="text-primary italic">Missões</span>
             </h1>
-            <p className="text-slate-300 text-base font-bold max-w-md tracking-tight italic leading-relaxed">
-              Evolua seu DNA Maker completando protocolos de treinamento em tempo real.
+            <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest opacity-60">
+              Módulos de aprendizado tecnológico em tempo real
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          <Card className="px-6 h-14 bg-slate-900/80 border-white/10 backdrop-blur-2xl flex items-center justify-between gap-4 flex-1 md:flex-initial rounded-2xl group hover:border-cyan-500/30 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_8px_#06b6d4]"></div>
-              <span className="text-xs font-black text-white tracking-widest uppercase">{activities.length} <span className="text-slate-500">CONEXÕES</span></span>
+        <div className="flex items-center gap-4">
+          <Card className="px-6 h-14 bg-white border border-border flex items-center gap-5 rounded-2xl shadow-xl">
+            <div className="flex items-center gap-2.5">
+              <Target className="w-5 h-5 text-primary" />
+              <span className="text-sm font-black text-foreground tracking-tight uppercase italic">{activities.length} AtividadesAtivas</span>
             </div>
-            <div className="h-6 w-[1px] bg-white/10 mx-2"></div>
-            <Flame className="w-5 h-5 text-orange-500 group-hover:scale-110 transition-transform" />
+            <div className="h-5 w-[1px] bg-border"></div>
+            <Flame className="w-5 h-5 text-orange-500 animate-bounce" />
           </Card>
         </div>
       </div>
 
-      {/* Grade de Missões Vibrante */}
+      {/* Grid de Atividades com Modern Cards */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -116,18 +100,13 @@ export function Activities({ onNavigate, activities, submissions }: ActivitiesPr
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
       >
         {activities.length === 0 ? (
-          <div className="col-span-full py-32 text-center border-2 border-dashed border-white/5 rounded-[3rem] bg-slate-900/40 backdrop-blur-xl">
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              <ShieldCheck className="w-20 h-20 text-slate-800 mx-auto mb-6" />
-            </motion.div>
-            <h3 className="text-2xl font-black text-slate-400 uppercase tracking-tighter">Frequência Silenciosa</h3>
-            <p className="text-slate-600 text-sm mt-2 max-w-xs mx-auto uppercase font-bold tracking-widest">Aguardando transmissão de novas missões pelo servidor mestre.</p>
+          <div className="col-span-full py-24 text-center border-2 border-dashed border-border rounded-[3rem] bg-muted/20">
+            <ShieldCheck className="w-20 h-20 text-muted-foreground/20 mx-auto mb-6" />
+            <h3 className="text-2xl font-black text-muted-foreground uppercase tracking-tight italic">Nenhuma Missão Identificada</h3>
+            <p className="text-muted-foreground/60 text-[10px] mt-2 uppercase font-black tracking-widest leading-relaxed">Aguardando telemetria de novos protocolos pedagógicos.</p>
           </div>
         ) : (
-          activities.map((activity, i) => {
+          activities.map((activity) => {
             const status = getRealStatus(activity.id);
             const statusInfo = getStatusInfo(status);
             const isCompleted = status === 'completed';
@@ -136,66 +115,54 @@ export function Activities({ onNavigate, activities, submissions }: ActivitiesPr
               <motion.div
                 key={activity.id}
                 variants={itemVariants}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group h-full"
+                className="h-full"
               >
                 <Card
                   onClick={() => !isCompleted && onNavigate('submit-activity', activity.id)}
-                  className={`relative p-0 overflow-hidden bg-slate-900/40 border border-white/5 backdrop-blur-2xl hover:border-cyan-500/50 shadow-2xl transition-all duration-500 cursor-pointer h-full flex flex-col group/card rounded-[2.5rem]`}
+                  className="flex flex-col h-full bg-white border border-border hover:border-primary/40 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer rounded-[2.5rem] overflow-hidden group relative"
                 >
-                  {/* Neon Glow Effect na borda do topo */}
-                  <div className={`h-[3px] w-full bg-gradient-to-r ${activity.color || 'from-cyan-400 to-blue-600'} opacity-30 group-hover/card:opacity-100 transition-opacity`} />
+                  <div className={`h-2 w-full ${isCompleted ? 'bg-emerald-500' : 'bg-primary'} opacity-20 group-hover:opacity-100 transition-opacity`}></div>
 
-                  {/* Luz de Fundo Dinâmica */}
-                  <div className={`absolute -top-10 -right-10 w-32 h-32 rounded-full blur-[80px] transition-opacity duration-700 opacity-20 group-hover/card:opacity-40 bg-gradient-to-br ${activity.color || 'from-cyan-500 to-blue-600'}`}></div>
-
-                  <div className="p-8 flex-1 space-y-6 relative z-10">
+                  <div className="p-8 flex-1 space-y-6">
                     <div className="flex justify-between items-start">
-                      <div className={`w-16 h-16 rounded-[1.2rem] bg-slate-950/80 border border-white/10 flex items-center justify-center text-4xl shadow-inner group-hover/card:scale-110 group-hover/card:border-cyan-500/40 transition-all duration-500 relative`}>
-                        <span className="relative z-10">{activity.icon || '🎯'}</span>
-                        <div className="absolute inset-0 bg-white/5 rounded-[1.2rem] animate-pulse"></div>
+                      <div className="w-16 h-16 rounded-[1.25rem] bg-muted border border-border flex items-center justify-center text-4xl group-hover:rotate-6 group-hover:scale-110 transition-all duration-500 shadow-inner">
+                        {activity.icon || '🎯'}
                       </div>
-                      <Badge className={`px-5 py-2 rounded-full ${statusInfo.color} border-2 font-black text-xs uppercase tracking-widest`}>
-                        {statusInfo.label}
+                      <Badge className={`px-4 py-1.5 rounded-xl ${statusInfo.color} border font-black text-[9px] uppercase tracking-widest italic`}>
+                        {statusInfo.icon} <span className="ml-2">{statusInfo.label}</span>
                       </Badge>
                     </div>
 
                     <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-1 bg-cyan-500 rounded-full"></div>
-                        <h3 className="text-xl font-black text-white tracking-tight leading-none group-hover/card:text-cyan-400 transition-colors uppercase font-mono">
-                          {activity.title}
-                        </h3>
-                      </div>
-                      <p className="text-base text-slate-300 font-bold leading-relaxed line-clamp-2 italic">
-                        "{activity.description}"
+                      <h3 className="text-2xl font-black text-foreground tracking-tight uppercase italic group-hover:text-primary transition-colors leading-none">
+                        {activity.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground font-medium italic leading-relaxed line-clamp-2 opacity-80">
+                        {activity.description}
                       </p>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs font-black uppercase tracking-[0.2em] pt-2">
-                      <div className="flex items-center gap-3 px-4 py-2 bg-slate-950/60 rounded-xl border border-white/10 text-cyan-400 shadow-inner">
-                        <Zap className="w-4 h-4 fill-cyan-400/20" />
-                        {activity.points} XP_PWR
-                      </div>
-                      <div className="flex items-center gap-3 px-4 py-2 bg-slate-950/60 rounded-xl border border-white/10 text-slate-200">
-                        <Clock className="w-4 h-4 text-slate-400" />
+                    <div className="flex flex-wrap gap-3 pt-2">
+                      <Badge variant="secondary" className="bg-primary/5 text-primary border-none text-[9px] font-black py-2 px-4 flex items-center gap-2 rounded-xl italic">
+                        <Zap className="w-3.5 h-3.5 text-primary/40 group-hover:text-primary transition-colors" />
+                        {activity.points} XP
+                      </Badge>
+                      <Badge variant="secondary" className="bg-muted/50 text-muted-foreground border-none text-[9px] font-black py-2 px-4 flex items-center gap-2 rounded-xl italic">
+                        <Clock className="w-3.5 h-3.5 opacity-40" />
                         {activity.deadline}
-                      </div>
+                      </Badge>
                     </div>
                   </div>
 
-                  <div className={`p-6 mt-auto transition-all duration-500 ${isCompleted ? 'bg-emerald-500/10' : 'bg-white/5 group-hover/card:bg-cyan-500/10'}`}>
+                  <div className={`p-5 border-t border-border flex items-center justify-center font-black uppercase tracking-widest text-[10px] italic transition-all duration-500 ${isCompleted ? 'bg-emerald-50 text-emerald-600' : 'bg-muted/30 group-hover:bg-primary group-hover:text-white group-hover:gap-4'}`}>
                     {isCompleted ? (
-                      <div className="flex items-center justify-center gap-3 text-xs font-black text-emerald-400 uppercase tracking-widest">
-                        <Trophy className="w-5 h-5 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" /> Sincronismo Finalizado
+                      <div className="flex items-center gap-3">
+                        <Trophy className="w-4 h-4" /> Pontuação Sincronizada
                       </div>
                     ) : (
-                      <Button
-                        variant="ghost"
-                        className="w-full text-sm font-black uppercase tracking-[0.3em] h-14 hover:bg-transparent text-slate-300 group-hover/card:text-cyan-400 flex items-center justify-center gap-6"
-                      >
-                        INICIAR CONEXÃO <div className="p-3 rounded-xl bg-cyan-500/20"><ExternalLink className="w-5 h-5" /></div>
-                      </Button>
+                      <div className="flex items-center gap-3">
+                        Acessar Protocolo <ExternalLink className="w-4 h-4" />
+                      </div>
                     )}
                   </div>
                 </Card>
@@ -205,39 +172,37 @@ export function Activities({ onNavigate, activities, submissions }: ActivitiesPr
         )}
       </motion.div>
 
-      {/* Call to Action: Upload Global Upgradeado */}
+      {/* Footer Banner */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        whileInView={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
         <Card
-          className="p-8 rounded-[3rem] bg-gradient-to-br from-indigo-900/60 via-slate-950 to-slate-900 border border-indigo-500/30 hover:border-indigo-500/60 transition-all cursor-pointer group/cta relative overflow-hidden shadow-[0_0_50px_rgba(79,70,229,0.1)]"
+          className="p-10 rounded-[3rem] bg-primary text-white border-none shadow-2xl shadow-primary/30 cursor-pointer group relative overflow-hidden text-center md:text-left"
           onClick={() => {
             const firstPending = activities.find(a => getRealStatus(a.id) === 'pending');
             onNavigate('submit-activity', firstPending?.id || activities[0]?.id);
           }}
         >
-          {/* Decoração Visual CTA */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] group-hover/cta:bg-indigo-500/20 transition-all"></div>
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-white/10 rounded-full blur-[100px] group-hover:scale-125 transition-transform duration-1000"></div>
 
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-10 relative z-10">
-            <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-              <div className="w-20 h-20 rounded-[2rem] bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center group-hover/cta:rotate-[15deg] transition-transform duration-500 shadow-2xl">
-                <Sparkles className="w-10 h-10 text-indigo-400 drop-shadow-[0_0_15px_rgba(129,140,248,0.8)]" />
+          <div className="flex flex-col md:flex-row items-center justify-between gap-10 relative z-10">
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="w-20 h-20 rounded-[1.5rem] bg-white/20 backdrop-blur-md flex items-center justify-center shadow-xl group-hover:-rotate-12 transition-transform duration-500 border border-white/20">
+                <Sparkles className="w-10 h-10 text-white" />
               </div>
-              <div className="space-y-1">
-                <h3 className="text-3xl font-black text-white tracking-widest uppercase italic">ENVIO GLOBAL_DATA</h3>
-                <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">Possui protocolos externos? Sincronize com o Core Central agora.</p>
+              <div className="space-y-2">
+                <h3 className="text-3xl font-black tracking-tight uppercase italic">Desafio de Maestria</h3>
+                <p className="text-white/70 text-[10px] font-black uppercase tracking-[0.2em] italic">Acelere seu progresso para atingir o Tier Elite Maker.</p>
               </div>
             </div>
-            <Button className="w-full lg:w-auto bg-indigo-600 hover:bg-indigo-500 text-white font-black h-16 px-12 rounded-2xl tracking-[0.3em] text-sm shadow-[0_0_30px_rgba(79,70,229,0.4)] transition-all uppercase italic">
-              UPLOAD://SYNC_CORE
+            <Button className="w-full md:w-auto bg-white text-primary hover:bg-white/90 font-black h-16 px-12 rounded-2xl tracking-[0.2em] text-[11px] shadow-2xl uppercase transition-all italic scale-100 group-hover:scale-105">
+              Continuar Jornada
             </Button>
           </div>
         </Card>
       </motion.div>
-
     </div>
   );
 }
