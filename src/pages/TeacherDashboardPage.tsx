@@ -21,6 +21,12 @@ export function TeacherDashboardPage() {
             'logout': '/logout'
         };
 
+        if (screen === 'ocr-scanner') {
+            // URL do App Flutter no Vercel - o professor é levado para a ferramenta de scanner
+            window.open('https://sistema-correcao-final.vercel.app', '_blank');
+            return;
+        }
+
         if (screen === 'logout') {
             navigate('/login');
             return;

@@ -375,6 +375,7 @@ export function TeacherDashboard({ onNavigate, classes, activities, onAddActivit
             <div className="grid grid-cols-2 gap-4">
               {[
                 { label: 'Minhas Turmas', icon: Users, screen: 'class-management', color: 'text-primary' },
+                { label: 'Scanner de OCR', icon: Sparkles, screen: 'ocr-scanner', color: 'text-cyan-500' },
                 { label: 'Validar Entregas', icon: CheckSquare, screen: 'submissions-list', color: 'text-orange-500' },
                 { label: 'Relatórios Pro', icon: BarChart3, screen: 'reports', color: 'text-primary' },
                 { label: 'Agenda Global', icon: Calendar, screen: 'calendar', color: 'text-primary' },
