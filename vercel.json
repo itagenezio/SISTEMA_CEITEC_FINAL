@@ -1,7 +1,11 @@
 {
     "rewrites": [
         {
-            "source": "/(.*)",
+            "source": "/scanner_ocr/(.*)",
+            "destination": "/scanner_ocr/$1"
+        },
+        {
+            "source": "/((?!scanner_ocr).*)$",
             "destination": "/index.html"
         }
     ]
