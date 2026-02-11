@@ -22,8 +22,8 @@ export function TeacherDashboardPage() {
         };
 
         if (screen === 'ocr-scanner') {
-            // URL do App Flutter no Vercel - o professor é levado para a ferramenta de scanner
-            window.open('https://sistema-correcao-final.vercel.app', '_blank');
+            // Navegar diretamente para o Scanner OCR
+            window.location.href = '/scanner_ocr';
             return;
         }
 
