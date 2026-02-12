@@ -21,9 +21,9 @@ export function TeacherDashboardPage() {
             'logout': '/logout'
         };
 
-        if (screen === 'ocr-scanner') {
-            // Navegar diretamente para o Scanner OCR
-            window.location.href = '/scanner_ocr';
+        if (screen === 'ocr-scanner' || screen === 'scanner_ocr') {
+            // FORÇAR RELOAD COMPLETO (Bypass React Router)
+            window.location.replace('/scanner_ocr/index.html');
             return;
         }
 

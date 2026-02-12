@@ -4,7 +4,7 @@ import { Progress as ProgressBar } from './ui/progress';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Activity } from '../../types';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 interface ProgressProps {
   onNavigate: (screen: string) => void;

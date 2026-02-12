@@ -1,0 +1,10 @@
+﻿
+Status   Name               DisplayName                           
+------   ----               -----------                           
+Stopped  AarSvc_c2422       Agent Activation Runtime_c2422        
+Stopped  ADPSvc             Serviço de Plataforma de Dados Agre...
+Stopped  ALG                Serviço Gateway de Camada de Aplica...
+Stopped  AppIDSvc           Identidade do Aplicativo              
+Running  Appinfo            Informações sobre Aplicativos         
+
+

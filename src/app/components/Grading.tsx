@@ -5,7 +5,7 @@ import { Badge } from './ui/badge';
 import { Textarea } from './ui/textarea';
 import { Slider } from './ui/slider';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { Activity, EnrolledStudent } from '../../types';
 

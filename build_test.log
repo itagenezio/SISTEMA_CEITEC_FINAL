@@ -1,0 +1,15 @@
+
+> @figma/my-make-file@0.0.1 build
+> vite build && echo 'Verificando Scanner...' && xcopy public\scanner_ocr dist\scanner_ocr /E /I /Y
+
+[36mvite v6.1.0 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 4 modules transformed.
+[31mx[39m Build failed in 100ms
+[31merror during build:
+[31m[@tailwindcss/vite:generate:build] Cannot convert undefined or null to object[31m
+file: [36mC:/Users/genez/PROJETOS_CEITEC/SISTEMA_CEITEC_FINAL/src/styles/index.css[31m
+    at _.generate (file:///C:/Users/genez/PROJETOS_CEITEC/SISTEMA_CEITEC_FINAL/node_modules/@tailwindcss/vite/dist/index.mjs:1:5707)
+    at async Object.transform (file:///C:/Users/genez/PROJETOS_CEITEC/SISTEMA_CEITEC_FINAL/node_modules/@tailwindcss/vite/dist/index.mjs:1:3727)
+    at async transform (file:///C:/Users/genez/PROJETOS_CEITEC/SISTEMA_CEITEC_FINAL/node_modules/rollup/dist/es/shared/node-entry.js:21246:16)
+    at async ModuleLoader.addModuleSource (file:///C:/Users/genez/PROJETOS_CEITEC/SISTEMA_CEITEC_FINAL/node_modules/rollup/dist/es/shared/node-entry.js:21474:36)[39m

@@ -4,7 +4,7 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Activity, EnrolledStudent } from '../../types';
 import { toast } from 'sonner';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 interface SubmissionsListProps {
     onNavigate: (screen: string, id?: string) => void;

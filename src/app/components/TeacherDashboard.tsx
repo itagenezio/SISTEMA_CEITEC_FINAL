@@ -5,7 +5,7 @@ import { Badge } from './ui/badge';
 import { Class, Activity } from '../../types';
 import { toast } from 'sonner';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Dialog,
   DialogContent,

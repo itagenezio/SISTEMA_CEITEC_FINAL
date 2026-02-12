@@ -2,7 +2,7 @@ import { ArrowLeft, Code, Lightbulb, Play, CheckCircle2, Lock, BookOpen } from '
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 interface LearningPathsProps {
   onNavigate: (screen: string) => void;

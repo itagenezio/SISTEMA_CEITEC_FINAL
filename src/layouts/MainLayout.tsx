@@ -21,7 +21,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../app/components/ui/button';
 import { Badge } from '../app/components/ui/badge';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function MainLayout() {
     const { user, role, logout } = useAuth();

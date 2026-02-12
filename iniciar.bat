@@ -1,14 +1,14 @@
 @echo off
-title Iniciar Servidor - INOVATEC EDU
+title Iniciar Portal - SISTEMA CEITEC
 echo ==========================================
-echo   Iniciando Servidor de Desenvolvimento
+echo   Iniciando Servidor na Porta 3000
 echo ==========================================
 echo.
+cd /d "%~dp0"
+echo [!] Local: %CD%
+echo ------------------------------------------
 echo.
-echo [!] IMPORTANTE: No PowerShell do VS Code, digite: .\iniciar.bat
-echo -------------------------------------------------------------
-echo.
-pnpm exec vite --port 5173 --host 127.0.0.1 --clearScreen false --force
+call npx vite --port 3000 --host --open
 echo.
 echo ------------------------------------------
 echo O servidor parou. Verifique as mensagens acima.
