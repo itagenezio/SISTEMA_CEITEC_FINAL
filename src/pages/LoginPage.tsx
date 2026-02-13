@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Login } from '../app/components/Login';
 
-export function LoginPage() {
+export default function LoginPage() {
     const { login, isAuthenticated, role } = useAuth();
     const navigate = useNavigate();
 

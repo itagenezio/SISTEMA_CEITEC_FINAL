@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { StudentDashboard } from '../app/components/StudentDashboard';
 
-export function StudentDashboardPage() {
+export default function StudentDashboardPage() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
 

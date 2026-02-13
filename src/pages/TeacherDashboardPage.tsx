@@ -3,7 +3,7 @@ import { useData } from '../contexts/DataContext';
 import { TeacherDashboard } from '../app/components/TeacherDashboard';
 import { Class, EnrolledStudent } from '../types';
 
-export function TeacherDashboardPage() {
+export default function TeacherDashboardPage() {
     const { classes, enrolledStudents, activities, addActivity, deleteActivity } = useData();
     const navigate = useNavigate();
 
@@ -22,8 +22,8 @@ export function TeacherDashboardPage() {
         };
 
         if (screen === 'ocr-scanner' || screen === 'scanner_ocr') {
-            // FORÇAR RELOAD COMPLETO (Bypass React Router)
-            window.location.replace('/scanner_ocr/index.html');
+            // ABRIR EM NOVA ABA (Preserva o Dashboard)
+            window.open('/scanner_ocr/index.html', '_blank');
             return;
         }
 

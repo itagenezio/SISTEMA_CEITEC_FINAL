@@ -1,0 +1,1 @@
+import{j as a}from"./vendor-radix-D9w6Aqn5.js";import{d}from"./index-C4prtVKG.js";function s({className:r,...o}){return a.jsx("div",{"data-slot":"card",className:d("bg-card text-card-foreground flex flex-col gap-6 rounded-xl border",r),...o})}export{s as C};

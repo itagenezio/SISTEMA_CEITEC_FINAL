@@ -8,6 +8,7 @@ cd /d "%~dp0"
 echo [!] Local: %CD%
 echo ------------------------------------------
 echo.
+set "PATH=%PATH%;C:\Program Files\nodejs"
 call npx vite --port 3000 --host --open
 echo.
 echo ------------------------------------------
