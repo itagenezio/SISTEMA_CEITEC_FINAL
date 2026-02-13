@@ -61,10 +61,9 @@ export function MainLayout() {
             </div>
 
             {/* Sidebar Evoluída c/ Efeito Moderno */}
-            <motion.aside
-                initial={false}
-                animate={{ width: isCollapsed ? '90px' : '300px' }}
-                className="relative z-30 h-full border-r border-blue-100 bg-white flex flex-col transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-[10px_0_30px_rgba(37,99,235,0.05)]"
+            <aside
+                style={{ width: isCollapsed ? '90px' : '300px' }}
+                className="relative z-30 h-full border-r border-blue-100 bg-white flex flex-col transition-all duration-300 shadow-[10px_0_30px_rgba(37,99,235,0.05)]"
             >
                 {/* Logo Area - PREMIUM */}
                 <div className="p-8 flex items-center gap-4 group">
@@ -72,9 +71,7 @@ export function MainLayout() {
                         <GraduationCap className="w-7 h-7 text-white drop-shadow-md" />
                     </div>
                     {!isCollapsed && (
-                        <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
+                        <div
                             className="flex flex-col"
                         >
                             <span className="font-black text-xl tracking-tighter leading-none italic text-slate-900">INOVATEC<span className="text-blue-600">_OS</span></span>
@@ -82,7 +79,7 @@ export function MainLayout() {
                                 <span className="text-[9px] text-slate-400 font-black uppercase tracking-[0.3em]">Build_2026.x</span>
                                 <div className="w-1 h-1 rounded-full bg-blue-500"></div>
                             </div>
-                        </motion.div>
+                        </div>
                     )}
                 </div>
 
@@ -91,10 +88,8 @@ export function MainLayout() {
                     {menuItems.map((item) => {
                         const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path) && item.path !== '/student' && item.path !== '/teacher');
                         return (
-                            <motion.button
+                            <button
                                 key={item.path}
-                                whileHover={{ x: 5 }}
-                                whileTap={{ scale: 0.98 }}
                                 onClick={() => navigate(item.path)}
                                 className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 group relative
                                     ${isActive
@@ -111,7 +106,7 @@ export function MainLayout() {
                                 {isActive && !isCollapsed && (
                                     <div className="absolute right-4 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.4)]"></div>
                                 )}
-                            </motion.button>
+                            </button>
                         );
                     })}
                 </nav>
@@ -125,8 +120,8 @@ export function MainLayout() {
                                     <span className="text-2xl relative z-10">{user?.avatar || '👤'}</span>
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-black truncate text-slate-900 uppercase italic tracking-tighter">{user?.name}</p>
-                                    <Badge className="p-0 text-[10px] text-blue-600 font-black uppercase tracking-[0.2em] bg-transparent border-none hover:bg-transparent">STATUS:_{role}</Badge>
+                                    <p className="text-sm font-black truncate text-slate-900 uppercase italic tracking-tighter">{user?.name || 'OPERADOR'}</p>
+                                    <Badge className="p-0 text-[10px] text-blue-600 font-black uppercase tracking-[0.2em] bg-transparent border-none hover:bg-transparent">STATUS:_{role || 'DESCONHECIDO'}</Badge>
                                 </div>
                             </div>
                         </div>
@@ -149,7 +144,7 @@ export function MainLayout() {
                         </button>
                     </div>
                 </div>
-            </motion.aside>
+            </aside>
 
             {/* Main Content Area */}
             <main className="flex-1 flex flex-col relative z-20 overflow-hidden bg-transparent">
@@ -205,12 +200,8 @@ export function MainLayout() {
                 {/* Dynamic Content View */}
                 <div className="flex-1 overflow-y-auto no-scrollbar custom-scrollbar bg-transparent">
                     <AnimatePresence mode="wait">
-                        <motion.div
+                        <div
                             key={location.pathname}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3 }}
                             className="p-10 min-h-full w-full flex flex-col"
                         >
                             <div className="flex-1">
@@ -223,7 +214,7 @@ export function MainLayout() {
                                     EDUCADOR GENÉZIO DE LAVOR CEITEC 2026 // ITA TECNOLOGIA EDUCACIONAL
                                 </p>
                             </footer>
-                        </motion.div>
+                        </div>
                     </AnimatePresence>
                 </div>
 

@@ -46,18 +46,49 @@ export function Login({ onLogin }: LoginProps) {
         onLogin(userType, userData);
         toast.success('Autenticação Concluída');
       } else {
-        const { data, error } = await supabase
-          .from('students')
-          .select('*')
-          .eq('access_code', accessCode)
-          .single();
+        // Forçar upper case para bater com o banco de dados
+        const cleanCode = accessCode.trim().toUpperCase();
 
-        if (error || !data) {
-          toast.error('Código Inválido', { description: 'Acesso negado pela plataforma.' });
-        } else {
-          onLogin('student', data);
-          toast.success(`Bem-vindo, ${data.name.toUpperCase()}`);
+        console.log('[DEBUG_LOGIN] Tentando código:', cleanCode);
+
+        const { data, error } = await supabase
+          .from('alunos')
+          .select('*')
+          .ilike('access_code', cleanCode) // ilike é case-insensitive no Supabase
+          .maybeSingle();
+
+        console.log('[DEBUG_LOGIN] Resposta do Banco:', { data, error });
+
+        if (error) {
+          console.error('[LOGIN] Erro Supabase:', error);
+          toast.error('Erro de Conexão', { description: 'Falha ao validar código no servidor.' });
+          setIsLoading(false);
+          return;
         }
+
+        if (!data) {
+          console.warn('[LOGIN] Código não encontrado:', accessCode);
+          toast.error('Código Inválido', { description: 'Verifique se digitou corretamente (ex: INV-1234)' });
+          setIsLoading(false);
+          return;
+        }
+
+        // Mapeamento resiliente
+        const mappedUser = {
+          ...data,
+          id: data.id || 'missing-id',
+          name: data.name || 'Agente Ceitec',
+          email: data.email || `st_${accessCode}@ceitec.com`,
+          classId: data.class_id,
+          accessCode: data.access_code,
+          role: 'student',
+          avatar: data.avatar || '👤',
+          xp: Number(data.xp || 1250)
+        };
+
+        console.log('[LOGIN] Sucesso! Iniciando sessão para:', mappedUser.name);
+        onLogin('student', mappedUser);
+        toast.success(`Bem-vindo, ${mappedUser.name?.toUpperCase() || 'ESTUDANTE'}`);
       }
     } catch (err) {
       toast.error('Erro no Sistema');
@@ -72,9 +103,7 @@ export function Login({ onLogin }: LoginProps) {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[120px] -z-10"></div>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+      <div
         className="w-full max-w-sm"
       >
         <Card className="shadow-2xl border-border rounded-[2.5rem] p-10 bg-white relative overflow-hidden">
@@ -183,7 +212,7 @@ export function Login({ onLogin }: LoginProps) {
             </p>
           </footer>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 }

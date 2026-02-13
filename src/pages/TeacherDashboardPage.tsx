@@ -4,7 +4,7 @@ import { TeacherDashboard } from '../app/components/TeacherDashboard';
 import { Class, EnrolledStudent } from '../types';
 
 export default function TeacherDashboardPage() {
-    const { classes, enrolledStudents, activities, addActivity, deleteActivity } = useData();
+    const { classes, enrolledStudents, activities, addActivity, deleteActivity, seedTestData } = useData();
     const navigate = useNavigate();
 
     const handleNavigate = (screen: string, id?: string) => {
@@ -50,6 +50,7 @@ export default function TeacherDashboardPage() {
             activities={activities}
             onAddActivity={addActivity}
             onDeleteActivity={deleteActivity}
+            onSeed={seedTestData}
         />
     );
 }

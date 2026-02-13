@@ -73,7 +73,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 { data: subsData, error: subsError }
             ] = await Promise.all([
                 supabase.from('classes').select('*'),
-                supabase.from('students').select('*'),
+                supabase.from('alunos').select('*'),
                 supabase.from('activities').select('*'),
                 supabase.from('submissions').select('*')
             ]);
@@ -94,8 +94,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
             if (studentsData) {
                 setEnrolledStudents(studentsData.map((s: any) => ({
                     ...s,
-                    classId: s.class_id,
-                    accessCode: s.access_code
+                    name: s.name || s.nome || 'Estudante',
+                    email: s.email || 'sem@email.com',
+                    classId: s.class_id || s.turma_id || s.classId,
+                    accessCode: s.access_code || s.matricula || s.accessCode || 'S/N'
                 })));
             }
 
@@ -152,7 +154,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             ];
 
             const { data: createdStudents, error: studentsError } = await supabase
-                .from('students')
+                .from('alunos')
                 .insert(studentsToCreate)
                 .select();
 
@@ -259,7 +261,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         // Isso resolve o problema de usuários "fantasmas" do login por email
         try {
             const { data: existingStudent, error: searchError } = await supabase
-                .from('students')
+                .from('alunos')
                 .select('id')
                 .eq('email', currentUser.email)
                 .maybeSingle();
@@ -273,7 +275,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 // 2. Se não existir, criar o estudante automaticamente
                 console.log('[DataContext] Estudante não encontrado. Criando registro...');
                 const { data: newStudent, error: createError } = await supabase
-                    .from('students')
+                    .from('alunos')
                     .insert([{
                         name: currentUser.name || 'Estudante Autogerado',
                         email: currentUser.email,
@@ -385,14 +387,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
             progress: student.progress || 0,
             avatar: student.avatar || '👤'
         };
-        const { error } = await supabase.from('students').insert([dbStudent]);
+        const { error } = await supabase.from('alunos').insert([dbStudent]);
         if (error) { toast.error('Erro ao adicionar aluno'); return false; }
         await loadData();
         return true;
     };
 
     const deleteStudent = async (id: string) => {
-        const { error } = await supabase.from('students').delete().eq('id', id);
+        const { error } = await supabase.from('alunos').delete().eq('id', id);
         if (error) { toast.error('Erro ao excluir aluno'); return false; }
         await loadData();
         return true;

@@ -19,12 +19,12 @@ import { Class, EnrolledStudent } from '../../types';
 
 interface ClassManagementProps {
   onNavigate: (screen: string, id?: string) => void;
-  onAddClass: (newClass: any) => void;
-  onAddActivity: (activity: any) => void;
+  onAddClass: (newClass: any) => Promise<boolean>;
+  onAddActivity: (activity: any) => Promise<boolean>;
   selectedClass: Class;
   classes: Class[];
   students: EnrolledStudent[];
-  onAddStudent: (student: any) => void;
+  onAddStudent: (student: any) => Promise<boolean>;
   onDeleteClass: (id: string) => Promise<boolean>;
   onDeleteStudent: (id: string) => Promise<boolean>;
 }
@@ -79,19 +79,21 @@ export function ClassManagement({
     return `INV-${Math.floor(1000 + Math.random() * 9000)}`;
   };
 
-  const handleCreateClass = () => {
+  const handleCreateClass = async () => {
     if (!newClassName.trim()) return;
     const newClass = {
       name: newClassName,
       disciplines: selectedDisciplines.length > 0 ? selectedDisciplines : ['Geral']
     };
-    onAddClass(newClass);
-    toast.success(`Turma "${newClassName}" criada!`);
-    setIsClassModalOpen(false);
-    setNewClassName('');
+    const success = await onAddClass(newClass);
+    if (success) {
+      toast.success(`Turma "${newClassName}" criada!`);
+      setIsClassModalOpen(false);
+      setNewClassName('');
+    }
   };
 
-  const handleAddStudent = () => {
+  const handleAddStudent = async () => {
     if (!newStudent.name || !newStudent.email.includes('@')) {
       toast.error('Preencha nome e e-mail corretamente.');
       return;
@@ -109,10 +111,12 @@ export function ClassManagement({
       avatar: '👤'
     };
 
-    onAddStudent(studentWithCode);
-    setNewStudent({ ...newStudent, name: '', email: '' });
-    setIsStudentModalOpen(false);
-    toast.success('Estudante cadastrado com sucesso!');
+    const success = await onAddStudent(studentWithCode);
+    if (success) {
+      setNewStudent({ ...newStudent, name: '', email: '' });
+      setIsStudentModalOpen(false);
+      toast.success('Estudante cadastrado com sucesso!');
+    }
   };
 
   const handleDeleteClass = async () => {
@@ -308,7 +312,7 @@ export function ClassManagement({
                         <Mail className="w-3.5 h-3.5 opacity-50" /> {student.email}
                       </span>
                       <Badge className="bg-primary/10 text-primary border-none h-6 px-3 text-[9px] font-bold rounded-lg uppercase">
-                        Cod: {student.accessCode}
+                        Matrícula: {student.accessCode}
                       </Badge>
                       <span className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1.5">
                         <Target className="w-3.5 h-3.5 opacity-50" /> Nível {Math.floor(student.xp / 500) + 1}

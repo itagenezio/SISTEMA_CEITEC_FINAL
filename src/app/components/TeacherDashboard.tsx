@@ -22,9 +22,10 @@ interface TeacherDashboardProps {
   activities: Activity[];
   onAddActivity: (activity: any) => void;
   onDeleteActivity: (id: string) => Promise<boolean>;
+  onSeed: () => Promise<void>;
 }
 
-export function TeacherDashboard({ onNavigate, classes, activities, onAddActivity, onDeleteActivity }: TeacherDashboardProps) {
+export function TeacherDashboard({ onNavigate, classes, activities, onAddActivity, onDeleteActivity, onSeed }: TeacherDashboardProps) {
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [activityToDelete, setActivityToDelete] = useState<string | null>(null);
@@ -145,6 +146,19 @@ export function TeacherDashboard({ onNavigate, classes, activities, onAddActivit
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto relative z-10">
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
+            <Button
+              onClick={async () => {
+                if (window.confirm('Isso irá gerar dados fictícios para teste. Continuar?')) {
+                  await onSeed();
+                }
+              }}
+              variant="outline"
+              className="h-16 px-8 border-primary/20 hover:bg-primary/5 text-primary font-bold rounded-2xl transition-all w-full sm:w-auto text-[10px] tracking-widest uppercase italic"
+            >
+              <Zap className="w-4 h-4 mr-3" /> Gerar Dados Teste
+            </Button>
+          </motion.div>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
             <Button
               onClick={() => onNavigate('mission-management')}

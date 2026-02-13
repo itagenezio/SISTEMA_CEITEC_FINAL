@@ -3,10 +3,10 @@ import { lazy, Suspense } from 'react';
 import { PrivateRoute } from './components/PrivateRoute';
 import { MainLayout } from './layouts/MainLayout';
 
-// Lazy Imports
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const StudentDashboardPage = lazy(() => import('./pages/StudentDashboardPage'));
-const TeacherDashboardPage = lazy(() => import('./pages/TeacherDashboardPage'));
+// Normal Imports (Estabilização)
+import LoginPage from './pages/LoginPage';
+import StudentDashboardPage from './pages/StudentDashboardPage';
+import TeacherDashboardPage from './pages/TeacherDashboardPage';
 
 const ActivitiesPage = lazy(() => import('./pages/student/ActivitiesPage'));
 const PortfolioPage = lazy(() => import('./pages/student/PortfolioPage'));

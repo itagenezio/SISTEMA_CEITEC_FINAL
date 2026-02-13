@@ -11,11 +11,16 @@ interface StudentDashboardProps {
 }
 
 export function StudentDashboard({ onNavigate, currentUser }: StudentDashboardProps) {
-  const studentName = currentUser?.name || "Recruta";
-  const xp = currentUser?.xp || 0;
+  // SEGURANÇA TOTAL: Se o usuário for nulo, usamos um template para não quebrar a tela
+  const safeUser = currentUser || { name: 'Recruta', xp: 0, avatar: '👤' };
+
+  const studentName = safeUser.name || "Recruta";
+  const xp = Number(safeUser.xp || 0);
   const maxXp = 2000;
-  const level = Math.floor(xp / 500) + 1;
-  const progressPercent = (xp / maxXp) * 100;
+
+  // Evita divisões por zero ou valores NaN
+  const level = Math.max(1, Math.floor(xp / 500) + 1);
+  const progressPercent = Math.min(100, Math.max(0, (xp / maxXp) * 100));
 
   return (
     <div className="space-y-12 pb-20 relative px-4">
@@ -26,9 +31,7 @@ export function StudentDashboard({ onNavigate, currentUser }: StudentDashboardPr
       <div className="relative">
         <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center">
           {/* Avatar Premium */}
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+          <div
             className="relative shrink-0"
           >
             <div className="relative w-36 h-36 md:w-44 md:h-44 bg-white rounded-[2.5rem] border border-border flex items-center justify-center text-6xl md:text-7xl shadow-2xl relative overflow-hidden group">
@@ -39,7 +42,7 @@ export function StudentDashboard({ onNavigate, currentUser }: StudentDashboardPr
             <Badge className="absolute -bottom-3 -right-3 bg-primary text-white border-4 border-background px-6 py-2.5 font-black text-sm shadow-xl rounded-2xl italic">
               LVL {level}
             </Badge>
-          </motion.div>
+          </div>
 
           <div className="flex-1 space-y-6 w-full">
             <div className="space-y-3">
@@ -57,7 +60,7 @@ export function StudentDashboard({ onNavigate, currentUser }: StudentDashboardPr
                 <div className="space-y-2">
                   <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Métrica de Evolução (XP)</p>
                   <p className="text-5xl font-black text-foreground tracking-tighter italic">
-                    {xp.toLocaleString()} <span className="text-muted-foreground text-2xl font-bold italic">/{maxXp.toLocaleString()}</span>
+                    {Number(xp || 0).toLocaleString()} <span className="text-muted-foreground text-2xl font-bold italic">/{Number(maxXp || 2000).toLocaleString()}</span>
                   </p>
                 </div>
                 <div className="text-right w-full sm:w-auto">
@@ -67,14 +70,12 @@ export function StudentDashboard({ onNavigate, currentUser }: StudentDashboardPr
               </div>
 
               <div className="relative h-4 w-full bg-muted rounded-full overflow-hidden p-1 border border-border/50">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPercent}%` }}
-                  transition={{ duration: 2, ease: "circOut" }}
+                <div
                   className="h-full bg-primary rounded-full shadow-[0_0_15px_rgba(59,130,246,0.4)] relative"
+                  style={{ width: `${progressPercent}%` }}
                 >
                   <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-                </motion.div>
+                </div>
               </div>
 
               <div className="mt-6 flex flex-wrap items-center gap-6">
@@ -110,7 +111,7 @@ export function StudentDashboard({ onNavigate, currentUser }: StudentDashboardPr
           </div>
 
           <div className="grid gap-6">
-            <motion.div whileHover={{ scale: 1.015 }} transition={{ type: "spring", stiffness: 300 }}>
+            <div>
               <Card
                 className="p-8 bg-white border border-border hover:border-primary/40 transition-all cursor-pointer rounded-[2.5rem] shadow-sm hover:shadow-2xl group overflow-hidden relative"
                 onClick={() => onNavigate('activities')}
@@ -136,9 +137,9 @@ export function StudentDashboard({ onNavigate, currentUser }: StudentDashboardPr
                   </div>
                 </div>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div whileHover={{ scale: 1.015 }}>
+            <div>
               <Card
                 className="p-6 bg-white border border-border hover:border-amber-400/40 transition-all cursor-pointer rounded-[2rem] shadow-sm group"
                 onClick={() => onNavigate('activities')}
@@ -159,7 +160,7 @@ export function StudentDashboard({ onNavigate, currentUser }: StudentDashboardPr
                   </div>
                 </div>
               </Card>
-            </motion.div>
+            </div>
           </div>
         </div>
 
